@@ -306,7 +306,7 @@ function importedWorkshopPage(w){
 }
 function additionalWorkshopTiles(){
  const existing=new Set(ships.map(s=>s[3]));
- return syncedWorkshop.filter(w=>w.id&&(!w.route||!existing.has(w.route))).map(w=>{
+ return syncedWorkshop.filter(w=>w.id&&!excludedWorkshopIds.has(String(w.id))&&(!w.route||!existing.has(w.route))).map(w=>{
   const name=safeWorkshopText(w.title),route=importedWorkshopRoute(w),kind=safeWorkshopText(w.category||'Other');
   const img=w.preview_url?'<div class="tile-art"><img src="'+safeWorkshopText(w.preview_url)+'" alt="'+name+' preview" loading="lazy" referrerpolicy="no-referrer"></div>':'<div class="tile-art"></div>';
   return {category:w.category||'Other',title:w.title||'',markup:'<a class="tile" href="#'+route+'" data-route="'+route+'">'+img+'<div class="tile-body"><span class="tag">'+kind+'</span><h3>'+name+'</h3><p>Steam Workshop listing</p><span class="arrow">Open vessel page →</span></div></a>'};
@@ -318,7 +318,7 @@ async function loadSteamWorkshop(){
   if(!response.ok)throw Error('HTTP '+response.status);
   const parsed=await response.json();
   if(!Array.isArray(parsed))throw Error('Invalid Workshop data');
-  syncedWorkshop=parsed.filter(w=>w.id&&!excludedWorkshopIds.has(String(w.id)));
+  syncedWorkshop=parsed.filter(w=>w.id);
   // Preserve hand-selected vessel hero images independently of Steam metadata.
   if((location.hash||'#home')==='#fleet')updateFleetResults();else if(location.hash.startsWith('#workshop-')||location.hash.startsWith('#ship-'))render();
  }catch(e){console.warn('Steam metadata unavailable; preserving existing fleet:',e);}
