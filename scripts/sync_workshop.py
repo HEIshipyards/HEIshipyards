@@ -4,6 +4,8 @@ import html
 import json
 import pathlib
 import re
+import time
+import urllib.error
 import sys
 import urllib.parse
 import urllib.request
@@ -117,6 +119,7 @@ if OUTPUT.exists():
         print(f"WARNING: Could not parse previous gallery data: {exc}", file=sys.stderr)
 
 out, errors, missing = [], [], []
+rate_limited = False
 for item in IDS:
     key = str(item["id"])
     d = by_id.get(key)
@@ -128,9 +131,16 @@ for item in IDS:
         continue
     preview = d.get("preview_url", "")
     gallery = api_gallery(d)
-    if not gallery:
+    if not gallery and not rate_limited:
         try:
             gallery = page_gallery(key, preview)
+            time.sleep(2)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429:
+                rate_limited = True
+                print("WARNING: Steam rate-limited page requests (HTTP 429); skipping further page requests this run.", file=sys.stderr)
+            else:
+                print(f"WARNING: Workshop {key} screenshot page unavailable: {exc}", file=sys.stderr)
         except Exception as exc:
             print(f"WARNING: Workshop {key} screenshot page unavailable: {exc}", file=sys.stderr)
     if not gallery:
