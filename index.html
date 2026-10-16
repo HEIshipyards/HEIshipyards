@@ -88,6 +88,10 @@
 </style>
 <style id="steam-gallery-styles">
 .workshop-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:var(--surface2)}
+/* Keep imported Workshop thumbnails the same size as vessel-page thumbnails. */
+.tile-art > img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:var(--surface2)}
+.tile-art:has(> img)::before,.tile-art:has(> img)::after{display:none}
+
 .tile-art:has(.workshop-photo)::before,.tile-art:has(.workshop-photo)::after{display:none}
 .workshop-gallery-item{min-height:220px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
 .workshop-gallery-item img{width:100%;height:100%;object-fit:cover;display:block;min-height:220px}
