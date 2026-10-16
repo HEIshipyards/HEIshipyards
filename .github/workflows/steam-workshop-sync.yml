@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run Excalibur-only screenshot test or full sync"
+        required: true
+        default: "excalibur-test"
+        type: choice
+        options:
+          - excalibur-test
+          - full-sync
 
 permissions:
   contents: write
@@ -24,10 +33,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Test Excalibur screenshots only (read-only)
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'excalibur-test'
+        run: python scripts/test_excalibur_gallery.py
+
       - name: Fetch Steam Workshop listings
+        if: github.event_name == 'schedule' || inputs.mode == 'full-sync'
         run: python scripts/sync_workshop.py
 
       - name: Commit only if data changed
+        if: github.event_name == 'schedule' || inputs.mode == 'full-sync'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
