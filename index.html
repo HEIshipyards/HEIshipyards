@@ -87,6 +87,9 @@
 .about-youtube-btn{background:var(--warm);color:#101820!important;min-width:260px;min-height:46px;text-align:center}.about-youtube-btn span{display:inline!important;visibility:visible!important;color:inherit!important;opacity:1!important;font-size:.78rem;font-weight:850;line-height:1.4}
 
 .tile-art img{width:100%;height:100%;display:block;object-fit:contain;object-position:center;position:relative;z-index:1;}
+
+/* Workshop vessel carousel: first supplementary screenshot is featured. */
+.hei-carousel{width:100%;max-width:1080px;margin:0 auto}.hei-carousel-stage{position:relative;background:#101a21;border:1px solid var(--line);border-radius:9px;overflow:hidden}.hei-carousel-stage img{width:100%;height:clamp(260px,49vw,620px);object-fit:contain;display:block}.hei-carousel-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;background:rgba(12,19,26,.8);border:1px solid var(--line);color:var(--text);font-size:1.8rem;padding:8px 15px;cursor:pointer;border-radius:5px}.hei-carousel-arrow:hover,.hei-carousel-thumb:hover{border-color:var(--warm)}.hei-carousel-prev{left:12px}.hei-carousel-next{right:12px}.hei-carousel-caption{color:var(--muted);text-align:center;margin:10px 0;font-size:.85rem}.hei-carousel-thumbs{display:flex;gap:9px;overflow-x:auto;padding:8px 2px}.hei-carousel-thumb{flex:0 0 112px;width:112px;height:74px;cursor:pointer;border:2px solid var(--line);border-radius:5px;background:var(--surface);padding:2px}.hei-carousel-thumb[aria-current="true"]{border-color:var(--warm)}.hei-carousel-thumb img{width:100%;height:100%;object-fit:cover;border-radius:2px}
 </style>
 <style id="steam-gallery-styles">
 .workshop-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:var(--surface2)}
@@ -235,17 +238,38 @@ const excludedWorkshopIds=new Set(["3450129673","3506049267","3506229782","35185
 let syncedWorkshop=[];
 function safeWorkshopText(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function importedWorkshopRoute(w){return 'workshop-'+String(w.id);}
+function heiGalleryShow(button,index){
+ const gallery=button.closest('.hei-carousel');if(!gallery)return;
+ const thumbs=[...gallery.querySelectorAll('.hei-carousel-thumb')];if(!thumbs.length)return;
+ const next=(Number(index)+thumbs.length)%thumbs.length;
+ const chosen=thumbs[next];const stage=gallery.querySelector('.hei-carousel-stage img');
+ stage.src=chosen.dataset.url;stage.alt=chosen.dataset.alt;
+ thumbs.forEach((t,i)=>t.setAttribute('aria-current',String(i===next)));
+ gallery.dataset.index=String(next);
+ gallery.querySelector('.hei-carousel-caption').textContent='Image '+(next+1)+' of '+thumbs.length;
+}
+function heiGalleryStep(button,increment){const gallery=button.closest('.hei-carousel');heiGalleryShow(button,Number(gallery.dataset.index||0)+increment);}
+function heiGalleryMarkup(w,name){
+ const extras=Array.isArray(w.gallery_urls)?w.gallery_urls.filter(x=>typeof x==='string'&&/^https:\/\//.test(x)):[];
+ const urls=[...new Set(extras.filter(x=>x!==w.preview_url))];
+ if(!urls.length&&w.preview_url)urls.push(w.preview_url);
+ if(!urls.length)return '<div class="placeholder">NO WORKSHOP IMAGES AVAILABLE</div>';
+ const safeUrls=urls.map(safeWorkshopText),alt=name+' photograph';
+ const main='<div class="hei-carousel-stage"><img src="'+safeUrls[0]+'" alt="'+alt+'" loading="lazy" referrerpolicy="no-referrer">'+(urls.length>1?'<button class="hei-carousel-arrow hei-carousel-prev" type="button" onclick="heiGalleryStep(this,-1)" aria-label="Previous image">&#10094;</button><button class="hei-carousel-arrow hei-carousel-next" type="button" onclick="heiGalleryStep(this,1)" aria-label="Next image">&#10095;</button>':'')+'</div>';
+ const thumbs=urls.length>1?'<div class="hei-carousel-thumbs">'+safeUrls.map((url,i)=>'<button type="button" class="hei-carousel-thumb" aria-label="Show image '+(i+1)+'" aria-current="'+(i===0)+'" data-url="'+url+'" data-alt="'+alt+' '+(i+1)+'" onclick="heiGalleryShow(this,'+i+')"><img src="'+url+'" alt="" loading="lazy" referrerpolicy="no-referrer"></button>').join('')+'</div>':'';
+ return '<div class="hei-carousel" data-index="0">'+main+'<div class="hei-carousel-caption">Image 1 of '+urls.length+'</div>'+thumbs+'</div>';
+}
 function importedWorkshopPage(w){
  const name=safeWorkshopText(w.title||'Untitled Workshop Vessel');
  const kind=safeWorkshopText(w.category||'N/A');
- const preview=w.preview_url?'<div class="workshop-gallery-item"><img src="'+safeWorkshopText(w.preview_url)+'" alt="'+name+'" loading="lazy" referrerpolicy="no-referrer"></div>':'<div class="placeholder">N/A</div>';
+ const gallery=heiGalleryMarkup(w,name);
  const url='https://steamcommunity.com/sharedfiles/filedetails/?id='+encodeURIComponent(w.id);
  const key=importedWorkshopRoute(w),anchor=n=>'v-'+key+'-'+n;
  const rows=['Classification','Dimensions','Baseline mass','Crew complement','Operating environment','Propulsion','Power systems','Armament','Cargo capacity','Mission equipment'].map(x=>'<tr><td>'+x+'</td><td>'+(x==='Classification'?kind:'N/A')+'</td></tr>').join('');
  const stats=['Dimensions','Baseline mass','Crew complement','Operating environment'].map(x=>'<div class="stat"><small>'+x+'</small><strong>N/A</strong></div>').join('');
  return `<nav class="vessel-jump" aria-label="${name} page sections"><a href="#${anchor('gallery')}">Gallery</a><a href="#${anchor('history')}">History</a><a href="#${anchor('specs')}">Specifications</a><a href="#${anchor('systems')}">Systems</a><a href="#${anchor('videos')}">Videos</a><a href="#${anchor('workshop')}">Workshop</a></nav>
  <section class="ship-section exc-hero"><div class="eyebrow">H-E-I / Almagest Division / Fleet registry</div><h2>${name}</h2><p class="ship-lead">N/A</p><div class="ship-actions"><a class="btn" href="${url}" target="_blank" rel="noopener noreferrer">Steam Workshop ↗</a><a class="btn outline" href="#${anchor('videos')}">Watch ship videos ↓</a></div><div class="exc-identity"><span>${kind}</span><span>Almagest Division</span></div><div class="ship-stats">${stats}</div></section>
- <section class="ship-section" id="${anchor('gallery')}"><div class="eyebrow">01 / Visual archive</div><h2>Vessel gallery</h2><div class="ship-gallery">${preview}<div class="placeholder">SECONDARY IMAGE<br>N/A</div><div class="placeholder">DETAIL / INTERIOR IMAGE<br>N/A</div></div></section>
+ <section class="ship-section" id="${anchor('gallery')}"><div class="eyebrow">01 / Visual archive</div><h2>Vessel gallery</h2><div class="ship-gallery">${gallery}</div></section>
  <section class="ship-section ship-copy" id="${anchor('history')}"><div class="eyebrow">02 / Program history</div><h2>Development and mission history</h2><div class="content-panel"><h3>Role in HEI</h3><p>N/A</p><h3>Development history</h3><p>N/A</p></div></section>
  <section class="ship-section" id="${anchor('specs')}"><div class="eyebrow">03 / Engineering record</div><h2>Technical specifications</h2><div class="content-panel"><h3>Specifications</h3><table class="spec-table"><tbody>${rows}</tbody></table></div></section>
  <section class="ship-section ship-copy" id="${anchor('systems')}"><div class="eyebrow">04 / Key systems</div><h2>Engineering and mission systems</h2><div class="catalog"><div class="content-panel"><h3>System information</h3><p>N/A</p></div></div></section>
