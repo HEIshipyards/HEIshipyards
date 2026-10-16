@@ -85,6 +85,8 @@
 
 /* About page call-to-action: explicit readable label on orange background */
 .about-youtube-btn{background:var(--warm);color:#101820!important;min-width:260px;min-height:46px;text-align:center}.about-youtube-btn span{display:inline!important;visibility:visible!important;color:inherit!important;opacity:1!important;font-size:.78rem;font-weight:850;line-height:1.4}
+
+.tile-art img{width:100%;height:100%;display:block;object-fit:contain;object-position:center;position:relative;z-index:1;}
 </style>
 <style id="steam-gallery-styles">
 .workshop-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:var(--surface2)}
@@ -223,13 +225,30 @@ const fleetCategories={"ship-excalibur":"Combat","ship-sojourner":"Civilian","sh
 // Steam Workshop metadata is imported separately; handcrafted lore/specifications remain authoritative.
 let syncedWorkshop=[];
 function safeWorkshopText(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function importedWorkshopRoute(w){return 'workshop-'+String(w.id);}
+function importedWorkshopPage(w){
+ const name=safeWorkshopText(w.title||'Untitled Workshop Vessel');
+ const kind=safeWorkshopText(w.category||'N/A');
+ const preview=w.preview_url?'<div class="workshop-gallery-item"><img src="'+safeWorkshopText(w.preview_url)+'" alt="'+name+'" loading="lazy" referrerpolicy="no-referrer"></div>':'<div class="placeholder">N/A</div>';
+ const url='https://steamcommunity.com/sharedfiles/filedetails/?id='+encodeURIComponent(w.id);
+ const key=importedWorkshopRoute(w),anchor=n=>'v-'+key+'-'+n;
+ const rows=['Classification','Dimensions','Baseline mass','Crew complement','Operating environment','Propulsion','Power systems','Armament','Cargo capacity','Mission equipment'].map(x=>'<tr><td>'+x+'</td><td>'+(x==='Classification'?kind:'N/A')+'</td></tr>').join('');
+ const stats=['Dimensions','Baseline mass','Crew complement','Operating environment'].map(x=>'<div class="stat"><small>'+x+'</small><strong>N/A</strong></div>').join('');
+ return `<nav class="vessel-jump" aria-label="${name} page sections"><a href="#${anchor('gallery')}">Gallery</a><a href="#${anchor('history')}">History</a><a href="#${anchor('specs')}">Specifications</a><a href="#${anchor('systems')}">Systems</a><a href="#${anchor('videos')}">Videos</a><a href="#${anchor('workshop')}">Workshop</a></nav>
+ <section class="ship-section exc-hero"><div class="eyebrow">H-E-I / Almagest Division / Fleet registry</div><h2>${name}</h2><p class="ship-lead">N/A</p><div class="ship-actions"><a class="btn" href="${url}" target="_blank" rel="noopener noreferrer">Steam Workshop ↗</a><a class="btn outline" href="#${anchor('videos')}">Watch ship videos ↓</a></div><div class="exc-identity"><span>${kind}</span><span>Almagest Division</span></div><div class="ship-stats">${stats}</div></section>
+ <section class="ship-section" id="${anchor('gallery')}"><div class="eyebrow">01 / Visual archive</div><h2>Vessel gallery</h2><div class="ship-gallery">${preview}<div class="placeholder">SECONDARY IMAGE<br>N/A</div><div class="placeholder">DETAIL / INTERIOR IMAGE<br>N/A</div></div></section>
+ <section class="ship-section ship-copy" id="${anchor('history')}"><div class="eyebrow">02 / Program history</div><h2>Development and mission history</h2><div class="content-panel"><h3>Role in HEI</h3><p>N/A</p><h3>Development history</h3><p>N/A</p></div></section>
+ <section class="ship-section" id="${anchor('specs')}"><div class="eyebrow">03 / Engineering record</div><h2>Technical specifications</h2><div class="content-panel"><h3>Specifications</h3><table class="spec-table"><tbody>${rows}</tbody></table></div></section>
+ <section class="ship-section ship-copy" id="${anchor('systems')}"><div class="eyebrow">04 / Key systems</div><h2>Engineering and mission systems</h2><div class="catalog"><div class="content-panel"><h3>System information</h3><p>N/A</p></div></div></section>
+ <section class="ship-section" id="${anchor('videos')}"><div class="eyebrow">05 / Media archive</div><h2>${name} videos</h2><div class="video-grid"><div class="video-card"><div class="video-placeholder">▶ VIDEO 01 · N/A</div><div class="tile-body"><h3>Featured video</h3><p>N/A</p></div></div><div class="video-card"><div class="video-placeholder">▶ VIDEO 02 · N/A</div><div class="tile-body"><h3>Additional video</h3><p>N/A</p></div></div></div></section>
+ <section class="ship-section" id="${anchor('workshop')}"><div class="eyebrow">06 / Download & publication</div><h2>Workshop archive</h2><div class="content-panel"><h3>${name}</h3><p class="muted">Steam Workshop release</p><div class="ship-actions"><a class="btn" href="${url}" target="_blank" rel="noopener noreferrer">Steam Workshop ↗</a><a class="btn outline" href="#fleet" data-route="fleet">Back to Fleet →</a></div></div></section>`;
+}
 function additionalWorkshopTiles(){
  const existing=new Set(ships.map(s=>s[3]));
- return syncedWorkshop.filter(w=>!w.route||!existing.has(w.route)).map(w=>{
- const name=safeWorkshopText(w.title), url='https://steamcommunity.com/sharedfiles/filedetails/?id='+encodeURIComponent(w.id);
- const kind=safeWorkshopText(w.category||'Other');
- const img=w.preview_url?'<div class="tile-art"><img src="'+safeWorkshopText(w.preview_url)+'" alt="'+name+' preview" loading="lazy" referrerpolicy="no-referrer"></div>':'<div class="tile-art"></div>';
- return {category:w.category||'Other',title:w.title||'',markup:'<a class="tile" href="'+url+'" target="_blank" rel="noopener noreferrer">'+img+'<div class="tile-body"><span class="tag">'+kind+'</span><h3>'+name+'</h3><p>Steam Workshop listing</p><span class="arrow">Open on Steam ↗</span></div></a>'};
+ return syncedWorkshop.filter(w=>w.id&&(!w.route||!existing.has(w.route))).map(w=>{
+  const name=safeWorkshopText(w.title),route=importedWorkshopRoute(w),kind=safeWorkshopText(w.category||'Other');
+  const img=w.preview_url?'<div class="tile-art"><img src="'+safeWorkshopText(w.preview_url)+'" alt="'+name+' preview" loading="lazy" referrerpolicy="no-referrer"></div>':'<div class="tile-art"></div>';
+  return {category:w.category||'Other',title:w.title||'',markup:'<a class="tile" href="#'+route+'" data-route="'+route+'">'+img+'<div class="tile-body"><span class="tag">'+kind+'</span><h3>'+name+'</h3><p>Steam Workshop listing</p><span class="arrow">Open vessel page →</span></div></a>'};
  });
 }
 async function loadSteamWorkshop(){
@@ -240,7 +259,7 @@ async function loadSteamWorkshop(){
   if(!Array.isArray(parsed))throw Error('Invalid Workshop data');
   syncedWorkshop=parsed;
   for(const w of parsed){if(w.route&&workshopImages[w.route]&&w.preview_url)workshopImages[w.route]=w.preview_url;}
-  if((location.hash||'#home')==='#fleet')updateFleetResults();
+  if((location.hash||'#home')==='#fleet')updateFleetResults();else if(location.hash.startsWith('#workshop-'))render();
  }catch(e){console.warn('Steam metadata unavailable; preserving existing fleet:',e);}
 }
 
@@ -290,7 +309,7 @@ function crewsPage(){return `<div class="crews-restricted">
 <div class="crews-bar">ACCESS NOT AUTHORISED &nbsp; // &nbsp; ARCHIVE UNAVAILABLE</div>
 <a class="btn outline" href="#home" data-route="home">Return to HEI Shipyards →</a></div></div>`;}
 
-function render(){let route=decodeURIComponent(location.hash.slice(1))||'home';let home=route==='home';document.getElementById('home').classList.toggle('active',home);document.getElementById('page').classList.toggle('active',!home);document.querySelectorAll('[data-route]').forEach(a=>a.classList.toggle('active',a.dataset.route===route));if(home){document.title='HEI Shipyards — Helix Engineering & Integration';window.scrollTo(0,0);return}let conf=pages[route],content='';if(conf){if(route==='fleet')content=fleetPage();if(route==='videos')content=`<div class="catalog">${['Featured video','Ship showcase','Combat & game design','Channel archive'].map(t=>`<div class="tile"><div class="placeholder">THUMBNAIL / YOUTUBE EMBED</div><div class="tile-body"><h3>${t}</h3><p>Video details coming soon.</p></div></div>`).join('')}</div>`;if(route==='projects')content=heiProjectsPage();if(route==='feedback')content=heiFeedbackPage();if(route==='lore')content=heiLorePage();if(route==='about')content=heiAboutPage();if(route==='crews')content=crewsPage();}else{let ship=ships.find(s=>s[3]===route);if(!ship){location.hash='home';return}conf=['FLEET / '+ship[1],ship[0],ship[2]];content=route==='ship-excalibur'?excaliburPage():shipDetails[route]?additionalShipPage(route):`<div class="stub"><div class="placeholder">SHIP SCREENSHOT OR HERO RENDER</div><div>${panel('Vessel overview','Space for the ship\'s introduction and role.')}</div></div><div class="catalog">${['Technical specifications','Ship history & development','Image gallery','Related videos & downloads'].map(t=>panel(t,'Content placeholder for '+ship[0]+'.')).join('')}</div>`}document.getElementById('page-kicker').textContent=conf[0];document.getElementById('page-heading').textContent=conf[1];document.getElementById('page-description').textContent=conf[2];document.getElementById('page-content').innerHTML=content;if(route==='fleet')updateFleetResults();document.title=conf[1]+' — HEI Shipyards';window.scrollTo(0,0)}
+function render(){let route=decodeURIComponent(location.hash.slice(1))||'home';let home=route==='home';document.getElementById('home').classList.toggle('active',home);document.getElementById('page').classList.toggle('active',!home);document.querySelectorAll('[data-route]').forEach(a=>a.classList.toggle('active',a.dataset.route===route));if(home){document.title='HEI Shipyards — Helix Engineering & Integration';window.scrollTo(0,0);return}let conf=pages[route],content='';if(conf){if(route==='fleet')content=fleetPage();if(route==='videos')content=`<div class="catalog">${['Featured video','Ship showcase','Combat & game design','Channel archive'].map(t=>`<div class="tile"><div class="placeholder">THUMBNAIL / YOUTUBE EMBED</div><div class="tile-body"><h3>${t}</h3><p>Video details coming soon.</p></div></div>`).join('')}</div>`;if(route==='projects')content=heiProjectsPage();if(route==='feedback')content=heiFeedbackPage();if(route==='lore')content=heiLorePage();if(route==='about')content=heiAboutPage();if(route==='crews')content=crewsPage();}else{let imported=syncedWorkshop.find(w=>w.id&&importedWorkshopRoute(w)===route&&(!w.route||!ships.some(s=>s[3]===w.route)));if(imported){conf=['FLEET / '+(imported.category||'Other'),imported.title||'Workshop Vessel','N/A'];content=importedWorkshopPage(imported);}else{let ship=ships.find(s=>s[3]===route);if(!ship){if(route.startsWith('workshop-')&&!syncedWorkshop.length)return;location.hash='home';return}conf=['FLEET / '+ship[1],ship[0],ship[2]];content=route==='ship-excalibur'?excaliburPage():shipDetails[route]?additionalShipPage(route):`<div class="stub"><div class="placeholder">SHIP SCREENSHOT OR HERO RENDER</div><div>${panel('Vessel overview','Space for the ship\'s introduction and role.')}</div></div><div class="catalog">${['Technical specifications','Ship history & development','Image gallery','Related videos & downloads'].map(t=>panel(t,'Content placeholder for '+ship[0]+'.')).join('')}</div>`}}document.getElementById('page-kicker').textContent=conf[0];document.getElementById('page-heading').textContent=conf[1];document.getElementById('page-description').textContent=conf[2];document.getElementById('page-content').innerHTML=content;if(route==='fleet')updateFleetResults();document.title=conf[1]+' — HEI Shipyards';window.scrollTo(0,0)}
 document.addEventListener('click',e=>{const filter=e.target.closest('[data-fleet-filter]');if(filter){activeFleetFilter=filter.dataset.fleetFilter;document.querySelectorAll('.fleet-filter').forEach(b=>b.classList.toggle('selected',b.dataset.fleetFilter===activeFleetFilter));updateFleetResults();}});
 document.addEventListener('input',e=>{if(e.target.id==='fleet-search'){fleetQuery=e.target.value;updateFleetResults();}});
 document.addEventListener('click',function(e){
