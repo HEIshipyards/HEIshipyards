@@ -215,9 +215,34 @@ function additionalShipPage(route){
 const pages={fleet:['01 / Fleet registry','The HEI Fleet','Explore HEI spacecraft. Workshop images are linked directly from Steam; select a vessel for its archive page.'],videos:['02 / Broadcast','Videos & Media','Space Engineers 2 discussions, ship showcases, and trailers.'],projects:['03 / R&D','Current Projects','Ongoing designs, prototypes, and engineering experiments.'],feedback:['03 / R&D','Support Site / Feedback Proposals','Space Engineers 2 proposals and support-site contributions.'],lore:['04 / Archives','Company Lore','The history of Helix Engineering & Integration and the Almagest Division.'],about:['05 / Channel','About HEI Shipyards','The channel, its creator, and its mission.'],crews:['RESTRICTED / ALMAGEST','Crews of the Almagest','A project area currently under development.']};
 const tile=s=>`<a class="tile" href="#${s[3]}" data-route="${s[3]}">${workshopVisual(s[3])}<div class="tile-body"><span class="tag">${s[1]}</span><h3>${s[0]}</h3><p>${s[2]}</p><span class="arrow">Open vessel page →</span></div></a>`;
 const fleetCategories={"ship-excalibur":"Combat","ship-sojourner":"Civilian","ship-outlander":"Industrial","ship-borehole":"Industrial","ship-featherfall":"Civilian","ship-shuttle-mod6":"Civilian","ship-shuttle-h":"Civilian","ship-shuttle-mod2":"Civilian","ship-asteroid-base":"Infrastructure"};
+
+// Steam Workshop metadata is imported separately; handcrafted lore/specifications remain authoritative.
+let syncedWorkshop=[];
+function safeWorkshopText(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function additionalWorkshopTiles(){
+ const existing=new Set(ships.map(s=>s[3]));
+ return syncedWorkshop.filter(w=>!w.route||!existing.has(w.route)).map(w=>{
+ const name=safeWorkshopText(w.title), url='https://steamcommunity.com/sharedfiles/filedetails/?id='+encodeURIComponent(w.id);
+ const kind=safeWorkshopText(w.category||'Other');
+ const img=w.preview_url?'<div class="tile-art"><img src="'+safeWorkshopText(w.preview_url)+'" alt="'+name+' preview" loading="lazy" referrerpolicy="no-referrer"></div>':'<div class="tile-art"></div>';
+ return {category:w.category||'Other',title:w.title||'',markup:'<a class="tile" href="'+url+'" target="_blank" rel="noopener noreferrer">'+img+'<div class="tile-body"><span class="tag">'+kind+'</span><h3>'+name+'</h3><p>Steam Workshop listing</p><span class="arrow">Open on Steam ↗</span></div></a>'};
+ });
+}
+async function loadSteamWorkshop(){
+ try{
+  const response=await fetch('data/workshop.json',{cache:'no-cache'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const parsed=await response.json();
+  if(!Array.isArray(parsed))throw Error('Invalid Workshop data');
+  syncedWorkshop=parsed;
+  for(const w of parsed){if(w.route&&workshopImages[w.route]&&w.preview_url)workshopImages[w.route]=w.preview_url;}
+  if((location.hash||'#home')==='#fleet')updateFleetResults();
+ }catch(e){console.warn('Steam metadata unavailable; preserving existing fleet:',e);}
+}
+
 let activeFleetFilter='All',fleetQuery='';
 function fleetPage(){return `<div class="fleet-tools"><div class="fleet-filters" role="group" aria-label="Fleet category">${['All','Combat','Civilian','Industrial','Infrastructure'].map(c=>`<button class="fleet-filter ${activeFleetFilter===c?'selected':''}" data-fleet-filter="${c}" type="button">${c}</button>`).join('')}</div><input class="fleet-search" id="fleet-search" type="search" placeholder="Search the fleet…" value="${fleetQuery.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;')}" aria-label="Search fleet by name or role"></div><div id="fleet-results" aria-live="polite"></div>`}
-function updateFleetResults(){const target=document.getElementById('fleet-results');if(!target)return;let shown=ships.filter(s=>(activeFleetFilter==='All'||fleetCategories[s[3]]===activeFleetFilter)&&(s[0]+' '+s[1]+' '+s[2]).toLowerCase().includes(fleetQuery.toLowerCase().trim()));target.innerHTML=`<p class="fleet-count">${shown.length} ${shown.length===1?'entry':'entries'} in registry</p>${shown.length?`<div class="grid">${shown.map(tile).join('')}</div>`:'<div class="fleet-empty">No matching entries. Try another category or search.</div>'}`;}
+function updateFleetResults(){const target=document.getElementById('fleet-results');if(!target)return;let shown=ships.filter(s=>(activeFleetFilter==='All'||fleetCategories[s[3]]===activeFleetFilter)&&(s[0]+' '+s[1]+' '+s[2]).toLowerCase().includes(fleetQuery.toLowerCase().trim()));const extras=additionalWorkshopTiles().filter(w=>(activeFleetFilter==='All'||w.category===activeFleetFilter)&&w.title.toLowerCase().includes(fleetQuery.toLowerCase().trim()));const count=shown.length+extras.length;target.innerHTML=`<p class="fleet-count">${count} ${count===1?'entry':'entries'} in registry</p>${count?`<div class="grid">${shown.map(tile).join('')}${extras.map(w=>w.markup).join('')}</div>`:'<div class="fleet-empty">No matching entries. Try another category or search.</div>'}`;}
 function panel(title,msg){return `<div class="content-panel"><h3>${title}</h3><p class="muted">${msg}</p><p class="placeholder-note">This section is intentionally left ready for your content. We can fill it in together later.</p></div>`}
 
 function excaliburPage(){return `
@@ -271,6 +296,6 @@ document.addEventListener('click',function(e){
  const target=document.getElementById(id);
  if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'});}
 });
-addEventListener('hashchange',render);document.getElementById('back').addEventListener('click',()=>location.hash='home');document.getElementById('year').textContent=new Date().getFullYear();document.querySelector('.menu').addEventListener('click',function(){let n=document.querySelector('.nav');let open=n.classList.toggle('open');this.setAttribute('aria-expanded',String(open))});document.addEventListener('click',e=>{if(e.target.closest('.nav a')){document.querySelector('.nav').classList.remove('open');document.querySelector('.menu').setAttribute('aria-expanded','false')}});render();
+addEventListener('hashchange',render);document.getElementById('back').addEventListener('click',()=>location.hash='home');document.getElementById('year').textContent=new Date().getFullYear();document.querySelector('.menu').addEventListener('click',function(){let n=document.querySelector('.nav');let open=n.classList.toggle('open');this.setAttribute('aria-expanded',String(open))});document.addEventListener('click',e=>{if(e.target.closest('.nav a')){document.querySelector('.nav').classList.remove('open');document.querySelector('.menu').setAttribute('aria-expanded','false')}});render();loadSteamWorkshop();
 </script>
 </body></html>
