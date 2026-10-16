@@ -231,7 +231,7 @@ const tile=s=>`<a class="tile" href="#${s[3]}" data-route="${s[3]}">${workshopVi
 const fleetCategories={"ship-excalibur":"Combat","ship-sojourner":"Civilian","ship-outlander":"Industrial","ship-borehole":"Industrial","ship-featherfall":"Civilian","ship-shuttle-mod6":"Civilian","ship-shuttle-h":"Civilian","ship-shuttle-mod2":"Civilian","ship-asteroid-base":"Infrastructure"};
 
 // Steam Workshop metadata is imported separately; handcrafted lore/specifications remain authoritative.
-const excludedWorkshopIds=new Set(["3450129673","3506049267","3506229782","3518553438","3523301728","3530412222","3552412175","3617528177","3619325505","3645547285","3662641507","3681496590","3694700803","3791302579"]);
+const excludedWorkshopIds=new Set(["3450129673","3506049267","3506229782","3518553438","3523301728","3530412222","3552412175","3617528177","3619325505","3639253451","3645547285","3662641507","3676952341","3681496590","3694700803","3718140217","3791302579"]);
 let syncedWorkshop=[];
 function safeWorkshopText(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function importedWorkshopRoute(w){return 'workshop-'+String(w.id);}
