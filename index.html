@@ -99,6 +99,14 @@
 .workshop-gallery-item img{width:100%;height:100%;object-fit:cover;display:block;min-height:220px}
 .workshop-source{font-size:.8rem;color:var(--muted);margin-top:12px}
 .workshop-source a{color:var(--warm);text-decoration:underline}
+
+/* Fleet card layout: equal-height cards and consistent call-to-action alignment. */
+#fleet-results .grid{align-items:stretch}
+#fleet-results .tile{display:flex;flex-direction:column;height:100%}
+#fleet-results .tile-art{flex:0 0 190px;width:100%}
+#fleet-results .tile-body{display:flex;flex:1;flex-direction:column;align-items:flex-start;min-height:178px}
+#fleet-results .tile-body .arrow{margin-top:auto;padding-top:14px}
+#fleet-results .tile-body h3{overflow-wrap:anywhere}
 </style><style>
 .channel-spotlight{background:#121a21}.featured-yt{display:flex;flex-direction:column;gap:16px;padding:35px;text-align:center;min-height:390px;background:linear-gradient(145deg,#172630,#3a4d57 48%,#11191e)}.feature-intro-mark{font-size:3.4rem;letter-spacing:.16em;font-weight:900;color:#c7d0d4}.intro-title{font-size:clamp(1.3rem,3vw,2.3rem);line-height:1.12;font-weight:850;letter-spacing:.05em}.archive-prose{max-width:1000px}.archive-block{border:1px solid var(--line);background:var(--surface);padding:clamp(22px,4vw,46px);margin:0 0 22px}.archive-block h2{font-size:clamp(1.5rem,3vw,2.5rem);margin:10px 0 18px}.archive-block p{max-width:85ch;color:var(--steel-light);line-height:1.75}.archive-block a{color:var(--warm);text-decoration:underline}.restricted{border:1px solid #ba8238;background:radial-gradient(ellipse at center,#292e2d,#0c1216 76%);text-align:center;overflow:hidden}.hazard-stripe{height:24px;background:repeating-linear-gradient(125deg,#15191b 0 20px,#da8d27 20px 40px)}.restricted-content{padding:clamp(55px,9vw,120px) 18px}.restricted-icon{color:#eda733;font-size:4rem}.restricted-label{font-size:clamp(1rem,3vw,1.7rem);font-weight:950;letter-spacing:.24em;color:#eda733}.restricted h2{font-size:clamp(2.2rem,6vw,4.6rem);letter-spacing:.03em;margin:18px auto}.restricted-status{color:#eda733;font-size:clamp(1.25rem,3vw,2rem);letter-spacing:.28em;font-weight:850}.restricted-content p:not(.restricted-status){color:#c7d0d4}.restricted .btn{margin-top:24px}.nav{gap:16px}.nav a{font-size:.72rem}@media(max-width:1150px){.nav{gap:10px}.nav a{font-size:.65rem}}
 
@@ -223,6 +231,7 @@ const tile=s=>`<a class="tile" href="#${s[3]}" data-route="${s[3]}">${workshopVi
 const fleetCategories={"ship-excalibur":"Combat","ship-sojourner":"Civilian","ship-outlander":"Industrial","ship-borehole":"Industrial","ship-featherfall":"Civilian","ship-shuttle-mod6":"Civilian","ship-shuttle-h":"Civilian","ship-shuttle-mod2":"Civilian","ship-asteroid-base":"Infrastructure"};
 
 // Steam Workshop metadata is imported separately; handcrafted lore/specifications remain authoritative.
+const excludedWorkshopIds=new Set(["3450129673","3506049267","3506229782","3518553438","3523301728","3530412222","3552412175","3617528177","3619325505","3645547285","3662641507","3681496590","3694700803","3791302579"]);
 let syncedWorkshop=[];
 function safeWorkshopText(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function importedWorkshopRoute(w){return 'workshop-'+String(w.id);}
@@ -257,8 +266,8 @@ async function loadSteamWorkshop(){
   if(!response.ok)throw Error('HTTP '+response.status);
   const parsed=await response.json();
   if(!Array.isArray(parsed))throw Error('Invalid Workshop data');
-  syncedWorkshop=parsed;
-  for(const w of parsed){if(w.route&&workshopImages[w.route]&&w.preview_url)workshopImages[w.route]=w.preview_url;}
+  syncedWorkshop=parsed.filter(w=>w.id&&!excludedWorkshopIds.has(String(w.id)));
+  for(const w of syncedWorkshop){if(w.route&&workshopImages[w.route]&&w.preview_url)workshopImages[w.route]=w.preview_url;}
   if((location.hash||'#home')==='#fleet')updateFleetResults();else if(location.hash.startsWith('#workshop-'))render();
  }catch(e){console.warn('Steam metadata unavailable; preserving existing fleet:',e);}
 }

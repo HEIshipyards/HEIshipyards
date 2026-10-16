@@ -35,10 +35,6 @@
     "category": "Infrastructure"
   },
   {
-    "id": "3791302579",
-    "category": "Civilian"
-  },
-  {
     "id": "3784793538",
     "category": "Industrial"
   },
@@ -79,10 +75,6 @@
     "category": "Civilian"
   },
   {
-    "id": "3694700803",
-    "category": "Civilian"
-  },
-  {
     "id": "3683369479",
     "category": "Infrastructure"
   },
@@ -97,10 +89,6 @@
   {
     "id": "3683368570",
     "category": "Infrastructure"
-  },
-  {
-    "id": "3681496590",
-    "category": "Civilian"
   },
   {
     "id": "3681468901",
@@ -123,14 +111,6 @@
     "category": "Civilian"
   },
   {
-    "id": "3662641507",
-    "category": "Industrial"
-  },
-  {
-    "id": "3645547285",
-    "category": "Civilian"
-  },
-  {
     "id": "3639321824",
     "category": "Infrastructure"
   },
@@ -139,43 +119,7 @@
     "category": "Infrastructure"
   },
   {
-    "id": "3619325505",
-    "category": "Civilian"
-  },
-  {
-    "id": "3617528177",
-    "category": "Industrial"
-  },
-  {
-    "id": "3552412175",
-    "category": "Civilian"
-  },
-  {
-    "id": "3530412222",
-    "category": "Civilian"
-  },
-  {
-    "id": "3523301728",
-    "category": "Infrastructure"
-  },
-  {
-    "id": "3518553438",
-    "category": "Civilian"
-  },
-  {
     "id": "3507713039",
-    "category": "Infrastructure"
-  },
-  {
-    "id": "3506229782",
-    "category": "Civilian"
-  },
-  {
-    "id": "3506049267",
-    "category": "Infrastructure"
-  },
-  {
-    "id": "3450129673",
     "category": "Infrastructure"
   }
 ]
