@@ -5,6 +5,11 @@
     "category": "Combat"
   },
   {
+    "id": "3821205482",
+    "route": "ship-sojourner",
+    "category": "Civilian"
+  },
+  {
     "id": "3658866132",
     "route": "ship-outlander",
     "category": "Industrial"
