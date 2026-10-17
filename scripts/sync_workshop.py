@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Sync HEI Workshop metadata and screenshot galleries; never edit custom site pages."""
+"""Sync HEI Workshop metadata and galleries conservatively; preserve custom site pages."""
 import html
 import json
 import pathlib
 import re
+import sys
 import time
 import urllib.error
-import sys
 import urllib.parse
 import urllib.request
 from html.parser import HTMLParser
@@ -14,16 +14,14 @@ from html.parser import HTMLParser
 BASE = pathlib.Path(__file__).resolve().parents[1]
 IDS = json.loads((BASE / "data/workshop-ids.json").read_text())
 OUTPUT = BASE / "data/workshop.json"
-if not IDS:
-    raise SystemExit("No Workshop IDs configured; preserving existing data.")
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; HEI-Shipyards-Workshop-Sync/2.0)",
-    "Accept-Language": "en-US,en;q=0.9",
-}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; HEI-Shipyards-Workshop-Sync/3.0)",
+           "Accept-Language": "en-US,en;q=0.9"}
 IMAGE_HOSTS = ("steamusercontent.com", "steamuserimages-a.akamaihd.net",
                "steamuserimages.akamaihd.net", "steamcommunity-a.akamaihd.net")
-
+REQUEST_GAP = 5
+BLUEPRINT_GAP = 10
+RETRY_WAIT = 30
+MAX_ATTEMPTS = 3
 
 def valid_image(value):
     if not isinstance(value, str):
@@ -37,14 +35,12 @@ def valid_image(value):
         return None
     return value
 
-
 class SteamScreenshotParser(HTMLParser):
-    """Extract actual screenshot links, not avatars, icons or Workshop thumbnails."""
+    """Extract screenshots from Steam highlight strip, excluding unrelated images."""
     def __init__(self):
         super().__init__()
         self.gallery = []
         self.in_strip = 0
-        self.main_photo = None
 
     def add(self, url):
         url = valid_image(url)
@@ -58,8 +54,6 @@ class SteamScreenshotParser(HTMLParser):
             self.in_strip += 1
         elif tag == "div" and ("highlight_strip" in classes or "workshopItemPreviewImage" in classes):
             self.in_strip = 1
-        if tag == "img" and d.get("id") == "previewImageMain":
-            self.main_photo = valid_image(d.get("src"))
         if self.in_strip:
             if tag == "img":
                 self.add(d.get("data-full") or d.get("data-src") or d.get("src"))
@@ -72,19 +66,31 @@ class SteamScreenshotParser(HTMLParser):
         if tag == "div" and self.in_strip:
             self.in_strip -= 1
 
+def request_json(workshop_id):
+    payload = urllib.parse.urlencode([
+        ("itemcount", 1), ("includeadditionalpreviews", "1"),
+        ("publishedfileids[0]", str(workshop_id))
+    ]).encode()
+    req = urllib.request.Request(
+        "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
+        data=payload, headers=HEADERS, method="POST")
+    with urllib.request.urlopen(req, timeout=30) as response:
+        data = json.load(response)
+    items = data.get("response", {}).get("publishedfiledetails", [])
+    if not items or items[0].get("result") != 1:
+        raise ValueError("Steam returned no valid listing")
+    return items[0]
 
 def page_gallery(workshop_id, preview):
     url = "https://steamcommunity.com/sharedfiles/filedetails/?id=" + urllib.parse.quote(str(workshop_id))
-    request = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(request, timeout=20) as response:
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=20) as response:
         page = response.read(4_000_000).decode("utf-8", "replace")
     parser = SteamScreenshotParser()
     parser.feed(page)
-    # Steam frequently places full-resolution images in ShowImage() calls.
-    for match in re.finditer(r"ShowImage\\(\\s*['\\\"](https://[^'\\\"]+)", html.unescape(page)):
+    for match in re.finditer(r"ShowImage\(\s*['\"](https://[^'\"]+)", html.unescape(page)):
         parser.add(match.group(1))
     return [x for x in parser.gallery if x != preview]
-
 
 def api_gallery(details):
     gallery = []
@@ -92,82 +98,89 @@ def api_gallery(details):
     for p in previews:
         if p.get("preview_type", 0) not in (0, None):
             continue
-        link = valid_image(p.get("url") or p.get("preview_url"))
-        if link and link != details.get("preview_url") and link not in gallery:
-            gallery.append(link)
+        url = valid_image(p.get("url") or p.get("preview_url"))
+        if url and url != details.get("preview_url") and url not in gallery:
+            gallery.append(url)
     return gallery
 
+def with_retries(label, operation):
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            return operation()
+        except Exception as exc:
+            print(f"WARNING: {label} attempt {attempt}/{MAX_ATTEMPTS} failed: {exc}", file=sys.stderr, flush=True)
+            if attempt < MAX_ATTEMPTS:
+                time.sleep(RETRY_WAIT)
+    return None
 
-payload = urllib.parse.urlencode(
-    [("itemcount", len(IDS)), ("includeadditionalpreviews", "1")]
-    + [(f"publishedfileids[{i}]", str(v["id"])) for i, v in enumerate(IDS)]
-).encode()
-request = urllib.request.Request(
-    "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/",
-    data=payload, headers=HEADERS, method="POST")
-with urllib.request.urlopen(request, timeout=30) as response:
-    result = json.load(response)
-by_id = {
-    str(item.get("publishedfileid")): item
-    for item in result.get("response", {}).get("publishedfiledetails", [])
-}
+def keep_valid_gallery(item, preview):
+    return [url for url in (valid_image(u) for u in item.get("gallery_urls", []))
+            if url and url != preview]
+
+def save(items):
+    if not items:
+        return
+    content = json.dumps(items, ensure_ascii=False, indent=2) + "\n"
+    if not OUTPUT.exists() or OUTPUT.read_text() != content:
+        OUTPUT.write_text(content)
+
+if not IDS:
+    raise SystemExit("No Workshop IDs configured; existing data preserved.")
+
 previous = {}
 if OUTPUT.exists():
     try:
         previous = {str(item["id"]): item for item in json.loads(OUTPUT.read_text())}
-    except (ValueError, KeyError, TypeError) as exc:
-        print(f"WARNING: Could not parse previous gallery data: {exc}", file=sys.stderr)
+    except (ValueError, TypeError, KeyError) as exc:
+        print(f"WARNING: Existing data couldn't be parsed: {exc}", file=sys.stderr)
 
-out, errors, missing = [], [], []
-rate_limited = False
-for item in IDS:
+# Preserve existing entries while refreshing. Never remove a valid entry just because Steam failed.
+current = dict(previous)
+for position, item in enumerate(IDS):
+    if position:
+        time.sleep(BLUEPRINT_GAP)
     key = str(item["id"])
-    d = by_id.get(key)
-    if not d or d.get("result") != 1:
-        errors.append(key)
+    prior = previous.get(key, {})
+    print(f"Refreshing {position + 1}/{len(IDS)}: {key}", flush=True)
+    details = with_retries(f"{key} metadata", lambda: request_json(key))
+    if details is None:
+        print(f"WARNING: Keeping previously saved {key} data", file=sys.stderr)
         continue
-    title = d.get("title", "")
+    title = details.get("title", "")
     if "(discontinued)" in title.lower():
+        current.pop(key, None)
+        save(list(current.values()))
         continue
-    preview = d.get("preview_url", "")
-    gallery = api_gallery(d)
-    if not gallery and not rate_limited:
-        try:
-            gallery = page_gallery(key, preview)
-            time.sleep(2)
-        except urllib.error.HTTPError as exc:
-            if exc.code == 429:
-                rate_limited = True
-                print("WARNING: Steam rate-limited page requests (HTTP 429); skipping further page requests this run.", file=sys.stderr)
-            else:
-                print(f"WARNING: Workshop {key} screenshot page unavailable: {exc}", file=sys.stderr)
-        except Exception as exc:
-            print(f"WARNING: Workshop {key} screenshot page unavailable: {exc}", file=sys.stderr)
-    if not gallery:
-        gallery = [valid_image(url) for url in previous.get(key, {}).get("gallery_urls", [])]
-        gallery = [url for url in gallery if url and url != preview]
-    if not gallery:
-        missing.append(key)
-    out.append({
-        "id": key, "title": title, "description": d.get("file_description", ""),
+    preview = valid_image(details.get("preview_url")) or prior.get("preview_url", "")
+    old_gallery = keep_valid_gallery(prior, preview)
+    gallery = api_gallery(details)
+    updated = details.get("time_updated")
+
+    # A known populated gallery need not be fetched repeatedly if the Workshop listing hasn't changed.
+    if old_gallery and updated == prior.get("time_updated"):
+        gallery = old_gallery
+    elif not gallery:
+        time.sleep(REQUEST_GAP)  # pause between API metadata and HTML requests for this blueprint
+        page_images = with_retries(f"{key} screenshot page",
+                                  lambda: page_gallery(key, preview))
+        if page_images:
+            gallery = page_images
+
+    # A failed/incomplete scrape cannot destroy an already populated gallery.
+    if old_gallery and (not gallery or len(gallery) < len(old_gallery)):
+        gallery = old_gallery
+
+    current[key] = {
+        "id": key, "title": title, "description": details.get("file_description", ""),
         "preview_url": preview, "gallery_urls": gallery,
-        "time_updated": d.get("time_updated"),
+        "time_updated": updated,
         "url": f"https://steamcommunity.com/sharedfiles/filedetails/?id={key}",
         "category": item.get("category", "Other"), "route": item.get("route")
-    })
+    }
+    save(list(current.values()))  # checkpoint after each blueprint; never leave an empty fleet
 
-if errors:
-    raise SystemExit("Steam metadata unavailable for: " + ", ".join(errors) + "; existing output preserved.")
-if not out:
-    raise SystemExit("No usable listings; existing output preserved.")
-images = sum(bool(x["gallery_urls"]) for x in out)
-print(f"Steam image galleries: {images}/{len(out)} listings populated.")
-if missing:
-    print("WARNING: Screenshot gallery missing for: " + ", ".join(missing), file=sys.stderr)
-if not images:
-    raise SystemExit("ERROR: All Workshop screenshot galleries are empty. Existing data preserved; investigate Steam API/page access.")
-
-updated = json.dumps(out, ensure_ascii=False, indent=2) + "\n"
-if not OUTPUT.exists() or OUTPUT.read_text() != updated:
-    OUTPUT.write_text(updated)
-print(f"Synced {len(out)} Workshop entries; custom content untouched.")
+configured = {str(item["id"]) for item in IDS}
+current = {key: value for key, value in current.items() if key in configured}
+save(list(current.values()))
+filled = sum(bool(item.get("gallery_urls")) for item in current.values())
+print(f"Synced/checkpointed {len(current)} blueprints; {filled} screenshot galleries populated.", flush=True)
