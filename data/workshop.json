@@ -251,7 +251,9 @@
     "title": "(H-E-I) HAB ADDON PRD-1/PW",
     "description": "",
     "preview_url": "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/",
-    "gallery_urls": [],
+    "gallery_urls": [
+      "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+    ],
     "time_updated": 1788574178,
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3683369365",
     "category": "Infrastructure",
