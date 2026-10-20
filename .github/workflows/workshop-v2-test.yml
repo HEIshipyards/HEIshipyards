@@ -1,0 +1,45 @@
+name: Workshop Sync v2 Test
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Offline seed or Steam API"
+        required: true
+        default: offline-seed
+        type: choice
+        options:
+          - offline-seed
+          - live-api
+          - live-api-cache
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate sync v2
+        run: python -m unittest discover -s tests -p 'test_sync_v2.py' -v
+      - name: Run offline seed
+        if: inputs.mode == 'offline-seed'
+        run: python scripts/sync_workshop_v2.py --offline-seed
+      - name: Run live metadata test
+        if: inputs.mode == 'live-api'
+        run: python scripts/sync_workshop_v2.py
+      - name: Run live metadata and image-cache test
+        if: inputs.mode == 'live-api-cache'
+        run: python scripts/sync_workshop_v2.py --cache-images
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-v2-test-results
+          path: |
+            data/workshop-v2.json
+            data/workshop-v2-report.json
+            assets/workshop/
+          if-no-files-found: warn
+          retention-days: 14
