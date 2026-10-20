@@ -132,6 +132,18 @@
 .workshop-source{font-size:.8rem;color:var(--muted);margin-top:12px}
 .workshop-source a{color:var(--warm);text-decoration:underline}
 
+/* Steam-sized vessel previews on the main Fleet registry. Keep card dimensions intact. */
+#fleet-results .tile-art{background:#101a21}
+#fleet-results .tile-art > img,
+#fleet-results .tile-art .workshop-photo{
+  width:min(268px,100%)!important;
+  height:auto!important;
+  max-height:151px!important;
+  aspect-ratio:268 / 151;
+  object-fit:contain!important;
+  object-position:center;
+  flex:0 1 auto;
+}
 /* Fleet card layout: equal-height cards and consistent call-to-action alignment. */
 #fleet-results .grid{align-items:stretch}
 #fleet-results .tile{display:flex;flex-direction:column;height:100%}
