@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+"""HEI Workshop Sync v2: API metadata, independently retained galleries, optional image mirroring.
+No Steam webpage scraping. Never claims cached galleries are freshly retrieved.
+"""
+import argparse
+import datetime as dt
+import hashlib
+import json
+import pathlib
+import re
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+IDS_FILE = ROOT / "data/workshop-ids.json"
+OLD_FILE = ROOT / "data/workshop.json"
+DATA_FILE = ROOT / "data/workshop-v2.json"
+REPORT_FILE = ROOT / "data/workshop-v2-report.json"
+OVERRIDES_FILE = ROOT / "data/gallery-overrides.json"
+CACHE_DIR = ROOT / "assets/workshop"
+API = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/"
+IMAGE_HOSTS = {"images.steamusercontent.com", "steamuserimages-a.akamaihd.net",
+               "steamuserimages.akamaihd.net", "steamcommunity-a.akamaihd.net"}
+MAX_IMAGE_BYTES = 5_000_000
+MAX_IMAGES_PER_ITEM = 16
+
+def load(path, default):
+    if not path.exists():
+        return default
+    return json.loads(path.read_text(encoding="utf-8"))
+
+def save(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    content = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    if not path.exists() or path.read_text(encoding="utf-8") != content:
+        path.write_text(content, encoding="utf-8")
+
+def valid_url(url):
+    if not isinstance(url, str):
+        return None
+    url = url.strip()
+    parsed = urllib.parse.urlsplit(url)
+    if parsed.scheme != "https" or parsed.hostname not in IMAGE_HOSTS or parsed.username or parsed.password:
+        return None
+    return url if len(url) <= 2048 else None
+
+def unique_images(values, preview=None):
+    result = []
+    for value in values or []:
+        url = valid_url(value)
+        if url and url != preview and url not in result:
+            result.append(url)
+    return result[:MAX_IMAGES_PER_ITEM]
+
+def get_gallery(details):
+    previews = details.get("previews")
+    if not isinstance(previews, list):
+        return []
+    gallery = []
+    for entry in sorted((p for p in previews if isinstance(p, dict)),
+                        key=lambda p: int(p.get("sortorder") or 0)):
+        if entry.get("preview_type", 0) not in (0, None):
+            continue
+        gallery.append(entry.get("url") or entry.get("preview_url"))
+    return unique_images(gallery, details.get("preview_url"))
+
+def fetch_metadata(ids):
+    form = [("itemcount", str(len(ids))), ("includeadditionalpreviews", "1")]
+    form += [("publishedfileids[%d]" % i, id_) for i, id_ in enumerate(ids)]
+    req = urllib.request.Request(API, data=urllib.parse.urlencode(form).encode("ascii"),
+                                 headers={"User-Agent": "HEI-Shipyards-Sync/4.0",
+                                          "Accept": "application/json"}, method="POST")
+    with urllib.request.urlopen(req, timeout=30) as response:
+        data = json.load(response)
+    entries = data.get("response", {}).get("publishedfiledetails", [])
+    return {str(entry.get("publishedfileid")): entry for entry in entries
+            if isinstance(entry, dict) and entry.get("publishedfileid")}
+
+def image_extension(data):
+    if data.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+    if data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+        return ".webp"
+    return None
+
+def cache_image(workshop_id, url):
+    """Mirror only recognized images from allowlisted Steam hosts; keep old assets on failures."""
+    if not valid_url(url):
+        raise ValueError("Unapproved image URL")
+    key = hashlib.sha256(url.encode("utf-8")).hexdigest()[:20]
+    folder = CACHE_DIR / workshop_id
+    for extension in (".jpg", ".png", ".webp"):
+        stored = folder / (key + extension)
+        if stored.is_file():
+            return "/" + stored.relative_to(ROOT).as_posix()
+    req = urllib.request.Request(url, headers={"User-Agent": "HEI-Shipyards-Sync/4.0"})
+    with urllib.request.urlopen(req, timeout=20) as response:
+        if not valid_url(response.geturl()):
+            raise ValueError("Image redirected to an unapproved host")
+        data = response.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES:
+        raise ValueError("Image exceeds 5 MB limit")
+    ext = image_extension(data)
+    if not ext:
+        raise ValueError("Response was not a supported image")
+    folder.mkdir(parents=True, exist_ok=True)
+    target = folder / (key + ext)
+    target.write_bytes(data)
+    return "/" + target.relative_to(ROOT).as_posix()
+
+def normalized_previous(item, legacy):
+    source = item if item else legacy
+    return {
+        "title": source.get("title", ""),
+        "preview_url": valid_url(source.get("preview_url")) or "",
+        "gallery_urls": unique_images(source.get("gallery_urls", [])),
+        "time_updated": source.get("time_updated"),
+        "images": source.get("images", {}),
+    }
+
+def build_listing(cfg, previous, legacy, details, override, checked, mirror):
+    key = str(cfg["id"])
+    prior = normalized_previous(previous or {}, legacy or {})
+    valid = isinstance(details, dict) and details.get("result") == 1
+    gallery = prior["gallery_urls"]
+    source = "saved" if gallery else "missing"
+    note = "Previously saved images; Steam has not confirmed a new gallery." if gallery else "No gallery images available."
+    preview = prior["preview_url"]
+    title = prior["title"]
+    updated = prior["time_updated"]
+    metadata_status = "preserved"
+    if valid:
+        title = str(details.get("title") or title)
+        preview = valid_url(details.get("preview_url")) or preview
+        updated = details.get("time_updated") or updated
+        metadata_status = "verified"
+        latest = get_gallery(details)
+        if latest:
+            gallery = latest
+            source = "steam-api"
+            note = "Current gallery returned by Steam API."
+        elif gallery:
+            note = "Steam API provided no gallery; previously saved images retained."
+        else:
+            note = "Steam API provided no gallery images."
+    manual = override.get("images") if isinstance(override, dict) else None
+    if manual is not None:
+        gallery = unique_images(manual, preview)
+        source = "manual"
+        note = "Explicitly supplied gallery image list."
+    previous_images = prior["images"] if isinstance(prior["images"], dict) else {}
+    cached = {}
+    errors = []
+    for url in ([preview] if preview else []) + gallery:
+        path = previous_images.get(url)
+        if path and isinstance(path, str) and path.startswith("/assets/workshop/") and (ROOT / path.lstrip("/")).is_file():
+            cached[url] = path
+        elif mirror:
+            try:
+                cached[url] = cache_image(key, url)
+            except (OSError, ValueError, urllib.error.URLError) as err:
+                errors.append(str(err)[:180])
+    return {
+        "id": key, "route": cfg.get("route"), "category": cfg.get("category", "Other"),
+        "title": title, "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=" + key,
+        "preview_url": preview, "gallery_urls": gallery, "time_updated": updated,
+        "metadata_status": metadata_status, "gallery_source": source, "gallery_note": note,
+        "images": cached, "image_cache_status": ("complete" if len(cached) == len(set(([preview] if preview else []) + gallery))
+                                               else "partial" if cached else "uncached"),
+        "image_errors": errors[:3]
+    }
+
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--offline-seed", action="store_true", help="Use saved data only; no network")
+    parser.add_argument("--cache-images", action="store_true", help="Download approved Steam image files into assets/workshop")
+    parser.add_argument("--only", help="Workshop ID to test; other entries are left unchanged")
+    args = parser.parse_args(argv)
+    configs = load(IDS_FILE, [])
+    old = {str(x["id"]): x for x in load(OLD_FILE, [])}
+    previous = {str(x["id"]): x for x in load(DATA_FILE, [])}
+    overrides = load(OVERRIDES_FILE, {})
+    selected = [c for c in configs if not args.only or str(c["id"]) == args.only]
+    if not selected:
+        parser.error("No configured Workshop item matched --only")
+    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+    fetched = {}
+    request_error = None
+    if not args.offline_seed:
+        try:
+            fetched = fetch_metadata([str(c["id"]) for c in selected])
+        except (OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
+            request_error = "%s: %s" % (type(exc).__name__, str(exc)[:200])
+    output = dict(previous)
+    statuses = []
+    for c in configs:
+        key = str(c["id"])
+        if c not in selected and key in output:
+            continue
+        if c not in selected:
+            # Bootstrap untouched items from legacy cache for an Excalibur-only test.
+            output[key] = build_listing(c, {}, old.get(key), None, overrides.get(key, {}), now, False)
+            continue
+        detail = fetched.get(key)
+        listing = build_listing(c, previous.get(key, {}), old.get(key, {}), detail,
+                                overrides.get(key, {}), now, args.cache_images)
+        output[key] = listing
+        statuses.append({"id": key, "title": listing["title"],
+                         "metadata": listing["metadata_status"],
+                         "gallery": listing["gallery_source"],
+                         "gallery_count": len(listing["gallery_urls"]),
+                         "cached_count": len(listing["images"]),
+                         "cache_status": listing["image_cache_status"],
+                         "errors": listing["image_errors"]})
+    rows = [output[str(c["id"])] for c in configs if str(c["id"]) in output]
+    save(DATA_FILE, rows)
+    verified = sum(x["metadata"] == "verified" for x in statuses)
+    overall = ("offline-seed" if args.offline_seed else
+               "failed" if verified == 0 else
+               "partial" if verified < len(statuses) or any(x["gallery"] == "saved" or x["cache_status"] == "partial" for x in statuses)
+               else "complete")
+    report = {"schema_version": 2, "checked_at": now, "status": overall,
+              "mode": "offline-seed" if args.offline_seed else "live-api",
+              "checked": len(statuses), "metadata_verified": verified,
+              "gallery_from_api": sum(x["gallery"] == "steam-api" for x in statuses),
+              "gallery_preserved": sum(x["gallery"] == "saved" for x in statuses),
+              "image_cache_complete": sum(x["cache_status"] == "complete" for x in statuses),
+              "request_error": request_error, "items": statuses}
+    save(REPORT_FILE, report)
+    print("HEI sync v2:", json.dumps({k: v for k, v in report.items() if k != "items"}))
+    for entry in statuses:
+        print("%s metadata=%s gallery=%s gallery_count=%d cached=%d" %
+              (entry["id"], entry["metadata"], entry["gallery"], entry["gallery_count"], entry["cached_count"]))
+    # A failed Steam request is a real failure, even though existing data was preserved.
+    return 2 if not args.offline_seed and verified == 0 else 0
+
+if __name__ == "__main__":
+    sys.exit(main())
