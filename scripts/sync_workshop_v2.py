@@ -46,11 +46,22 @@ def valid_url(url):
         return None
     return url if len(url) <= 2048 else None
 
+def full_resolution_url(url):
+    """Remove Steam's thumbnail-only image resize options; retain original image identity."""
+    url = valid_url(url)
+    if not url:
+        return None
+    parsed = urllib.parse.urlsplit(url)
+    query = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
+    image_resize_keys = {"imw", "imh", "ima", "impolicy", "imcolor", "letterbox"}
+    clean_query = urllib.parse.urlencode([(k, v) for k, v in query if k.lower() not in image_resize_keys])
+    return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, clean_query, parsed.fragment))
+
 def unique_images(values, preview=None):
     result = []
     for value in values or []:
-        url = valid_url(value)
-        if url and url != preview and url not in result:
+        url = full_resolution_url(value)
+        if url and url != full_resolution_url(preview) and url not in result:
             result.append(url)
     return result[:MAX_IMAGES_PER_ITEM]
 
@@ -116,7 +127,7 @@ def normalized_previous(item, legacy):
     source = item if item else legacy
     return {
         "title": source.get("title", ""),
-        "preview_url": valid_url(source.get("preview_url")) or "",
+        "preview_url": full_resolution_url(source.get("preview_url")) or "",
         "gallery_urls": unique_images(source.get("gallery_urls", [])),
         "time_updated": source.get("time_updated"),
         "images": source.get("images", {}),
@@ -135,7 +146,7 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror):
     metadata_status = "preserved"
     if valid:
         title = str(details.get("title") or title)
-        preview = valid_url(details.get("preview_url")) or preview
+        preview = full_resolution_url(details.get("preview_url")) or preview
         updated = details.get("time_updated") or updated
         metadata_status = "verified"
         latest = get_gallery(details)
