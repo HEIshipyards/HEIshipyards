@@ -1,10 +1,7 @@
 name: Sync Steam Workshop
 
+# Legacy manual-only recovery workflow. V2 owns the daily schedule.
 on:
-  schedule:
-    # 08:00 America/Los_Angeles: 15:00 UTC in PDT, 16:00 UTC in PST.
-    # Both triggers are necessary for seasonal timezone shifts; guard below runs only at local 08:00.
-    - cron: "0 15,16 * * *"
   workflow_dispatch:
     inputs:
       mode:
