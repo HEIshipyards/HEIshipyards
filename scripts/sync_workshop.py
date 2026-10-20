@@ -174,8 +174,14 @@ for position, item in enumerate(IDS):
     if old_gallery and not gallery:
         gallery = old_gallery
     elif old_gallery and len(gallery) < len(old_gallery):
-        print(f"WARNING: {key} returned {len(gallery)} images versus {len(old_gallery)} saved; retaining saved gallery", file=sys.stderr)
-        gallery = old_gallery
+        # Excalibur's screenshot gallery has been replaced on Steam. A smaller
+        # successfully parsed screenshot strip is not automatically an error.
+        # Require at least two distinct valid pictures before replacing saved data.
+        if key == "3718140217" and len(gallery) >= 2 and gallery != old_gallery:
+            print(f"Gallery {key}: replacing {len(old_gallery)} archived images with {len(gallery)} newly retrieved images", flush=True)
+        else:
+            print(f"WARNING: {key} returned {len(gallery)} images versus {len(old_gallery)} saved; retaining saved gallery", file=sys.stderr)
+            gallery = old_gallery
     print(f"Gallery {key}: API={len(api_gallery(details))}, active={len(gallery)}, saved={len(old_gallery)}", flush=True)
 
     current[key] = {
