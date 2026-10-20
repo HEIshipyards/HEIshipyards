@@ -156,19 +156,27 @@ for position, item in enumerate(IDS):
     gallery = api_gallery(details)
     updated = details.get("time_updated")
 
-    # A known populated gallery need not be fetched repeatedly if the Workshop listing hasn't changed.
-    if old_gallery and updated == prior.get("time_updated"):
-        gallery = old_gallery
-    elif not gallery:
-        time.sleep(REQUEST_GAP)  # pause between API metadata and HTML requests for this blueprint
+    # Steam can replace screenshots without changing the blueprint's update timestamp.
+    # Excalibur must refresh the screenshot page even when cached gallery data exists.
+    # Other ships retain the previous conservative cache behavior.
+    refresh_page = key == "3718140217" or (not gallery and not old_gallery)
+    if refresh_page:
+        time.sleep(REQUEST_GAP)
         page_images = with_retries(f"{key} screenshot page",
                                   lambda: page_gallery(key, preview))
         if page_images:
             gallery = page_images
-
-    # A failed/incomplete scrape cannot destroy an already populated gallery.
-    if old_gallery and (not gallery or len(gallery) < len(old_gallery)):
+    elif not gallery and old_gallery:
         gallery = old_gallery
+
+    # Preserve saved screenshots when Steam's API or page scrape is incomplete.
+    # An updated gallery is accepted when it has a trustworthy full replacement.
+    if old_gallery and not gallery:
+        gallery = old_gallery
+    elif old_gallery and len(gallery) < len(old_gallery):
+        print(f"WARNING: {key} returned {len(gallery)} images versus {len(old_gallery)} saved; retaining saved gallery", file=sys.stderr)
+        gallery = old_gallery
+    print(f"Gallery {key}: API={len(api_gallery(details))}, active={len(gallery)}, saved={len(old_gallery)}", flush=True)
 
     current[key] = {
         "id": key, "title": title, "description": details.get("file_description", ""),
