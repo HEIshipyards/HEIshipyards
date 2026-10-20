@@ -22,7 +22,8 @@
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/10464581743205860736/B1DCE7BE7A485D75B9E7CE0E25DD8D74166B14CB/": "/assets/workshop/3718140217/42b3ff7f5134a7e7dd06.jpg"
+      "https://images.steamusercontent.com/ugc/10464581743205860736/B1DCE7BE7A485D75B9E7CE0E25DD8D74166B14CB/": "/assets/workshop/3718140217/42b3ff7f5134a7e7dd06.jpg",
+      "https://images.steamusercontent.com/ugc/9369371693757354860/B9BAC70A70E1AE68983D27F6929932653F56DD2F/": "/assets/workshop/3718140217/87120c1a8a8252e04b6e.jpg"
     },
     "image_cache_status": "partial",
     "image_errors": [

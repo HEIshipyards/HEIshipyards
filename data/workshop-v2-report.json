@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "checked_at": "2026-10-20T18:51:44+00:00",
+  "checked_at": "2026-10-20T18:54:38+00:00",
   "status": "partial",
   "mode": "live-api",
   "checked": 28,
@@ -16,7 +16,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 9,
-      "cached_count": 1,
+      "cached_count": 2,
       "cache_status": "partial",
       "errors": [
         "HTTP Error 404: Not Found",
