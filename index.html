@@ -200,7 +200,11 @@ function heiArchiveMarkup(route,name){
  const item=syncedWorkshop.find(w=>w.route===route);
  const gallery=item&&Array.isArray(item.gallery_urls)?item.gallery_urls:[];
  if(!gallery.length&&!item?.preview_url)return '<div class="placeholder">STEAM WORKSHOP VISUAL ARCHIVE · IMAGES PENDING</div>';
- return `<div class="hei-visual-archive">${heiGalleryMarkup(item,name)}</div>`;
+ // Include the current Steam preview first for Excalibur, even when screenshot requests are rate-limited.
+ const visible=route==='ship-excalibur'&&item?.preview_url
+  ?{...item,gallery_urls:[item.preview_url,...gallery.filter(u=>u!==item.preview_url)],preview_url:""}
+  :item;
+ return `<div class="hei-visual-archive">${heiGalleryMarkup(visible,name)}</div>`;
 }
 function workshopMedia(route){let src=workshopImages[route];if(!src)return `<div class="placeholder">SHIP PHOTO — TO BE PROVIDED</div>`;return `<div class="workshop-gallery-item"><img src="${src}" alt="Steam Workshop screenshot" referrerpolicy="no-referrer" loading="lazy"></div>`;}
 const currentFleetCanon={
