@@ -200,6 +200,7 @@ function heiArchiveMarkup(route,name){
  const item=syncedWorkshop.find(w=>w.route===route);
  const gallery=item&&Array.isArray(item.gallery_urls)?item.gallery_urls:[];
  if(!gallery.length&&!item?.preview_url)return '<div class="placeholder">STEAM WORKSHOP VISUAL ARCHIVE · IMAGES PENDING</div>';
+ // Saved galleries are preserved until Steam returns verified fresh screenshots.
  // Include the current Steam preview first for Excalibur, even when screenshot requests are rate-limited.
  const visible=route==='ship-excalibur'&&item?.preview_url
   ?{...item,gallery_urls:[item.preview_url,...gallery.filter(u=>u!==item.preview_url)],preview_url:""}
@@ -365,11 +366,24 @@ function additionalWorkshopTiles(){
 }
 async function loadSteamWorkshop(){
  try{
-  const response=await fetch('data/workshop.json',{cache:'no-cache'});
-  if(!response.ok)throw Error('HTTP '+response.status);
-  const parsed=await response.json();
-  if(!Array.isArray(parsed))throw Error('Invalid Workshop data');
-  syncedWorkshop=parsed.filter(w=>w.id);
+  // Prefer the new V2 registry, falling back to our last stable legacy snapshot.
+  let parsed=null;
+  for(const path of ['data/workshop-v2.json','data/workshop.json']){
+    try{
+      const response=await fetch(path,{cache:'no-store'});
+      if(!response.ok)throw Error('HTTP '+response.status);
+      const candidate=await response.json();
+      if(!Array.isArray(candidate)||!candidate.length)throw Error('Invalid Workshop data');
+      parsed=candidate;
+      break;
+    }catch(error){console.warn('Workshop registry unavailable at '+path,error);}
+  }
+  if(!parsed)throw Error('No available Workshop registry');
+  syncedWorkshop=parsed.filter(w=>w.id).map(w=>{
+    const images=w.images||{};
+    const resolve=u=>typeof images[u]==='string'&&images[u].startsWith('/assets/workshop/')?images[u]:u;
+    return {...w,preview_url:resolve(w.preview_url),gallery_urls:(w.gallery_urls||[]).map(resolve)};
+  });
   syncFeaturedVesselPhotos();
   // Preserve hand-selected vessel hero images independently of Steam metadata.
   if((location.hash||'#home')==='#fleet')updateFleetResults();else if(location.hash.startsWith('#workshop-')||location.hash.startsWith('#ship-'))render();
