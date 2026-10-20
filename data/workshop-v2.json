@@ -40,8 +40,8 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3821205482",
     "preview_url": "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/",
+      "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/"
     ],
     "time_updated": 1792204802,
     "metadata_status": "verified",
@@ -49,8 +49,7 @@
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
       "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/": "/assets/workshop/3821205482/43d81eeaeb9e501cea33.png",
-      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3821205482/0f794cc4e0ce1699badf.jpg",
-      "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3821205482/5440ce28148a59dcd3a7.jpg"
+      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/": "/assets/workshop/3821205482/19e23072e5b94c28cc86.png"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -63,8 +62,8 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3658866132",
     "preview_url": "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/10635063507012477199/614E7B2C102D52BCDF308586791CE2E949D6C7D1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/10635063507012477199/614E7B2C102D52BCDF308586791CE2E949D6C7D1/",
+      "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/"
     ],
     "time_updated": 1792205816,
     "metadata_status": "verified",
@@ -72,8 +71,7 @@
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
       "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/": "/assets/workshop/3658866132/431ee94ec4d2d7335ede.png",
-      "https://images.steamusercontent.com/ugc/10635063507012477199/614E7B2C102D52BCDF308586791CE2E949D6C7D1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3658866132/dd2727f837da3aac1203.jpg",
-      "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3658866132/7fb50c40b86b53bb4634.jpg"
+      "https://images.steamusercontent.com/ugc/10635063507012477199/614E7B2C102D52BCDF308586791CE2E949D6C7D1/": "/assets/workshop/3658866132/f16b9d18ad823500b7bc.png"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -86,15 +84,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3695393157",
     "preview_url": "https://images.steamusercontent.com/ugc/17357139387320045288/74570E1739AE86BE96761E250ECDF7A2250548D1/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/17357139387320045288/74570E1739AE86BE96761E250ECDF7A2250548D1/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/17357139387320045288/74570E1739AE86BE96761E250ECDF7A2250548D1/"
     ],
     "time_updated": 1787366445,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/17357139387320045288/74570E1739AE86BE96761E250ECDF7A2250548D1/": "/assets/workshop/3695393157/45bdf42041d10e58429c.jpg",
-      "https://images.steamusercontent.com/ugc/17357139387320045288/74570E1739AE86BE96761E250ECDF7A2250548D1/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3695393157/36f65b7b6c2615aadd88.jpg"
+      "https://images.steamusercontent.com/ugc/17357139387320045288/74570E1739AE86BE96761E250ECDF7A2250548D1/": "/assets/workshop/3695393157/45bdf42041d10e58429c.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -107,11 +104,11 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3631594269",
     "preview_url": "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/",
+      "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/",
+      "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/",
+      "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/",
+      "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/"
     ],
     "time_updated": 1792438654,
     "metadata_status": "verified",
@@ -119,11 +116,10 @@
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
       "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/": "/assets/workshop/3631594269/d5196e9a68555059512b.jpg",
-      "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3631594269/ef2aff8db8de83649e8a.jpg",
-      "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3631594269/c668b1ab8275f4bfed4e.jpg",
-      "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3631594269/fd2310b0ce68fc942412.jpg",
-      "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3631594269/d8fa92f45efd2d804d83.jpg",
-      "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3631594269/cd85650f8795ff886034.jpg"
+      "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/": "/assets/workshop/3631594269/c404ed1483a94c08064c.jpg",
+      "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/": "/assets/workshop/3631594269/0689a880a4f1f7f55117.jpg",
+      "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/": "/assets/workshop/3631594269/38aca3f741de7a8fd9b6.jpg",
+      "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/": "/assets/workshop/3631594269/ba93450c47ed126a8d40.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -136,15 +132,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3616196196",
     "preview_url": "https://images.steamusercontent.com/ugc/12948879665894599826/A40567DFD9D34ABA4D22DAC34232A285AB13AF6E/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12948879665894599826/A40567DFD9D34ABA4D22DAC34232A285AB13AF6E/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/12948879665894599826/A40567DFD9D34ABA4D22DAC34232A285AB13AF6E/"
     ],
     "time_updated": 1787520517,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/12948879665894599826/A40567DFD9D34ABA4D22DAC34232A285AB13AF6E/": "/assets/workshop/3616196196/d833cc9a5cac1ad2f055.jpg",
-      "https://images.steamusercontent.com/ugc/12948879665894599826/A40567DFD9D34ABA4D22DAC34232A285AB13AF6E/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3616196196/87a683b9fbd5f21a4a72.jpg"
+      "https://images.steamusercontent.com/ugc/12948879665894599826/A40567DFD9D34ABA4D22DAC34232A285AB13AF6E/": "/assets/workshop/3616196196/d833cc9a5cac1ad2f055.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -157,15 +152,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3788933499",
     "preview_url": "https://images.steamusercontent.com/ugc/11955692997393173546/B38FAEFFE05770BC3C8097BAE3D19412D9F38115/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/11955692997393173546/B38FAEFFE05770BC3C8097BAE3D19412D9F38115/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/11955692997393173546/B38FAEFFE05770BC3C8097BAE3D19412D9F38115/"
     ],
     "time_updated": 1787598865,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/11955692997393173546/B38FAEFFE05770BC3C8097BAE3D19412D9F38115/": "/assets/workshop/3788933499/cfd713ad60f880ddd3e5.jpg",
-      "https://images.steamusercontent.com/ugc/11955692997393173546/B38FAEFFE05770BC3C8097BAE3D19412D9F38115/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3788933499/2ff5b12d28b058feee69.jpg"
+      "https://images.steamusercontent.com/ugc/11955692997393173546/B38FAEFFE05770BC3C8097BAE3D19412D9F38115/": "/assets/workshop/3788933499/cfd713ad60f880ddd3e5.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -178,15 +172,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3764169474",
     "preview_url": "https://images.steamusercontent.com/ugc/17175362615862423765/2B5F947D8D8F3E38CE713C6DDC01689D1AF8121D/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/17175362615862423765/2B5F947D8D8F3E38CE713C6DDC01689D1AF8121D/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/17175362615862423765/2B5F947D8D8F3E38CE713C6DDC01689D1AF8121D/"
     ],
     "time_updated": 1787520481,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/17175362615862423765/2B5F947D8D8F3E38CE713C6DDC01689D1AF8121D/": "/assets/workshop/3764169474/b1a5470c56f55165595d.jpg",
-      "https://images.steamusercontent.com/ugc/17175362615862423765/2B5F947D8D8F3E38CE713C6DDC01689D1AF8121D/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3764169474/ddd5337f4a2477e7869b.jpg"
+      "https://images.steamusercontent.com/ugc/17175362615862423765/2B5F947D8D8F3E38CE713C6DDC01689D1AF8121D/": "/assets/workshop/3764169474/b1a5470c56f55165595d.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -199,15 +192,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3658317349",
     "preview_url": "https://images.steamusercontent.com/ugc/9912206228362266910/CDC102680ABE7DF02F5340CF8C150B4992080DD5/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/9912206228362266910/CDC102680ABE7DF02F5340CF8C150B4992080DD5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/9912206228362266910/CDC102680ABE7DF02F5340CF8C150B4992080DD5/"
     ],
     "time_updated": 1787619583,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/9912206228362266910/CDC102680ABE7DF02F5340CF8C150B4992080DD5/": "/assets/workshop/3658317349/4a09ce0d0b876ac3111e.jpg",
-      "https://images.steamusercontent.com/ugc/9912206228362266910/CDC102680ABE7DF02F5340CF8C150B4992080DD5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3658317349/a74de8f1ddb5f335528a.jpg"
+      "https://images.steamusercontent.com/ugc/9912206228362266910/CDC102680ABE7DF02F5340CF8C150B4992080DD5/": "/assets/workshop/3658317349/4a09ce0d0b876ac3111e.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -220,15 +212,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3784793538",
     "preview_url": "https://images.steamusercontent.com/ugc/13264998316971721335/5B9E558BF7704A664BE43375A481797CA0EE3C56/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/13264998316971721335/5B9E558BF7704A664BE43375A481797CA0EE3C56/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/13264998316971721335/5B9E558BF7704A664BE43375A481797CA0EE3C56/"
     ],
     "time_updated": 1786913847,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/13264998316971721335/5B9E558BF7704A664BE43375A481797CA0EE3C56/": "/assets/workshop/3784793538/1254a39ddf8f35e26375.jpg",
-      "https://images.steamusercontent.com/ugc/13264998316971721335/5B9E558BF7704A664BE43375A481797CA0EE3C56/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3784793538/631da13664300b3f27cb.jpg"
+      "https://images.steamusercontent.com/ugc/13264998316971721335/5B9E558BF7704A664BE43375A481797CA0EE3C56/": "/assets/workshop/3784793538/1254a39ddf8f35e26375.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -241,15 +232,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3784793112",
     "preview_url": "https://images.steamusercontent.com/ugc/10853806419697518698/7856A4426F0CD2725A790C68B05474F5E8A365FE/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/10853806419697518698/7856A4426F0CD2725A790C68B05474F5E8A365FE/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/10853806419697518698/7856A4426F0CD2725A790C68B05474F5E8A365FE/"
     ],
     "time_updated": 1788578884,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/10853806419697518698/7856A4426F0CD2725A790C68B05474F5E8A365FE/": "/assets/workshop/3784793112/acab09cecfeaf2804f35.jpg",
-      "https://images.steamusercontent.com/ugc/10853806419697518698/7856A4426F0CD2725A790C68B05474F5E8A365FE/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3784793112/72cbbd0b934a10f9474f.jpg"
+      "https://images.steamusercontent.com/ugc/10853806419697518698/7856A4426F0CD2725A790C68B05474F5E8A365FE/": "/assets/workshop/3784793112/acab09cecfeaf2804f35.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -262,15 +252,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3784770590",
     "preview_url": "https://images.steamusercontent.com/ugc/11666123901797399632/ADA0EB7489D297952D7E5BCCDF4CF821E1E2A328/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/11666123901797399632/ADA0EB7489D297952D7E5BCCDF4CF821E1E2A328/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/11666123901797399632/ADA0EB7489D297952D7E5BCCDF4CF821E1E2A328/"
     ],
     "time_updated": 1787286098,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/11666123901797399632/ADA0EB7489D297952D7E5BCCDF4CF821E1E2A328/": "/assets/workshop/3784770590/569f1582f0c303eab168.jpg",
-      "https://images.steamusercontent.com/ugc/11666123901797399632/ADA0EB7489D297952D7E5BCCDF4CF821E1E2A328/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3784770590/d93ba3de37a4d0d55e02.jpg"
+      "https://images.steamusercontent.com/ugc/11666123901797399632/ADA0EB7489D297952D7E5BCCDF4CF821E1E2A328/": "/assets/workshop/3784770590/569f1582f0c303eab168.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -283,15 +272,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3780663924",
     "preview_url": "https://images.steamusercontent.com/ugc/17876956576849604832/0877509CE47AF422C3475BD2FEE851E4948D9D41/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/17876956576849604832/0877509CE47AF422C3475BD2FEE851E4948D9D41/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/17876956576849604832/0877509CE47AF422C3475BD2FEE851E4948D9D41/"
     ],
     "time_updated": 1787285864,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/17876956576849604832/0877509CE47AF422C3475BD2FEE851E4948D9D41/": "/assets/workshop/3780663924/135513005c5f654d35a2.jpg",
-      "https://images.steamusercontent.com/ugc/17876956576849604832/0877509CE47AF422C3475BD2FEE851E4948D9D41/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3780663924/9ccc4022dcb2c66d9007.jpg"
+      "https://images.steamusercontent.com/ugc/17876956576849604832/0877509CE47AF422C3475BD2FEE851E4948D9D41/": "/assets/workshop/3780663924/135513005c5f654d35a2.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -304,15 +292,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3780655287",
     "preview_url": "https://images.steamusercontent.com/ugc/10517277429650665681/434DD8904821E4E2097496C4C13061A9EFEC9DFC/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/10517277429650665681/434DD8904821E4E2097496C4C13061A9EFEC9DFC/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/10517277429650665681/434DD8904821E4E2097496C4C13061A9EFEC9DFC/"
     ],
     "time_updated": 1787285374,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/10517277429650665681/434DD8904821E4E2097496C4C13061A9EFEC9DFC/": "/assets/workshop/3780655287/6ea380c464ea92491bce.jpg",
-      "https://images.steamusercontent.com/ugc/10517277429650665681/434DD8904821E4E2097496C4C13061A9EFEC9DFC/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3780655287/9ba57ed7d277088b61cc.jpg"
+      "https://images.steamusercontent.com/ugc/10517277429650665681/434DD8904821E4E2097496C4C13061A9EFEC9DFC/": "/assets/workshop/3780655287/6ea380c464ea92491bce.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -325,10 +312,10 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3759202934",
     "preview_url": "https://images.steamusercontent.com/ugc/11977053800576867808/2A98E78C74C8ACFA122471A2974530BA388F05BB/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/14214898609860025983/39E434351A13B32C83F8420A355B87A7181F28F0/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/13937602891819325448/0DE11FA411253D5D69A004CA1338B6902B4DC123/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/16369224509315453149/23F861DF6344EE1AE93FAC5E6323EEBE599C2BCA/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/11977053800576867808/2A98E78C74C8ACFA122471A2974530BA388F05BB/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/14214898609860025983/39E434351A13B32C83F8420A355B87A7181F28F0/",
+      "https://images.steamusercontent.com/ugc/13937602891819325448/0DE11FA411253D5D69A004CA1338B6902B4DC123/",
+      "https://images.steamusercontent.com/ugc/16369224509315453149/23F861DF6344EE1AE93FAC5E6323EEBE599C2BCA/",
+      "https://images.steamusercontent.com/ugc/11977053800576867808/2A98E78C74C8ACFA122471A2974530BA388F05BB/"
     ],
     "time_updated": 1788159526,
     "metadata_status": "verified",
@@ -336,10 +323,9 @@
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
       "https://images.steamusercontent.com/ugc/11977053800576867808/2A98E78C74C8ACFA122471A2974530BA388F05BB/": "/assets/workshop/3759202934/2e7f5ec0ddcc8803834e.jpg",
-      "https://images.steamusercontent.com/ugc/14214898609860025983/39E434351A13B32C83F8420A355B87A7181F28F0/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3759202934/ea56096c885375423d0a.jpg",
-      "https://images.steamusercontent.com/ugc/13937602891819325448/0DE11FA411253D5D69A004CA1338B6902B4DC123/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3759202934/e47ddb5d2af8ef7464e1.jpg",
-      "https://images.steamusercontent.com/ugc/16369224509315453149/23F861DF6344EE1AE93FAC5E6323EEBE599C2BCA/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3759202934/2849329dc0a9eb494f11.jpg",
-      "https://images.steamusercontent.com/ugc/11977053800576867808/2A98E78C74C8ACFA122471A2974530BA388F05BB/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3759202934/2ac9ef3c8d2e60fb326c.jpg"
+      "https://images.steamusercontent.com/ugc/14214898609860025983/39E434351A13B32C83F8420A355B87A7181F28F0/": "/assets/workshop/3759202934/86496158af2c777cc984.jpg",
+      "https://images.steamusercontent.com/ugc/13937602891819325448/0DE11FA411253D5D69A004CA1338B6902B4DC123/": "/assets/workshop/3759202934/635c4e3a18edcfe5bad8.jpg",
+      "https://images.steamusercontent.com/ugc/16369224509315453149/23F861DF6344EE1AE93FAC5E6323EEBE599C2BCA/": "/assets/workshop/3759202934/6ed231eb05905bf43e61.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -352,15 +338,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3754656488",
     "preview_url": "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/"
     ],
     "time_updated": 1782782926,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/": "/assets/workshop/3754656488/5520f737f82687a19cd1.jpg",
-      "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3754656488/7150310018c842fcea28.jpg"
+      "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/": "/assets/workshop/3754656488/5520f737f82687a19cd1.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -373,15 +358,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3749265855",
     "preview_url": "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/"
     ],
     "time_updated": 1783225962,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/": "/assets/workshop/3749265855/776f491b5fd66b760261.jpg",
-      "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3749265855/d3cade9e8e3280741df1.jpg"
+      "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/": "/assets/workshop/3749265855/776f491b5fd66b760261.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -394,15 +378,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3706444124",
     "preview_url": "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/"
     ],
     "time_updated": 1776124766,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/": "/assets/workshop/3706444124/b4f80add181a2c0c25ab.jpg",
-      "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3706444124/babbf3345724e74d73c2.jpg"
+      "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/": "/assets/workshop/3706444124/b4f80add181a2c0c25ab.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -415,15 +398,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3683369479",
     "preview_url": "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/"
     ],
     "time_updated": 1788573351,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/": "/assets/workshop/3683369479/55cf48c3732fd3fcf0b2.jpg",
-      "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3683369479/cb02ce29f9440f48c69b.jpg"
+      "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/": "/assets/workshop/3683369479/55cf48c3732fd3fcf0b2.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -436,15 +418,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3683369365",
     "preview_url": "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/"
     ],
     "time_updated": 1788574178,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/": "/assets/workshop/3683369365/b590932eab611d96c595.jpg",
-      "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3683369365/df6c89771b5bc8036cb8.jpg"
+      "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/": "/assets/workshop/3683369365/b590932eab611d96c595.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -457,15 +438,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3683369184",
     "preview_url": "https://images.steamusercontent.com/ugc/13209515628509868642/FDAEE4D2752A28AD7708CF59F6EACAC0053FA0B7/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/13209515628509868642/FDAEE4D2752A28AD7708CF59F6EACAC0053FA0B7/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/13209515628509868642/FDAEE4D2752A28AD7708CF59F6EACAC0053FA0B7/"
     ],
     "time_updated": 1788573317,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/13209515628509868642/FDAEE4D2752A28AD7708CF59F6EACAC0053FA0B7/": "/assets/workshop/3683369184/84c86eee5ebac7835e5f.jpg",
-      "https://images.steamusercontent.com/ugc/13209515628509868642/FDAEE4D2752A28AD7708CF59F6EACAC0053FA0B7/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3683369184/87b4141e3cf028365ded.jpg"
+      "https://images.steamusercontent.com/ugc/13209515628509868642/FDAEE4D2752A28AD7708CF59F6EACAC0053FA0B7/": "/assets/workshop/3683369184/84c86eee5ebac7835e5f.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -478,15 +458,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3683368570",
     "preview_url": "https://images.steamusercontent.com/ugc/11967845470299641376/7D1D00488EF1E4510B6B5C4C1BC49DBEB019BD65/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/11967845470299641376/7D1D00488EF1E4510B6B5C4C1BC49DBEB019BD65/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/11967845470299641376/7D1D00488EF1E4510B6B5C4C1BC49DBEB019BD65/"
     ],
     "time_updated": 1788573057,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/11967845470299641376/7D1D00488EF1E4510B6B5C4C1BC49DBEB019BD65/": "/assets/workshop/3683368570/b374ecfe25bbc67332dd.jpg",
-      "https://images.steamusercontent.com/ugc/11967845470299641376/7D1D00488EF1E4510B6B5C4C1BC49DBEB019BD65/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3683368570/a73218e72dd167d792c4.jpg"
+      "https://images.steamusercontent.com/ugc/11967845470299641376/7D1D00488EF1E4510B6B5C4C1BC49DBEB019BD65/": "/assets/workshop/3683368570/b374ecfe25bbc67332dd.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -499,15 +478,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3681468901",
     "preview_url": "https://images.steamusercontent.com/ugc/9849997199981323832/B963A093DE09BD91BE4C848B59AA823443D2B7E7/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/9849997199981323832/B963A093DE09BD91BE4C848B59AA823443D2B7E7/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/9849997199981323832/B963A093DE09BD91BE4C848B59AA823443D2B7E7/"
     ],
     "time_updated": 1773004335,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/9849997199981323832/B963A093DE09BD91BE4C848B59AA823443D2B7E7/": "/assets/workshop/3681468901/3271832182bac42c3bbd.jpg",
-      "https://images.steamusercontent.com/ugc/9849997199981323832/B963A093DE09BD91BE4C848B59AA823443D2B7E7/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3681468901/419fc9017d6c7b7ac658.jpg"
+      "https://images.steamusercontent.com/ugc/9849997199981323832/B963A093DE09BD91BE4C848B59AA823443D2B7E7/": "/assets/workshop/3681468901/3271832182bac42c3bbd.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -520,15 +498,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3681448151",
     "preview_url": "https://images.steamusercontent.com/ugc/10711303414198703147/81859865F4AEC561A092528B4565897CBBDAADC6/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/10711303414198703147/81859865F4AEC561A092528B4565897CBBDAADC6/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/10711303414198703147/81859865F4AEC561A092528B4565897CBBDAADC6/"
     ],
     "time_updated": 1773002828,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/10711303414198703147/81859865F4AEC561A092528B4565897CBBDAADC6/": "/assets/workshop/3681448151/352d06229478bb195fd2.jpg",
-      "https://images.steamusercontent.com/ugc/10711303414198703147/81859865F4AEC561A092528B4565897CBBDAADC6/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3681448151/2bf4cacc569be7f1e195.jpg"
+      "https://images.steamusercontent.com/ugc/10711303414198703147/81859865F4AEC561A092528B4565897CBBDAADC6/": "/assets/workshop/3681448151/352d06229478bb195fd2.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -541,15 +518,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3680122012",
     "preview_url": "https://images.steamusercontent.com/ugc/12007938862257604860/B71BC9F2C446DCEA41FAC9428F3FE241B967DE24/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12007938862257604860/B71BC9F2C446DCEA41FAC9428F3FE241B967DE24/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/12007938862257604860/B71BC9F2C446DCEA41FAC9428F3FE241B967DE24/"
     ],
     "time_updated": 1772849604,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/12007938862257604860/B71BC9F2C446DCEA41FAC9428F3FE241B967DE24/": "/assets/workshop/3680122012/639333e76c7c0cc171e1.jpg",
-      "https://images.steamusercontent.com/ugc/12007938862257604860/B71BC9F2C446DCEA41FAC9428F3FE241B967DE24/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3680122012/5597f82e0e7b14a64d29.jpg"
+      "https://images.steamusercontent.com/ugc/12007938862257604860/B71BC9F2C446DCEA41FAC9428F3FE241B967DE24/": "/assets/workshop/3680122012/639333e76c7c0cc171e1.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -562,15 +538,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3671759756",
     "preview_url": "https://images.steamusercontent.com/ugc/10857996108620476179/2A35FA3364BEB29837014D37C4B30284A0B16D1E/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/10857996108620476179/2A35FA3364BEB29837014D37C4B30284A0B16D1E/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/10857996108620476179/2A35FA3364BEB29837014D37C4B30284A0B16D1E/"
     ],
     "time_updated": 1775005246,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/10857996108620476179/2A35FA3364BEB29837014D37C4B30284A0B16D1E/": "/assets/workshop/3671759756/ab931bf1ef5d2eef9e6c.jpg",
-      "https://images.steamusercontent.com/ugc/10857996108620476179/2A35FA3364BEB29837014D37C4B30284A0B16D1E/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3671759756/b642368f8d5a2a788847.jpg"
+      "https://images.steamusercontent.com/ugc/10857996108620476179/2A35FA3364BEB29837014D37C4B30284A0B16D1E/": "/assets/workshop/3671759756/ab931bf1ef5d2eef9e6c.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -583,15 +558,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3639321824",
     "preview_url": "https://images.steamusercontent.com/ugc/11628172780051461506/88E06D8BADD8AEF72A01B7168DCA0D5CCA34A518/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/11628172780051461506/88E06D8BADD8AEF72A01B7168DCA0D5CCA34A518/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/11628172780051461506/88E06D8BADD8AEF72A01B7168DCA0D5CCA34A518/"
     ],
     "time_updated": 1788574712,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/11628172780051461506/88E06D8BADD8AEF72A01B7168DCA0D5CCA34A518/": "/assets/workshop/3639321824/d26acbef8e28516a6398.jpg",
-      "https://images.steamusercontent.com/ugc/11628172780051461506/88E06D8BADD8AEF72A01B7168DCA0D5CCA34A518/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3639321824/feb6bc10bbab8ab60782.jpg"
+      "https://images.steamusercontent.com/ugc/11628172780051461506/88E06D8BADD8AEF72A01B7168DCA0D5CCA34A518/": "/assets/workshop/3639321824/d26acbef8e28516a6398.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -604,15 +578,14 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3507713039",
     "preview_url": "https://images.steamusercontent.com/ugc/14177051696120822105/5E7AD75FD707088046038D506C32E5DD1B20ADA3/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/14177051696120822105/5E7AD75FD707088046038D506C32E5DD1B20ADA3/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/14177051696120822105/5E7AD75FD707088046038D506C32E5DD1B20ADA3/"
     ],
     "time_updated": 1750778365,
     "metadata_status": "verified",
     "gallery_source": "saved",
     "gallery_note": "Steam API provided no gallery; previously saved images retained.",
     "images": {
-      "https://images.steamusercontent.com/ugc/14177051696120822105/5E7AD75FD707088046038D506C32E5DD1B20ADA3/": "/assets/workshop/3507713039/d98d7d7b64bd5e701f25.jpg",
-      "https://images.steamusercontent.com/ugc/14177051696120822105/5E7AD75FD707088046038D506C32E5DD1B20ADA3/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true": "/assets/workshop/3507713039/0202a70c30bff6df0be3.jpg"
+      "https://images.steamusercontent.com/ugc/14177051696120822105/5E7AD75FD707088046038D506C32E5DD1B20ADA3/": "/assets/workshop/3507713039/d98d7d7b64bd5e701f25.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []

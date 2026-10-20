@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "checked_at": "2026-10-20T19:08:15+00:00",
+  "checked_at": "2026-10-20T20:10:34+00:00",
   "status": "partial",
   "mode": "live-api",
   "checked": 28,
@@ -30,7 +30,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 2,
-      "cached_count": 3,
+      "cached_count": 2,
       "cache_status": "complete",
       "errors": []
     },
@@ -40,7 +40,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 2,
-      "cached_count": 3,
+      "cached_count": 2,
       "cache_status": "complete",
       "errors": []
     },
@@ -50,7 +50,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -60,7 +60,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 5,
-      "cached_count": 6,
+      "cached_count": 5,
       "cache_status": "complete",
       "errors": []
     },
@@ -70,7 +70,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -80,7 +80,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -90,7 +90,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -100,7 +100,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -110,7 +110,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -120,7 +120,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -130,7 +130,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -140,7 +140,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -150,7 +150,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -160,7 +160,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 4,
-      "cached_count": 5,
+      "cached_count": 4,
       "cache_status": "complete",
       "errors": []
     },
@@ -170,7 +170,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -180,7 +180,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -190,7 +190,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -200,7 +200,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -210,7 +210,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -220,7 +220,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -230,7 +230,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -240,7 +240,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -250,7 +250,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -260,7 +260,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -270,7 +270,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -280,7 +280,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     },
@@ -290,7 +290,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
-      "cached_count": 2,
+      "cached_count": 1,
       "cache_status": "complete",
       "errors": []
     }
