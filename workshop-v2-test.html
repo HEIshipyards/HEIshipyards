@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HEI Shipyards / Workshop Sync V2 Diagnostics</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui;background:#10191e;color:#e2e9e8}
+body{max-width:1100px;margin:auto;padding:28px 18px}h1,h2{color:#f1f4f3}h1{font-size:2rem}small,.muted{color:#a2b3b8}
+header{border-bottom:2px solid #e87928;margin-bottom:22px;padding-bottom:12px}
+a{color:#f7a05b}.notice{background:#23323a;padding:16px;border-left:4px solid #e87928;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:16px}
+.card{border:1px solid #47565d;background:#18252b;border-radius:10px;padding:14px}
+.card img{display:block;width:100%;height:175px;object-fit:cover;margin-bottom:10px;border-radius:4px;background:#0b1318}
+.thumb{width:72px;height:60px;object-fit:cover;border:1px solid #667;border-radius:4px}
+.gallery{display:flex;gap:6px;flex-wrap:wrap}.status{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#ffa767}
+button{background:#d8742c;color:white;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}
+</style></head><body><header><small>HELIX ENGINEERING & INTEGRATION / ALMAGEST DIVISION</small><h1>Workshop Sync V2 — Test Console</h1><p><a href="./index.html#fleet">← Back to HEI fleet</a></p></header>
+<div class="notice"><strong>Testing only.</strong> This page shows V2 data separately from the published vessel pages. Seeded galleries are preserved snapshots, not verified current Steam galleries. Refresh runs from GitHub Actions; this webpage does not contact Steam.</div>
+<p id="summary" role="status">Loading preview data…</p><button onclick="reload()">Reload data</button>
+<div id="cards" class="cards"></div>
+<script>
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\x27':'&#39;'}[c]));
+function safeImg(u){try{const v=new URL(u,location.href);if(v.protocol==='https:'&&v.hostname==='images.steamusercontent.com'||v.origin===location.origin&&v.pathname.startsWith('/assets/workshop/'))return v.href}catch{}return ''}
+async function reload(){
+ try {
+ const [res,reportRes]=await Promise.all([fetch('./data/workshop-v2.json?ts='+Date.now()),fetch('./data/workshop-v2-report.json?ts='+Date.now())]);
+ if(!res.ok)throw Error('Preview data has not been seeded; run the offline seed script and commit its output on the testing branch.');
+ const rows=await res.json();const report=reportRes.ok?await reportRes.json():null;
+ document.getElementById('summary').textContent=(report?'Latest report: '+report.status+' / '+report.mode+' / '+report.checked_at+'. ':'')+rows.length+' vessel entries in V2.';
+ document.getElementById('cards').innerHTML=rows.map(w=>{
+ const imageUrl=u=>w.images&&w.images[u]||u;
+ const preview=safeImg(imageUrl(w.preview_url)),imgs=(w.gallery_urls||[]).map(imageUrl).map(safeImg).filter(Boolean);
+ return '<article class="card"><img src="'+esc(preview)+'" alt="'+esc(w.title)+' preview" loading="lazy"><h2>'+esc(w.title)+'</h2><p class="status">Metadata: '+esc(w.metadata_status)+' · Gallery: '+esc(w.gallery_source)+'</p><p class="muted">'+esc(w.gallery_note)+'</p><p>'+imgs.length+' gallery URLs · Cache: '+esc(w.image_cache_status)+'</p><div class="gallery">'+imgs.slice(0,16).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener"><img class="thumb" src="'+esc(u)+'" alt="Gallery image" loading="lazy"></a>').join('')+'</div><p><a href="'+esc(w.url)+'" target="_blank" rel="noopener">View on Steam ↗</a></p></article>';
+ }).join('');
+ }catch(err){document.getElementById('summary').textContent=err.message;}
+}reload();
+</script></body></html>
