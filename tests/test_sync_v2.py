@@ -31,6 +31,11 @@ class SyncTests(unittest.TestCase):
             {"images":["https://images.steamusercontent.com/manual"]}, "", False)
         self.assertEqual(result["gallery_source"], "manual")
         self.assertEqual(result["gallery_urls"], ["https://images.steamusercontent.com/manual"])
+    def test_thumbnail_resize_query_removed(self):
+        url = "https://images.steamusercontent.com/ugc/123/ABC/?imw=116&imh=65&ima=fit&letterbox=true"
+        self.assertEqual(mod.full_resolution_url(url), "https://images.steamusercontent.com/ugc/123/ABC/")
+        self.assertEqual(mod.unique_images([url, url.replace("116", "268")]), ["https://images.steamusercontent.com/ugc/123/ABC/"])
+
     def test_deny_unapproved_image_hosts(self):
         self.assertIsNone(mod.valid_url("https://example.com/image.png"))
         self.assertIsNone(mod.valid_url("http://images.steamusercontent.com/file"))
