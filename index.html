@@ -200,7 +200,7 @@ function heiArchiveMarkup(route,name){
  const item=syncedWorkshop.find(w=>w.route===route);
  const gallery=item&&Array.isArray(item.gallery_urls)?item.gallery_urls:[];
  if(!gallery.length&&!item?.preview_url)return '<div class="placeholder">STEAM WORKSHOP VISUAL ARCHIVE · IMAGES PENDING</div>';
- return `<div class="hei-visual-archive">${heiGalleryMarkup({...item,preview_url:""},name)}</div>`;
+ return `<div class="hei-visual-archive">${heiGalleryMarkup(item,name)}</div>`;
 }
 function workshopMedia(route){let src=workshopImages[route];if(!src)return `<div class="placeholder">SHIP PHOTO — TO BE PROVIDED</div>`;return `<div class="workshop-gallery-item"><img src="${src}" alt="Steam Workshop screenshot" referrerpolicy="no-referrer" loading="lazy"></div>`;}
 const currentFleetCanon={
