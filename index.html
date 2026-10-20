@@ -189,15 +189,18 @@ function syncFeaturedVesselPhotos(){
 }
 
 function heiHeroMarkup(route,name){
- const src=workshopImages[route]; // Hand-selected image, never synced from Steam.
+ // Excalibur follows the current Workshop preview; other vessels retain their curated hero art.
+ const workshopItem=route==='ship-excalibur'?syncedWorkshop.find(w=>w.route===route):null;
+ const livePreview=workshopItem&&typeof workshopItem.preview_url==='string'&&/^https:\/\/images\.steamusercontent\.com\//.test(workshopItem.preview_url)?workshopItem.preview_url:null;
+ const src=livePreview||workshopImages[route];
  if(!src)return `<div class="hei-vessel-hero"><div class="hei-vessel-hero-label">${name} · Featured image pending</div></div>`;
- return `<div class="hei-vessel-hero"><img src="${src}" alt="${name} featured vessel image" loading="eager" referrerpolicy="no-referrer"><div class="hei-vessel-hero-label">${name} / H-E-I Shipyards</div></div>`;
+ return `<div class="hei-vessel-hero"><img src="${safeWorkshopText(src)}" alt="${safeWorkshopText(name)} featured vessel image" loading="eager" referrerpolicy="no-referrer"><div class="hei-vessel-hero-label">${safeWorkshopText(name)} / H-E-I Shipyards</div></div>`;
 }
 function heiArchiveMarkup(route,name){
  const item=syncedWorkshop.find(w=>w.route===route);
  const gallery=item&&Array.isArray(item.gallery_urls)?item.gallery_urls:[];
- if(!gallery.length)return '<div class="placeholder">STEAM WORKSHOP VISUAL ARCHIVE · IMAGES PENDING</div>';
- return `<div class="hei-visual-archive">${heiGalleryMarkup({...item,preview_url:""},name)}</div>`;
+ if(!gallery.length&&!item?.preview_url)return '<div class="placeholder">STEAM WORKSHOP VISUAL ARCHIVE · IMAGES PENDING</div>';
+ return `<div class="hei-visual-archive">${heiGalleryMarkup(item,name)}</div>`;
 }
 function workshopMedia(route){let src=workshopImages[route];if(!src)return `<div class="placeholder">SHIP PHOTO — TO BE PROVIDED</div>`;return `<div class="workshop-gallery-item"><img src="${src}" alt="Steam Workshop screenshot" referrerpolicy="no-referrer" loading="lazy"></div>`;}
 const currentFleetCanon={
