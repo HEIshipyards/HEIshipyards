@@ -10,6 +10,7 @@ on:
       - 'tests/test_sync_v2.py'
       - 'data/gallery-overrides.json'
       - 'index.html'
+      - 'scripts/audit_workshop_images.py'
   pull_request:
     paths:
       - '.github/workflows/workshop-v2-test.yml'
@@ -53,6 +54,9 @@ jobs:
 
       - name: Run V2 regression tests
         run: python -m unittest discover -s tests -p 'test_sync_v2.py' -v
+
+      - name: Audit cached image dimensions
+        run: python scripts/audit_workshop_images.py
 
       - name: Check Pacific scheduled run
         id: pacific

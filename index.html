@@ -338,7 +338,7 @@ function heiGalleryMarkup(w,name){
  if(!urls.length&&w.preview_url)urls.push(w.preview_url);
  if(!urls.length)return '<div class="placeholder">NO WORKSHOP IMAGES AVAILABLE</div>';
  const safeUrls=urls.map(safeWorkshopText),alt=name+' photograph';
- const main='<div class="hei-carousel-stage"><img src="'+safeUrls[0]+'" alt="'+alt+'" loading="lazy" referrerpolicy="no-referrer">'+(urls.length>1?'<button class="hei-carousel-arrow hei-carousel-prev" type="button" onclick="heiGalleryStep(this,-1)" aria-label="Previous image">&#10094;</button><button class="hei-carousel-arrow hei-carousel-next" type="button" onclick="heiGalleryStep(this,1)" aria-label="Next image">&#10095;</button>':'')+'</div>';
+ const main='<div class="hei-carousel-stage"><img src="'+safeUrls[0]+'" alt="'+alt+'" loading="lazy" referrerpolicy="no-referrer" onload="this.style.maxWidth=this.naturalWidth+\'px\'">'+(urls.length>1?'<button class="hei-carousel-arrow hei-carousel-prev" type="button" onclick="heiGalleryStep(this,-1)" aria-label="Previous image">&#10094;</button><button class="hei-carousel-arrow hei-carousel-next" type="button" onclick="heiGalleryStep(this,1)" aria-label="Next image">&#10095;</button>':'')+'</div>';
  const thumbs=urls.length>1?'<div class="hei-carousel-thumbs">'+safeUrls.map((url,i)=>'<button type="button" class="hei-carousel-thumb" aria-label="Show image '+(i+1)+'" aria-current="'+(i===0)+'" data-url="'+url+'" data-alt="'+alt+' '+(i+1)+'" onclick="heiGalleryShow(this,'+i+')"><img src="'+url+'" alt="" loading="lazy" referrerpolicy="no-referrer"></button>').join('')+'</div>':'';
  return '<div class="hei-carousel" data-index="0">'+main+'<div class="hei-carousel-caption">Image 1 of '+urls.length+'</div>'+thumbs+'</div>';
 }
