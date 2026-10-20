@@ -1,5 +1,13 @@
 name: Workshop Sync v2 Test
 on:
+  push:
+    branches:
+      - test/workshop-sync-v2
+  pull_request:
+    paths:
+      - 'scripts/sync_workshop_v2.py'
+      - 'tests/test_sync_v2.py'
+      - 'workshop-v2-test.html'
   workflow_dispatch:
     inputs:
       mode:
