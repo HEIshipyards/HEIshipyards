@@ -162,7 +162,8 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror):
     if manual is not None:
         gallery = unique_images(manual, preview)
         source = "manual"
-        note = "Explicitly supplied gallery image list."
+        note = ("Manual gallery selection: no additional still photos; the Workshop preview remains visible."
+                if not gallery else "Explicitly supplied gallery image list.")
     previous_images = prior["images"] if isinstance(prior["images"], dict) else {}
     cached = {}
     errors = []
