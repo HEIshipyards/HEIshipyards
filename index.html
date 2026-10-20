@@ -136,6 +136,13 @@
 #fleet-results .grid{align-items:stretch}
 #fleet-results .tile{display:flex;flex-direction:column;height:100%}
 #fleet-results .tile-art{flex:0 0 190px;width:100%}
+/* Steam-style fleet thumbnails: native display footprint, no stretching or cropping. */
+#fleet-results .tile-art{background:#111a20}
+#fleet-results .tile-art > img,#fleet-results .tile-art > .workshop-photo{
+  width:min(268px,calc(100% - 20px));height:auto;max-height:151px;
+  aspect-ratio:268 / 151;object-fit:contain;object-position:center;
+  flex:none;margin:auto;background:transparent;
+}
 #fleet-results .tile-body{display:flex;flex:1;flex-direction:column;align-items:flex-start;min-height:178px}
 #fleet-results .tile-body .arrow{margin-top:auto;padding-top:14px}
 #fleet-results .tile-body h3{overflow-wrap:anywhere}
