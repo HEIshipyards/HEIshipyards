@@ -1,9 +1,9 @@
 [
   {
     "id": "3718140217",
-    "title": "( H-E-I ) Excalibur Class 1-M Starchaser  R-1.0",
+    "title": "( H-E-I ) Excalibur Class 1-M Starchaser  R-2.0",
     "description": "",
-    "preview_url": "https://images.steamusercontent.com/ugc/15467130635512557346/94895CA8F9B952C1C401283EA36177342A0EFBA1/",
+    "preview_url": "https://images.steamusercontent.com/ugc/10464581743205860736/B1DCE7BE7A485D75B9E7CE0E25DD8D74166B14CB/",
     "gallery_urls": [
       "https://images.steamusercontent.com/ugc/11133714131419650781/A9A50CC6FDD756ED04882F4B4F123CB1640A6751/",
       "https://images.steamusercontent.com/ugc/11242133340980574851/BB5BC17DCAA7A7136153F4D0139814D0C0F8A855/",
@@ -15,18 +15,21 @@
       "https://images.steamusercontent.com/ugc/10353142375103143863/05014A3513C1AEAFF8947B4A35DBA80102FE1F14/",
       "https://images.steamusercontent.com/ugc/9369371693757354860/B9BAC70A70E1AE68983D27F6929932653F56DD2F/"
     ],
-    "time_updated": 1786248127,
+    "time_updated": 1792204913,
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3718140217",
     "category": "Combat",
     "route": "ship-excalibur"
   },
   {
     "id": "3658866132",
-    "title": "(H-E-I) outlander freighter MK3",
+    "title": "(H-E-I) outlander freighter",
     "description": "",
-    "preview_url": "https://images.steamusercontent.com/ugc/9569321082750958662/F1A2207F5D7E7B7D6CB3511DBF67AE4411D7861A/",
-    "gallery_urls": [],
-    "time_updated": 1776024641,
+    "preview_url": "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/",
+    "gallery_urls": [
+      "https://images.steamusercontent.com/ugc/10635063507012477199/614E7B2C102D52BCDF308586791CE2E949D6C7D1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+      "https://images.steamusercontent.com/ugc/17081563473332985810/3A985E37DBCE5A277B76460077F749BEAC776092/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+    ],
+    "time_updated": 1792205816,
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3658866132",
     "category": "Industrial",
     "route": "ship-outlander"
@@ -46,17 +49,17 @@
   },
   {
     "id": "3631594269",
-    "title": "(H-E-I) Featherfall Freighter MK 5",
+    "title": "(H-E-I) Featherfall Freighter MK 6",
     "description": "",
-    "preview_url": "https://images.steamusercontent.com/ugc/16861419256299353851/5B097F1B112D305568AE4ABBB4548D6045FC64AA/",
+    "preview_url": "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/",
     "gallery_urls": [
       "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
       "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
       "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
       "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/16861419256299353851/5B097F1B112D305568AE4ABBB4548D6045FC64AA/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+      "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
     ],
-    "time_updated": 1784494286,
+    "time_updated": 1792438654,
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3631594269",
     "category": "Civilian",
     "route": "ship-featherfall"
@@ -362,5 +365,19 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3507713039",
     "category": "Infrastructure",
     "route": null
+  },
+  {
+    "id": "3821205482",
+    "title": "H-E-I Soujourner",
+    "description": "",
+    "preview_url": "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/",
+    "gallery_urls": [
+      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+      "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
+    ],
+    "time_updated": 1792204802,
+    "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3821205482",
+    "category": "Civilian",
+    "route": "ship-sojourner"
   }
 ]
