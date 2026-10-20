@@ -168,11 +168,9 @@ const shipDetails={
 'ship-asteroid-base':{title:'All-in-One Asteroid Base (S)',intro:'A compact HEI asteroid outpost for Space Engineers 2. Included in the registry as infrastructure rather than a spacecraft.',history:'The published Workshop entry is labeled “ALL IN ONE ASTROID BASE ( S )” and identifies version 2.3. The description does not list a verifiable module inventory or extensive company lore, so those fields are reserved for later documentation.',facts:[['Category','Station / asteroid infrastructure'],['Workshop version note','VS2.3'],['Published name','All-in-One Astroid Base (S)']],workshop:'3658317349'}
 };
 function workshopPhoto(route){
- // Fleet card uses the same first image as the vessel's visual archive.
- // The workshop preview_url is a separate promotional image and is not used here.
+ // Use the current Workshop cover for fleet cards; gallery screenshots may be tiny thumbnails.
  const item=syncedWorkshop.find(w=>w.route===route);
- const gallery=item&&Array.isArray(item.gallery_urls)?item.gallery_urls.filter(url=>typeof url==='string'&&/^https:\/\//.test(url)&&url!==item.preview_url):[];
- const url=gallery[0]||workshopImages[route];
+ const url=item?.preview_url||item?.gallery_urls?.[0]||workshopImages[route];
  return url?`<img class="workshop-photo" src="${safeWorkshopText(url)}" loading="lazy" referrerpolicy="no-referrer" alt="${route.replace('ship-','').replaceAll('-',' ')} vessel image" onerror="this.style.display='none'">`:'';
 }
 function workshopVisual(route){return `<div class="tile-art">${workshopPhoto(route)}</div>`;}
@@ -330,7 +328,12 @@ function heiGalleryShow(button,index){
 }
 function heiGalleryStep(button,increment){const gallery=button.closest('.hei-carousel');heiGalleryShow(button,Number(gallery.dataset.index||0)+increment);}
 function heiGalleryMarkup(w,name){
- const extras=Array.isArray(w.gallery_urls)?w.gallery_urls.filter(x=>typeof x==='string'&&/^https:\/\//.test(x)):[];
+ // V2 caches media on our own site. Accept our verified local image paths as well as Steam HTTPS media.
+ const allowedImage=x=>typeof x==='string'&&(
+  /^https:\/\/(?:images\.steamusercontent\.com|steamuserimages-a\.akamaihd\.net|steamuserimages\.akamaihd\.net|steamcommunity-a\.akamaihd\.net)\//.test(x)||
+  /^\/assets\/workshop\/[0-9]+\/[a-f0-9]{20}\.(?:jpg|png|webp)$/.test(x)
+ );
+ const extras=Array.isArray(w.gallery_urls)?w.gallery_urls.filter(allowedImage):[];
  const urls=[...new Set(extras.filter(x=>x!==w.preview_url))];
  if(!urls.length&&w.preview_url)urls.push(w.preview_url);
  if(!urls.length)return '<div class="placeholder">NO WORKSHOP IMAGES AVAILABLE</div>';
@@ -382,7 +385,11 @@ async function loadSteamWorkshop(){
   syncedWorkshop=parsed.filter(w=>w.id).map(w=>{
     const images=w.images||{};
     const resolve=u=>typeof images[u]==='string'&&images[u].startsWith('/assets/workshop/')?images[u]:u;
-    return {...w,preview_url:resolve(w.preview_url),gallery_urls:(w.gallery_urls||[]).map(resolve)};
+    // A partially cached saved gallery may contain dead Steam links (404). Keep
+    // them in the data archive, but display only verified local copies until repaired.
+    const incompleteArchive=w.gallery_source==='saved'&&w.image_cache_status==='partial'&&Object.keys(images).length>0;
+    const visibleGallery=(w.gallery_urls||[]).filter(u=>!incompleteArchive||!!images[u]);
+    return {...w,preview_url:resolve(w.preview_url),gallery_urls:visibleGallery.map(resolve)};
   });
   syncFeaturedVesselPhotos();
   // Preserve hand-selected vessel hero images independently of Steam metadata.
