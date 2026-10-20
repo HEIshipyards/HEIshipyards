@@ -1,53 +1,110 @@
-name: Workshop Sync v2 Test
+name: HEI Workshop Sync V2
 on:
   push:
     branches:
+      - main
       - test/workshop-sync-v2
-  pull_request:
     paths:
+      - '.github/workflows/workshop-v2-test.yml'
       - 'scripts/sync_workshop_v2.py'
       - 'tests/test_sync_v2.py'
-      - 'workshop-v2-test.html'
+      - 'data/gallery-overrides.json'
+      - 'index.html'
+  pull_request:
+    paths:
+      - '.github/workflows/workshop-v2-test.yml'
+      - 'scripts/sync_workshop_v2.py'
+      - 'tests/test_sync_v2.py'
+      - 'index.html'
+  schedule:
+    # 8 AM Pacific, observing both PDT and PST.
+    - cron: '0 15,16 * * *'
   workflow_dispatch:
     inputs:
       mode:
-        description: "Offline seed or Steam API"
+        description: "Choose a test or real sync"
         required: true
-        default: offline-seed
         type: choice
+        default: live-api-cache
         options:
-          - offline-seed
-          - live-api
           - live-api-cache
+          - live-api
+          - offline-seed
+
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: hei-workshop-v2
+  cancel-in-progress: false
+
 jobs:
-  test:
+  sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Validate sync v2
+          python-version: '3.12'
+
+      - name: Run V2 regression tests
         run: python -m unittest discover -s tests -p 'test_sync_v2.py' -v
-      - name: Run offline seed
-        if: inputs.mode == 'offline-seed'
-        run: python scripts/sync_workshop_v2.py --offline-seed
-      - name: Run live metadata test
-        if: inputs.mode == 'live-api'
-        run: python scripts/sync_workshop_v2.py
-      - name: Run live metadata and image-cache test
-        if: inputs.mode == 'live-api-cache'
-        run: python scripts/sync_workshop_v2.py --cache-images
-      - name: Upload test results
+
+      - name: Check Pacific scheduled run
+        id: pacific
+        env:
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          if [ "$TRIGGER" != "schedule" ] || [ "$(TZ=America/Los_Angeles date +%H)" = "08" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping duplicate timezone schedule."
+          fi
+
+      - name: Synchronize V2 fleet data
+        if: github.event_name != 'pull_request' && steps.pacific.outputs.run == 'true'
+        env:
+          SYNC_MODE: ${{ inputs.mode }}
+          GIT_REF: ${{ github.ref }}
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          if [ "$GIT_REF" != "refs/heads/main" ]; then
+            echo "Testing branch: verifying saved data without contacting Steam."
+            python scripts/sync_workshop_v2.py --offline-seed
+          elif [ "$SYNC_MODE" = "offline-seed" ]; then
+            python scripts/sync_workshop_v2.py --offline-seed
+          elif [ "$SYNC_MODE" = "live-api" ]; then
+            python scripts/sync_workshop_v2.py
+          else
+            python scripts/sync_workshop_v2.py --cache-images
+          fi
+
+      - name: Commit V2 data and mirrored pictures to main
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.pacific.outputs.run == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/workshop-v2.json data/workshop-v2-report.json
+          if [ -d assets/workshop ]; then git add assets/workshop; fi
+          if ! git diff --cached --quiet; then
+            git commit -m "Update HEI Workshop V2 data and image cache"
+            git push
+          else
+            echo "No V2 changes."
+          fi
+
+      - name: Upload V2 test data and status report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: workshop-v2-test-results
+          name: workshop-v2-results
           path: |
             data/workshop-v2.json
             data/workshop-v2-report.json
-            assets/workshop/
           if-no-files-found: warn
           retention-days: 14
