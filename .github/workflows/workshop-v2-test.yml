@@ -18,7 +18,8 @@ on:
       - 'tests/test_sync_v2.py'
       - 'index.html'
   schedule:
-    # 8 AM Pacific, observing both PDT and PST.
+    # One live Steam refresh per day at 8 AM Pacific (DST-aware gate below).
+    # Two UTC cron hours are needed for the seasonal Pacific offset change.
     - cron: '0 15,16 * * *'
   workflow_dispatch:
     inputs:
@@ -35,14 +36,15 @@ on:
 permissions:
   contents: write
 
+# Serialize only real Steam requests. PR and code-push checks never call Steam.
 concurrency:
-  group: hei-workshop-v2
+  group: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'hei-workshop-v2-live' || github.ref }}
   cancel-in-progress: false
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,8 +79,8 @@ jobs:
           GIT_REF: ${{ github.ref }}
           TRIGGER: ${{ github.event_name }}
         run: |
-          if [ "$GIT_REF" != "refs/heads/main" ]; then
-            echo "Testing branch: verifying saved data without contacting Steam."
+          if [ "$TRIGGER" = "push" ] || [ "$GIT_REF" != "refs/heads/main" ]; then
+            echo "Code push / test branch: verifying saved data without contacting Steam."
             python scripts/sync_workshop_v2.py --offline-seed
           elif [ "$SYNC_MODE" = "offline-seed" ]; then
             python scripts/sync_workshop_v2.py --offline-seed
@@ -89,7 +91,7 @@ jobs:
           fi
 
       - name: Commit V2 data and mirrored pictures to main
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && steps.pacific.outputs.run == 'true'
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && steps.pacific.outputs.run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

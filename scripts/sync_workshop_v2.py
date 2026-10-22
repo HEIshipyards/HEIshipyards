@@ -27,11 +27,10 @@ IMAGE_HOSTS = {"images.steamusercontent.com", "steamuserimages-a.akamaihd.net",
 MAX_IMAGE_BYTES = 5_000_000
 MAX_IMAGES_PER_ITEM = 16
 PAGE_REQUEST_GAP_SECONDS = 10  # Match the legacy sync's 10-second Workshop interval.
-RATE_LIMIT_COOLDOWN_SECONDS = 300  # Five minutes after the first Steam HTTP 429.
-RATE_LIMIT_RETRY_INTERVAL_SECONDS = 600  # Ten minutes between recovery retries.
-RATE_LIMIT_RETRIES = 3  # Three recovery attempts, in addition to the initial request.
-MAX_RATE_LIMIT_WAIT_SECONDS = 1800  # Honor Retry-After up to 30 minutes per wait.
-MAX_TOTAL_BACKOFF_SECONDS = 2400  # Bound combined sleeps within the Actions time limit.
+RATE_LIMIT_COOLDOWN_SECONDS = 3600  # One retry one hour after the first Steam HTTP 429.
+RATE_LIMIT_RETRIES = 1  # Do not retry again until the next daily scheduled sync.
+MAX_RATE_LIMIT_WAIT_SECONDS = 5400  # Allow Steam Retry-After up to 90 minutes.
+MAX_TOTAL_BACKOFF_SECONDS = 5400  # Ensure the one retry fits the workflow timeout.
 
 def load(path, default):
     if not path.exists():
@@ -115,11 +114,10 @@ def fetch_page_gallery(workshop_id, preview):
     return unique_images(values, preview)
 
 def fetch_page_gallery_with_cooldown(workshop_id, preview):
-    """Wait five minutes on the first 429, then retry up to three times.
+    """On HTTP 429, wait at least an hour and retry exactly once.
 
-    After the first recovery attempt, wait ten minutes between further retries.
-    Preserve existing galleries if Steam keeps rate limiting; respect long
-    Retry-After values without exceeding the configured workflow wait budget.
+    If still blocked, retain the saved gallery and leave further requests to
+    the next daily sync. Respect a longer Steam Retry-After within the budget.
     """
     total_wait = 0
     for attempt in range(RATE_LIMIT_RETRIES + 1):
@@ -138,8 +136,7 @@ def fetch_page_gallery_with_cooldown(workshop_id, preview):
                 requested_wait = max(0, int(retry_after)) if retry_after is not None else 0
             except (TypeError, ValueError):
                 requested_wait = 0
-            wait = max(RATE_LIMIT_COOLDOWN_SECONDS if attempt == 0 else
-                       RATE_LIMIT_RETRY_INTERVAL_SECONDS, requested_wait)
+            wait = max(RATE_LIMIT_COOLDOWN_SECONDS, requested_wait)
             if wait > MAX_RATE_LIMIT_WAIT_SECONDS or total_wait + wait > MAX_TOTAL_BACKOFF_SECONDS:
                 print(f"WARNING: Steam cooldown exceeds safety budget for {workshop_id}; "
                       "preserving gallery for the next scheduled sync.",
@@ -347,7 +344,6 @@ def main(argv=None):
               "page_lookups_paused": page_lookups_paused,
               "page_request_gap_seconds": PAGE_REQUEST_GAP_SECONDS,
               "rate_limit_cooldown_seconds": RATE_LIMIT_COOLDOWN_SECONDS,
-              "rate_limit_retry_interval_seconds": RATE_LIMIT_RETRY_INTERVAL_SECONDS,
               "rate_limit_retries": RATE_LIMIT_RETRIES,
               "gallery_preserved": sum(x["gallery"] == "saved" for x in statuses),
               "image_cache_complete": sum(x["cache_status"] == "complete" for x in statuses),
