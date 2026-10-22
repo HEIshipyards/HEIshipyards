@@ -31,8 +31,7 @@
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3821205482",
     "preview_url": "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/",
     "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/",
-      "https://images.steamusercontent.com/ugc/11190215085533715500/69F0507DE4CC3DC9F9D8ED51558D310B9663C908/"
+      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/"
     ],
     "time_updated": 1792204802,
     "metadata_status": "verified",
@@ -41,8 +40,7 @@
     "gallery_page_rate_limited": false,
     "images": {
       "https://images.steamusercontent.com/ugc/9425123124065004232/6E3A891253534C2B1A426F1A2627D1E7BA7CCE55/": "/assets/workshop/3821205482/43d81eeaeb9e501cea33.png",
-      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/": "/assets/workshop/3821205482/19e23072e5b94c28cc86.png",
-      "https://images.steamusercontent.com/ugc/11190215085533715500/69F0507DE4CC3DC9F9D8ED51558D310B9663C908/": "/assets/workshop/3821205482/65182d642c110f39aedd.png"
+      "https://images.steamusercontent.com/ugc/17663402003555870437/2A796535E1416DDFA5FA3F7A2E5F603D208E9A07/": "/assets/workshop/3821205482/19e23072e5b94c28cc86.png"
     },
     "image_cache_status": "complete",
     "image_errors": []
@@ -320,14 +318,12 @@
     "title": "Nostromo Battleship",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3754656488",
     "preview_url": "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/",
-    "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/"
-    ],
+    "gallery_urls": [],
     "time_updated": 1782782926,
     "metadata_status": "verified",
-    "gallery_source": "saved",
-    "gallery_note": "Steam page HTTP 429; previously saved pictures retained.",
-    "gallery_page_rate_limited": true,
+    "gallery_source": "steam-page",
+    "gallery_note": "Steam screenshot list confirms no additional still photos.",
+    "gallery_page_rate_limited": false,
     "images": {
       "https://images.steamusercontent.com/ugc/12408706071810004989/899866F9917C5637B3DCF01BADCCDE2A48419A8F/": "/assets/workshop/3754656488/5520f737f82687a19cd1.jpg"
     },
@@ -341,13 +337,11 @@
     "title": "HEI LIGHT HAB",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3749265855",
     "preview_url": "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/",
-    "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/"
-    ],
+    "gallery_urls": [],
     "time_updated": 1783225962,
     "metadata_status": "verified",
-    "gallery_source": "saved",
-    "gallery_note": "Steam page lookups paused after rate limiting; saved photos retained.",
+    "gallery_source": "steam-page",
+    "gallery_note": "Steam screenshot list confirms no additional still photos.",
     "gallery_page_rate_limited": false,
     "images": {
       "https://images.steamusercontent.com/ugc/11017668520803080453/E5E60DC5AEBEA16408230D7C594F44341736BF53/": "/assets/workshop/3749265855/776f491b5fd66b760261.jpg"
@@ -362,13 +356,11 @@
     "title": "excalibur vtol mk4",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3706444124",
     "preview_url": "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/",
-    "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/"
-    ],
+    "gallery_urls": [],
     "time_updated": 1776124766,
     "metadata_status": "verified",
-    "gallery_source": "saved",
-    "gallery_note": "Steam page lookups paused after rate limiting; saved photos retained.",
+    "gallery_source": "steam-page",
+    "gallery_note": "Steam screenshot list confirms no additional still photos.",
     "gallery_page_rate_limited": false,
     "images": {
       "https://images.steamusercontent.com/ugc/15633464965917528689/0D406CD964714ADB007C109575CF249D169327D5/": "/assets/workshop/3706444124/b4f80add181a2c0c25ab.jpg"
@@ -383,13 +375,11 @@
     "title": "(H-E-I) HAB ADDON C-01",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3683369479",
     "preview_url": "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/",
-    "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/"
-    ],
+    "gallery_urls": [],
     "time_updated": 1788573351,
     "metadata_status": "verified",
-    "gallery_source": "saved",
-    "gallery_note": "Steam page lookups paused after rate limiting; saved photos retained.",
+    "gallery_source": "steam-page",
+    "gallery_note": "Steam screenshot list confirms no additional still photos.",
     "gallery_page_rate_limited": false,
     "images": {
       "https://images.steamusercontent.com/ugc/12173951336109309543/F2259F9CA3A531A92F40C8EFE585955D3250D8ED/": "/assets/workshop/3683369479/55cf48c3732fd3fcf0b2.jpg"
@@ -410,8 +400,8 @@
     "time_updated": 1788574178,
     "metadata_status": "verified",
     "gallery_source": "saved",
-    "gallery_note": "Steam page lookups paused after rate limiting; saved photos retained.",
-    "gallery_page_rate_limited": false,
+    "gallery_note": "Steam page HTTP 429; previously saved pictures retained.",
+    "gallery_page_rate_limited": true,
     "images": {
       "https://images.steamusercontent.com/ugc/12771280386010620497/59B267C2A2F045B1DF0C102152FD8D7CDC25C092/": "/assets/workshop/3683369365/b590932eab611d96c595.jpg"
     },
