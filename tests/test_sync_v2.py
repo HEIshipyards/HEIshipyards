@@ -16,8 +16,9 @@ class SyncTests(unittest.TestCase):
                       "gallery_urls": ["https://images.steamusercontent.com/old"],
                       "images": {}}
     def test_stale_gallery_is_retained_and_labeled(self):
-        result = mod.build_listing(self.config, self.prior, {}, {"result":1, "title":"New Excalibur",
-                         "preview_url":"https://images.steamusercontent.com/new", "previews":[]}, {}, "", False)
+        with patch.object(mod, "fetch_page_gallery", side_effect=OSError("Steam HTTP 429")):
+            result = mod.build_listing(self.config, self.prior, {}, {"result":1, "title":"New Excalibur",
+                             "preview_url":"https://images.steamusercontent.com/new", "previews":[]}, {}, "", False)
         self.assertEqual(result["gallery_source"], "saved")
         self.assertEqual(result["gallery_urls"], self.prior["gallery_urls"])
         self.assertEqual(result["title"], "New Excalibur")
@@ -26,6 +27,14 @@ class SyncTests(unittest.TestCase):
             {"url":"https://images.steamusercontent.com/newphoto"}]}, {}, "", False)
         self.assertEqual(result["gallery_source"], "steam-api")
         self.assertEqual(result["gallery_urls"], ["https://images.steamusercontent.com/newphoto"])
+    def test_excalibur_live_page_gallery_replaces_saved_images(self):
+        with patch.object(mod, "fetch_page_gallery",
+                          return_value=["https://images.steamusercontent.com/newstill"]):
+            result = mod.build_listing(self.config, self.prior, {},
+                                       {"result":1, "previews":[]}, {}, "", False)
+        self.assertEqual(result["gallery_source"], "steam-page")
+        self.assertEqual(result["gallery_urls"], ["https://images.steamusercontent.com/newstill"])
+
     def test_override_is_authoritative(self):
         result = mod.build_listing(self.config, self.prior, {}, None,
             {"images":["https://images.steamusercontent.com/manual"]}, "", False)
@@ -35,6 +44,21 @@ class SyncTests(unittest.TestCase):
         url = "https://images.steamusercontent.com/ugc/123/ABC/?imw=116&imh=65&ima=fit&letterbox=true"
         self.assertEqual(mod.full_resolution_url(url), "https://images.steamusercontent.com/ugc/123/ABC/")
         self.assertEqual(mod.unique_images([url, url.replace("116", "268")]), ["https://images.steamusercontent.com/ugc/123/ABC/"])
+
+    def test_steam_page_only_stills(self):
+        import io
+        from unittest.mock import patch
+        html = b"""var rgFullScreenshotURLs = [
+         { 'previewid': '1', 'url': 'https://images.steamusercontent.com/ugc/111/AAA/?imw=5000' },
+         { 'previewid': '2', 'url': 'https://images.steamusercontent.com/ugc/222/BBB/?imw=5000' },
+        ]; var rgMovieFlashvars = {'url': 'https://images.steamusercontent.com/ugc/333/VIDEO/'};"""
+        class FakeResponse(io.BytesIO):
+            def __enter__(self): return self
+            def __exit__(self, *args): self.close()
+        with patch.object(mod.urllib.request, "urlopen", return_value=FakeResponse(html)):
+            result = mod.fetch_page_gallery("3718140217", None)
+        self.assertEqual(result, ["https://images.steamusercontent.com/ugc/111/AAA/",
+                                  "https://images.steamusercontent.com/ugc/222/BBB/"])
 
     def test_deny_unapproved_image_hosts(self):
         self.assertIsNone(mod.valid_url("https://example.com/image.png"))
