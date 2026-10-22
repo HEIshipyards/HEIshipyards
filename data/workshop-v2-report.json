@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "checked_at": "2026-10-22T19:56:55+00:00",
+  "checked_at": "2026-10-22T20:13:29+00:00",
   "status": "partial",
   "mode": "live-api",
   "checked": 28,
@@ -14,9 +14,9 @@
       "id": "3718140217",
       "title": "( H-E-I ) Excalibur Class 1-M Starchaser  R-2.0",
       "metadata": "verified",
-      "gallery": "manual",
-      "gallery_count": 0,
-      "cached_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 2,
+      "cached_count": 3,
       "cache_status": "complete",
       "errors": []
     },

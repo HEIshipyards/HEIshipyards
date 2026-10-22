@@ -6,13 +6,18 @@
     "title": "( H-E-I ) Excalibur Class 1-M Starchaser  R-2.0",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3718140217",
     "preview_url": "https://images.steamusercontent.com/ugc/10464581743205860736/B1DCE7BE7A485D75B9E7CE0E25DD8D74166B14CB/",
-    "gallery_urls": [],
+    "gallery_urls": [
+      "https://images.steamusercontent.com/ugc/9322575329048029852/1D606476B1F8C5FACB0AF48FC01A21EF44DAB595/",
+      "https://images.steamusercontent.com/ugc/9839995886561282592/1F543546AE1DD074D868085A4A100AE5ECD698C2/"
+    ],
     "time_updated": 1792204913,
     "metadata_status": "verified",
-    "gallery_source": "manual",
-    "gallery_note": "Manual gallery selection: no additional still photos; the Workshop preview remains visible.",
+    "gallery_source": "steam-page",
+    "gallery_note": "Current still photographs parsed from Steam screenshot listing.",
     "images": {
-      "https://images.steamusercontent.com/ugc/10464581743205860736/B1DCE7BE7A485D75B9E7CE0E25DD8D74166B14CB/": "/assets/workshop/3718140217/42b3ff7f5134a7e7dd06.jpg"
+      "https://images.steamusercontent.com/ugc/10464581743205860736/B1DCE7BE7A485D75B9E7CE0E25DD8D74166B14CB/": "/assets/workshop/3718140217/42b3ff7f5134a7e7dd06.jpg",
+      "https://images.steamusercontent.com/ugc/9322575329048029852/1D606476B1F8C5FACB0AF48FC01A21EF44DAB595/": "/assets/workshop/3718140217/97b2ce39560aa7fccd50.jpg",
+      "https://images.steamusercontent.com/ugc/9839995886561282592/1F543546AE1DD074D868085A4A100AE5ECD698C2/": "/assets/workshop/3718140217/34ff0552fd5731c7de35.jpg"
     },
     "image_cache_status": "complete",
     "image_errors": []
