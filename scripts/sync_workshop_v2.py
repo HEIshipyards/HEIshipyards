@@ -27,11 +27,11 @@ IMAGE_HOSTS = {"images.steamusercontent.com", "steamuserimages-a.akamaihd.net",
 MAX_IMAGE_BYTES = 5_000_000
 MAX_IMAGES_PER_ITEM = 16
 PAGE_REQUEST_GAP_SECONDS = 10  # Match the legacy sync's 10-second Workshop interval.
-RATE_LIMIT_COOLDOWN_SECONDS = 300  # Five minutes after the first Steam HTTP 429.
-RATE_LIMIT_RETRY_INTERVAL_SECONDS = 600  # Ten minutes between recovery retries.
-RATE_LIMIT_RETRIES = 3  # Three recovery attempts, in addition to the initial request.
-MAX_RATE_LIMIT_WAIT_SECONDS = 1800  # Honor Retry-After up to 30 minutes per wait.
-MAX_TOTAL_BACKOFF_SECONDS = 2400  # Bound combined sleeps within the Actions time limit.
+RATE_LIMIT_COOLDOWN_SECONDS = 3600  # Wait one hour after first Steam HTTP 429.
+RATE_LIMIT_RETRY_INTERVAL_SECONDS = 3600  # One hour between recovery attempts.
+RATE_LIMIT_RETRIES = 3  # Three recovery attempts, in addition to initial request.
+MAX_RATE_LIMIT_WAIT_SECONDS = 5400  # Longer Retry-After allowed up to 90 minutes.
+MAX_TOTAL_BACKOFF_SECONDS = 11700  # Bound waits to 3h15m within Actions timeout.
 
 def load(path, default):
     if not path.exists():
@@ -115,9 +115,9 @@ def fetch_page_gallery(workshop_id, preview):
     return unique_images(values, preview)
 
 def fetch_page_gallery_with_cooldown(workshop_id, preview):
-    """Wait five minutes on the first 429, then retry up to three times.
+    """Wait one hour on the first 429, then retry up to three times.
 
-    After the first recovery attempt, wait ten minutes between further retries.
+    Wait at least one hour between each subsequent recovery attempt.
     Preserve existing galleries if Steam keeps rate limiting; respect long
     Retry-After values without exceeding the configured workflow wait budget.
     """
