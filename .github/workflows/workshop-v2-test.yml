@@ -93,11 +93,27 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Another run may have published newer galleries while this job queried Steam.
+          # Never rebase stale generated data over more recently published images.
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::warning::main advanced during this sync. Skipping stale results to protect newer galleries."
+            echo "## Stale sync skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "Another run updated main first; this run did not overwrite its fleet data." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           git add data/workshop-v2.json data/workshop-v2-report.json
           if [ -d assets/workshop ]; then git add assets/workshop; fi
           if ! git diff --cached --quiet; then
             git commit -m "Update HEI Workshop V2 data and image cache"
-            git push
+            if ! git push; then
+              # Covers the last-second race after the check above.
+              git fetch origin main
+              echo "::warning::main moved during push. Kept other run's data; stale result was not published."
+              echo "## Concurrent sync detected" >> "$GITHUB_STEP_SUMMARY"
+              echo "Another run pushed first. This run preserved its artifact without overwriting main." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
           else
             echo "No V2 changes."
           fi
