@@ -49,6 +49,10 @@ def main():
             parser=CandidateImages()
             parser.feed(page)
             print("STEAM_PAGE_IMAGE_CANDIDATES",json.dumps(parser.gallery[:25]))
+            import re
+            match=re.search(r"var\s+rgFullScreenshotURLs\s*=\s*\[([\s\S]*?)\];",page)
+            if match:print("STEAM_FULL_SCREENSHOT_LIST",match.group(1)[:4500])
+            else:print("STEAM_FULL_SCREENSHOT_LIST_NOT_FOUND")
             for i,url in enumerate(parser.gallery[:10]):
                 fragment=url.split("?")[0]
                 pos=page.find(fragment)
