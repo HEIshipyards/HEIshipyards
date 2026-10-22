@@ -35,6 +35,55 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(result["gallery_source"], "steam-page")
         self.assertEqual(result["gallery_urls"], ["https://images.steamusercontent.com/newstill"])
 
+    def test_other_vessel_uses_current_steam_stills(self):
+        cfg = {"id": "3821205482", "route": "ship-sojourner", "category": "Civilian"}
+        with patch.object(mod, "fetch_page_gallery",
+                          return_value=["https://images.steamusercontent.com/sojourner-new"]) as fetch:
+            result = mod.build_listing(cfg, self.prior, {},
+                                       {"result": 1, "previews": []}, {}, "", False)
+        fetch.assert_called_once_with("3821205482", self.prior["preview_url"])
+        self.assertEqual(result["gallery_source"], "steam-page")
+        self.assertEqual(result["gallery_urls"],
+                         ["https://images.steamusercontent.com/sojourner-new"])
+
+    def test_empty_page_list_replaces_obsolete_gallery(self):
+        cfg = {"id": "3695393157", "route": "ship-borehole"}
+        with patch.object(mod, "fetch_page_gallery", return_value=[]):
+            result = mod.build_listing(cfg, self.prior, {},
+                                       {"result": 1, "previews": []}, {}, "", False)
+        self.assertEqual(result["gallery_source"], "steam-page")
+        self.assertEqual(result["gallery_urls"], [])
+
+    def test_other_vessel_rate_limited_retains_previous_gallery(self):
+        cfg = {"id": "3658866132", "route": "ship-outlander"}
+        with patch.object(mod, "fetch_page_gallery",
+                          side_effect=mod.urllib.error.HTTPError("url", 429, "Rate limited", {}, None)):
+            result = mod.build_listing(cfg, self.prior, {},
+                                       {"result": 1, "previews": []}, {}, "", False)
+        self.assertEqual(result["gallery_source"], "saved")
+        self.assertTrue(result["gallery_page_rate_limited"])
+        self.assertEqual(result["gallery_urls"], self.prior["gallery_urls"])
+
+    def test_manual_gallery_bypasses_steam_page(self):
+        cfg = {"id": "3821205482", "route": "ship-sojourner"}
+        with patch.object(mod, "fetch_page_gallery",
+                          side_effect=AssertionError("Should not access Steam page")):
+            result = mod.build_listing(cfg, self.prior, {},
+                                       {"result": 1, "previews": []},
+                                       {"images": []}, "", False)
+        self.assertEqual(result["gallery_source"], "manual")
+        self.assertEqual(result["gallery_urls"], [])
+
+    def test_page_lookup_pause_keeps_saved_gallery(self):
+        cfg = {"id": "3821205482", "route": "ship-sojourner"}
+        with patch.object(mod, "fetch_page_gallery",
+                          side_effect=AssertionError("Should not retry when paused")):
+            result = mod.build_listing(cfg, self.prior, {},
+                                       {"result": 1, "previews": []}, {}, "", False,
+                                       allow_page_lookup=False)
+        self.assertEqual(result["gallery_source"], "saved")
+        self.assertEqual(result["gallery_urls"], self.prior["gallery_urls"])
+
     def test_override_is_authoritative(self):
         result = mod.build_listing(self.config, self.prior, {}, None,
             {"images":["https://images.steamusercontent.com/manual"]}, "", False)

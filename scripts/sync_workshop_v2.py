@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """HEI Workshop Sync v2: API metadata, independently retained galleries, optional image mirroring.
-No Steam webpage scraping. Never claims cached galleries are freshly retrieved.
+Uses Steam API metadata and dedicated still-image list, preserves galleries on page errors.
 """
 import argparse
 import datetime as dt
@@ -9,6 +9,7 @@ import json
 import pathlib
 import re
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -25,6 +26,7 @@ IMAGE_HOSTS = {"images.steamusercontent.com", "steamuserimages-a.akamaihd.net",
                "steamuserimages.akamaihd.net", "steamcommunity-a.akamaihd.net"}
 MAX_IMAGE_BYTES = 5_000_000
 MAX_IMAGES_PER_ITEM = 16
+PAGE_REQUEST_GAP_SECONDS = 2  # Courtesy delay between different Steam Workshop pages.
 
 def load(path, default):
     if not path.exists():
@@ -151,7 +153,7 @@ def normalized_previous(item, legacy):
         "images": source.get("images", {}),
     }
 
-def build_listing(cfg, previous, legacy, details, override, checked, mirror):
+def build_listing(cfg, previous, legacy, details, override, checked, mirror, allow_page_lookup=True):
     key = str(cfg["id"])
     prior = normalized_previous(previous or {}, legacy or {})
     valid = isinstance(details, dict) and details.get("result") == 1
@@ -162,6 +164,7 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror):
     title = prior["title"]
     updated = prior["time_updated"]
     metadata_status = "preserved"
+    page_rate_limited = False
     if valid:
         title = str(details.get("title") or title)
         preview = full_resolution_url(details.get("preview_url")) or preview
@@ -176,16 +179,24 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror):
             note = "Steam API provided no gallery; previously saved images retained."
         else:
             note = "Steam API provided no gallery images."
-        # Excalibur test: the authenticated API omits screenshots but Steam's
-        # public page exposes stills in rgFullScreenshotURLs. Never parse video tiles.
-        if key == "3718140217" and not latest and not (isinstance(override, dict) and "images" in override):
-            try:
-                page_gallery = fetch_page_gallery(key, preview)
-                gallery = page_gallery
-                source = "steam-page"
-                note = "Current still photographs parsed from Steam screenshot listing."
-            except (OSError, ValueError, urllib.error.URLError) as err:
-                note = "Steam gallery check failed; previous pictures retained: " + str(err)[:100]
+        # Steam omits additional previews for many blueprints, not only Excalibur.
+        # Read only its dedicated still-screenshot list (never video poster images).
+        # A successfully parsed empty list is authoritative; errors keep saved photos.
+        has_manual_gallery = isinstance(override, dict) and "images" in override
+        if not latest and not has_manual_gallery:
+            if allow_page_lookup:
+                try:
+                    gallery = fetch_page_gallery(key, preview)
+                    source = "steam-page"
+                    note = ("Current still photos from Steam screenshot list." if gallery
+                            else "Steam screenshot list confirms no additional still photos.")
+                except urllib.error.HTTPError as err:
+                    page_rate_limited = err.code == 429
+                    note = "Steam page HTTP %s; previously saved pictures retained." % err.code
+                except (OSError, ValueError, urllib.error.URLError) as err:
+                    note = "Steam gallery check failed; previous pictures retained: " + str(err)[:100]
+            else:
+                note = "Steam page lookups paused after rate limiting; saved photos retained."
     manual = override.get("images") if isinstance(override, dict) else None
     if manual is not None:
         gallery = unique_images(manual, preview)
@@ -209,6 +220,7 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror):
         "title": title, "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=" + key,
         "preview_url": preview, "gallery_urls": gallery, "time_updated": updated,
         "metadata_status": metadata_status, "gallery_source": source, "gallery_note": note,
+        "gallery_page_rate_limited": page_rate_limited,
         "images": cached, "image_cache_status": ("complete" if len(cached) == len(set(([preview] if preview else []) + gallery))
                                                else "partial" if cached else "uncached"),
         "image_errors": errors[:3]
@@ -237,6 +249,8 @@ def main(argv=None):
             request_error = "%s: %s" % (type(exc).__name__, str(exc)[:200])
     output = dict(previous)
     statuses = []
+    page_attempts = 0
+    page_lookups_paused = False
     for c in configs:
         key = str(c["id"])
         if c not in selected and key in output:
@@ -246,13 +260,28 @@ def main(argv=None):
             output[key] = build_listing(c, {}, old.get(key), None, overrides.get(key, {}), now, False)
             continue
         detail = fetched.get(key)
+        override = overrides.get(key, {})
+        should_visit_page = (not args.offline_seed and not page_lookups_paused
+                             and isinstance(detail, dict) and detail.get("result") == 1
+                             and not get_gallery(detail)
+                             and not (isinstance(override, dict) and "images" in override))
+        if should_visit_page:
+            if page_attempts:
+                time.sleep(PAGE_REQUEST_GAP_SECONDS)
+            page_attempts += 1
         listing = build_listing(c, previous.get(key, {}), old.get(key, {}), detail,
-                                overrides.get(key, {}), now, args.cache_images)
+                                override, now, args.cache_images,
+                                allow_page_lookup=not page_lookups_paused)
+        if listing["gallery_page_rate_limited"]:
+            page_lookups_paused = True
+            print("WARNING: Steam returned HTTP 429; skipping remaining screenshot page requests.",
+                  file=sys.stderr, flush=True)
         output[key] = listing
         statuses.append({"id": key, "title": listing["title"],
                          "metadata": listing["metadata_status"],
                          "gallery": listing["gallery_source"],
                          "gallery_count": len(listing["gallery_urls"]),
+                         "page_rate_limited": listing["gallery_page_rate_limited"],
                          "cached_count": len(listing["images"]),
                          "cache_status": listing["image_cache_status"],
                          "errors": listing["image_errors"]})
@@ -267,6 +296,8 @@ def main(argv=None):
               "mode": "offline-seed" if args.offline_seed else "live-api",
               "checked": len(statuses), "metadata_verified": verified,
               "gallery_from_api": sum(x["gallery"] == "steam-api" for x in statuses),
+              "gallery_from_page": sum(x["gallery"] == "steam-page" for x in statuses),
+              "page_lookups_paused": page_lookups_paused,
               "gallery_preserved": sum(x["gallery"] == "saved" for x in statuses),
               "image_cache_complete": sum(x["cache_status"] == "complete" for x in statuses),
               "request_error": request_error, "items": statuses}
