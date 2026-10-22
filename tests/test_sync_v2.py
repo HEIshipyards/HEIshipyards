@@ -60,6 +60,19 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(result, ["https://images.steamusercontent.com/ugc/111/AAA/",
                                   "https://images.steamusercontent.com/ugc/222/BBB/"])
 
+    def test_full_steam_screenshot_list_excludes_videos(self):
+        from unittest.mock import MagicMock
+        page = """var rgFullScreenshotURLs = [
+          { 'previewid': '1', 'url': 'https://images.steamusercontent.com/ugc/100/A/?imw=5000&imh=5000' },
+          { 'previewid': '2', 'url': 'https://images.steamusercontent.com/ugc/200/B/?imw=5000&imh=5000' }
+        ]; var rgMovieFlashvars = {'video':'https://images.steamusercontent.com/ugc/300/C/'};"""
+        response=MagicMock()
+        response.read.return_value=page.encode()
+        response.__enter__.return_value=response
+        with patch.object(mod.urllib.request, "urlopen", return_value=response):
+            images=mod.fetch_page_gallery("3718140217", None)
+        self.assertEqual(images, ["https://images.steamusercontent.com/ugc/100/A/", "https://images.steamusercontent.com/ugc/200/B/"])
+
     def test_deny_unapproved_image_hosts(self):
         self.assertIsNone(mod.valid_url("https://example.com/image.png"))
         self.assertIsNone(mod.valid_url("http://images.steamusercontent.com/file"))
