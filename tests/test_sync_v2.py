@@ -16,8 +16,9 @@ class SyncTests(unittest.TestCase):
                       "gallery_urls": ["https://images.steamusercontent.com/old"],
                       "images": {}}
     def test_stale_gallery_is_retained_and_labeled(self):
-        result = mod.build_listing(self.config, self.prior, {}, {"result":1, "title":"New Excalibur",
-                         "preview_url":"https://images.steamusercontent.com/new", "previews":[]}, {}, "", False)
+        with patch.object(mod, "fetch_page_gallery", side_effect=OSError("Steam HTTP 429")):
+            result = mod.build_listing(self.config, self.prior, {}, {"result":1, "title":"New Excalibur",
+                             "preview_url":"https://images.steamusercontent.com/new", "previews":[]}, {}, "", False)
         self.assertEqual(result["gallery_source"], "saved")
         self.assertEqual(result["gallery_urls"], self.prior["gallery_urls"])
         self.assertEqual(result["title"], "New Excalibur")
@@ -26,6 +27,14 @@ class SyncTests(unittest.TestCase):
             {"url":"https://images.steamusercontent.com/newphoto"}]}, {}, "", False)
         self.assertEqual(result["gallery_source"], "steam-api")
         self.assertEqual(result["gallery_urls"], ["https://images.steamusercontent.com/newphoto"])
+    def test_excalibur_live_page_gallery_replaces_saved_images(self):
+        with patch.object(mod, "fetch_page_gallery",
+                          return_value=["https://images.steamusercontent.com/newstill"]):
+            result = mod.build_listing(self.config, self.prior, {},
+                                       {"result":1, "previews":[]}, {}, "", False)
+        self.assertEqual(result["gallery_source"], "steam-page")
+        self.assertEqual(result["gallery_urls"], ["https://images.steamusercontent.com/newstill"])
+
     def test_override_is_authoritative(self):
         result = mod.build_listing(self.config, self.prior, {}, None,
             {"images":["https://images.steamusercontent.com/manual"]}, "", False)
