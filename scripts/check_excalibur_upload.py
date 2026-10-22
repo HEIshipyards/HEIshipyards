@@ -33,8 +33,20 @@ def main():
         with urllib.request.urlopen(request,timeout=15) as response:
             page=response.read(3_000_000).decode("utf-8","replace")
             print("STEAM_PAGE_HTTP",response.status,"html_bytes",len(page))
-            from scripts.sync_workshop import SteamScreenshotParser
-            parser=SteamScreenshotParser()
+            # Parse locally. Importing the legacy sync script would execute a full sync.
+            from html.parser import HTMLParser
+            class CandidateImages(HTMLParser):
+                def __init__(self):
+                    super().__init__()
+                    self.gallery=[]
+                def handle_starttag(self,tag,attrs):
+                    if tag != "img":return
+                    props=dict(attrs)
+                    for name in ("data-full","data-src","src"):
+                        url=props.get(name,"")
+                        if "steamusercontent.com" in url and url not in self.gallery:
+                            self.gallery.append(url)
+            parser=CandidateImages()
             parser.feed(page)
             print("STEAM_PAGE_IMAGE_CANDIDATES",json.dumps(parser.gallery[:25]))
     except urllib.error.HTTPError as exc:
