@@ -49,6 +49,13 @@ def main():
             parser=CandidateImages()
             parser.feed(page)
             print("STEAM_PAGE_IMAGE_CANDIDATES",json.dumps(parser.gallery[:25]))
+            for i,url in enumerate(parser.gallery[:10]):
+                fragment=url.split("?")[0]
+                pos=page.find(fragment)
+                print("IMAGE_CONTEXT", i+1, json.dumps(page[max(0,pos-500):pos+350],ensure_ascii=False))
+            for term in ("ShowImage(", "highlight_strip", "workshopItemPreviewImage", "workshopItemPreviewVideo", "highlight_movie"):
+                pos=page.find(term)
+                if pos!=-1:print("ELEMENT_CONTEXT",term,json.dumps(page[max(0,pos-250):pos+750],ensure_ascii=False))
     except urllib.error.HTTPError as exc:
         print("STEAM_PAGE_HTTP",exc.code,"retry_after",exc.headers.get("Retry-After"))
     except Exception as exc:
