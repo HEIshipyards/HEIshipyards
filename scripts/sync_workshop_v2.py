@@ -89,6 +89,24 @@ def fetch_metadata(ids):
     return {str(entry.get("publishedfileid")): entry for entry in entries
             if isinstance(entry, dict) and entry.get("publishedfileid")}
 
+def fetch_page_gallery(workshop_id, preview):
+    """Extract only true still photos from Steam's dedicated screenshot list, not video posters."""
+    url = "https://steamcommunity.com/sharedfiles/filedetails/?id=" + urllib.parse.quote(str(workshop_id))
+    request = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (compatible; HEI-Shipyards-Gallery/4.1)",
+        "Accept-Language": "en-US,en;q=0.9"})
+    with urllib.request.urlopen(request, timeout=18) as response:
+        page = response.read(3_000_001)
+        if len(page) > 3_000_000:
+            raise ValueError("Steam page exceeds HTML safety limit")
+        content = page.decode("utf-8", "replace")
+    match = re.search(r"var\s+rgFullScreenshotURLs\s*=\s*\[([\s\S]*?)\];", content)
+    if not match:
+        raise ValueError("Steam full screenshot list not found")
+    # Steam supplies JavaScript object literals here, not strict JSON.
+    values = re.findall(r"['\"]url['\"]\s*:\s*['\"](https://[^'\"]+)['\"]", match.group(1))
+    return unique_images(values, preview)
+
 def image_extension(data):
     if data.startswith(b"\xff\xd8\xff"):
         return ".jpg"
@@ -158,6 +176,16 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror):
             note = "Steam API provided no gallery; previously saved images retained."
         else:
             note = "Steam API provided no gallery images."
+        # Excalibur test: the authenticated API omits screenshots but Steam's
+        # public page exposes stills in rgFullScreenshotURLs. Never parse video tiles.
+        if key == "3718140217" and not latest and not (isinstance(override, dict) and "images" in override):
+            try:
+                page_gallery = fetch_page_gallery(key, preview)
+                gallery = page_gallery
+                source = "steam-page"
+                note = "Current still photographs parsed from Steam screenshot listing."
+            except (OSError, ValueError, urllib.error.URLError) as err:
+                note = "Steam gallery check failed; previous pictures retained: " + str(err)[:100]
     manual = override.get("images") if isinstance(override, dict) else None
     if manual is not None:
         gallery = unique_images(manual, preview)
