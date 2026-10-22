@@ -1,12 +1,14 @@
 {
   "schema_version": 2,
-  "checked_at": "2026-10-22T20:27:09+00:00",
+  "checked_at": "2026-10-22T21:36:48+00:00",
   "status": "partial",
   "mode": "live-api",
   "checked": 28,
   "metadata_verified": 28,
   "gallery_from_api": 0,
-  "gallery_preserved": 27,
+  "gallery_from_page": 15,
+  "page_lookups_paused": true,
+  "gallery_preserved": 13,
   "image_cache_complete": 28,
   "request_error": null,
   "items": [
@@ -16,6 +18,7 @@
       "metadata": "verified",
       "gallery": "steam-page",
       "gallery_count": 2,
+      "page_rate_limited": false,
       "cached_count": 3,
       "cache_status": "complete",
       "errors": []
@@ -24,9 +27,10 @@
       "id": "3821205482",
       "title": "H-E-I Soujourner",
       "metadata": "verified",
-      "gallery": "saved",
+      "gallery": "steam-page",
       "gallery_count": 2,
-      "cached_count": 2,
+      "page_rate_limited": false,
+      "cached_count": 3,
       "cache_status": "complete",
       "errors": []
     },
@@ -34,8 +38,9 @@
       "id": "3658866132",
       "title": "(H-E-I) outlander freighter",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 2,
+      "gallery": "steam-page",
+      "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 2,
       "cache_status": "complete",
       "errors": []
@@ -44,8 +49,9 @@
       "id": "3695393157",
       "title": "BOREHOLE MK2 (VS2.3) MOD 4",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -54,8 +60,9 @@
       "id": "3631594269",
       "title": "(H-E-I) Featherfall Freighter MK 6",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 5,
+      "gallery": "steam-page",
+      "gallery_count": 4,
+      "page_rate_limited": false,
       "cached_count": 5,
       "cache_status": "complete",
       "errors": []
@@ -64,8 +71,9 @@
       "id": "3616196196",
       "title": "( H-E-I ) SHUTTLE MOD 6",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -74,8 +82,9 @@
       "id": "3788933499",
       "title": "( H-E-I ) SHUTTLE H",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -84,8 +93,9 @@
       "id": "3764169474",
       "title": "( H-E-I ) SHUTTLE MOD 2",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -94,8 +104,9 @@
       "id": "3658317349",
       "title": "(H-E-I) ALL IN ONE ASTROID BASE ( S )",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -104,8 +115,9 @@
       "id": "3784793538",
       "title": "H-E-I LMV MEDIUM CARGO",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -114,8 +126,9 @@
       "id": "3784793112",
       "title": "H-E-I LMV BASE",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -124,8 +137,9 @@
       "id": "3784770590",
       "title": "H-E-I LMV REFUELING RIG",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -134,8 +148,9 @@
       "id": "3780663924",
       "title": "H-E-I LMV PERSONELLE TRANSPORT",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -144,8 +159,9 @@
       "id": "3780655287",
       "title": "H-E-I LMV LGHT CARGO",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 1,
+      "gallery": "steam-page",
+      "gallery_count": 0,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -154,8 +170,9 @@
       "id": "3759202934",
       "title": "H-E-I LRV",
       "metadata": "verified",
-      "gallery": "saved",
-      "gallery_count": 4,
+      "gallery": "steam-page",
+      "gallery_count": 3,
+      "page_rate_limited": false,
       "cached_count": 4,
       "cache_status": "complete",
       "errors": []
@@ -166,6 +183,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": true,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -176,6 +194,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -186,6 +205,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -196,6 +216,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -206,6 +227,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -216,6 +238,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -226,6 +249,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -236,6 +260,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -246,6 +271,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -256,6 +282,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -266,6 +293,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -276,6 +304,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
@@ -286,6 +315,7 @@
       "metadata": "verified",
       "gallery": "saved",
       "gallery_count": 1,
+      "page_rate_limited": false,
       "cached_count": 1,
       "cache_status": "complete",
       "errors": []
