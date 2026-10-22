@@ -27,8 +27,11 @@ IMAGE_HOSTS = {"images.steamusercontent.com", "steamuserimages-a.akamaihd.net",
 MAX_IMAGE_BYTES = 5_000_000
 MAX_IMAGES_PER_ITEM = 16
 PAGE_REQUEST_GAP_SECONDS = 10  # Match the legacy sync's 10-second Workshop interval.
-RATE_LIMIT_COOLDOWN_SECONDS = 60  # Wait once on HTTP 429, then pause remaining pages if rejected.
-MAX_RATE_LIMIT_WAIT_SECONDS = 180  # Respect longer Retry-After values by deferring the run.
+RATE_LIMIT_COOLDOWN_SECONDS = 300  # Five minutes after the first Steam HTTP 429.
+RATE_LIMIT_RETRY_INTERVAL_SECONDS = 600  # Ten minutes between recovery retries.
+RATE_LIMIT_RETRIES = 3  # Three recovery attempts, in addition to the initial request.
+MAX_RATE_LIMIT_WAIT_SECONDS = 1800  # Honor Retry-After up to 30 minutes per wait.
+MAX_TOTAL_BACKOFF_SECONDS = 2400  # Bound combined sleeps within the Actions time limit.
 
 def load(path, default):
     if not path.exists():
@@ -112,26 +115,41 @@ def fetch_page_gallery(workshop_id, preview):
     return unique_images(values, preview)
 
 def fetch_page_gallery_with_cooldown(workshop_id, preview):
-    """Retry a 429 just once after a cooldown; do not hammer a rate-limited Steam page."""
-    try:
-        return fetch_page_gallery(workshop_id, preview)
-    except urllib.error.HTTPError as exc:
-        if exc.code != 429:
-            raise
-        retry_after = exc.headers.get("Retry-After") if exc.headers else None
+    """Wait five minutes on the first 429, then retry up to three times.
+
+    After the first recovery attempt, wait ten minutes between further retries.
+    Preserve existing galleries if Steam keeps rate limiting; respect long
+    Retry-After values without exceeding the configured workflow wait budget.
+    """
+    total_wait = 0
+    for attempt in range(RATE_LIMIT_RETRIES + 1):
         try:
-            requested_wait = max(0, int(retry_after)) if retry_after is not None else 0
-        except (TypeError, ValueError):
-            requested_wait = 0
-        if requested_wait > MAX_RATE_LIMIT_WAIT_SECONDS:
-            print(f"WARNING: Steam requests a {requested_wait}s cooldown; postponing remaining screenshot checks.",
+            return fetch_page_gallery(workshop_id, preview)
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429:
+                raise
+            if attempt == RATE_LIMIT_RETRIES:
+                print(f"WARNING: Steam HTTP 429 persisted after {RATE_LIMIT_RETRIES} recovery attempts "
+                      f"for {workshop_id}; preserving saved gallery.",
+                      file=sys.stderr, flush=True)
+                raise
+            retry_after = exc.headers.get("Retry-After") if exc.headers else None
+            try:
+                requested_wait = max(0, int(retry_after)) if retry_after is not None else 0
+            except (TypeError, ValueError):
+                requested_wait = 0
+            wait = max(RATE_LIMIT_COOLDOWN_SECONDS if attempt == 0 else
+                       RATE_LIMIT_RETRY_INTERVAL_SECONDS, requested_wait)
+            if wait > MAX_RATE_LIMIT_WAIT_SECONDS or total_wait + wait > MAX_TOTAL_BACKOFF_SECONDS:
+                print(f"WARNING: Steam cooldown exceeds safety budget for {workshop_id}; "
+                      "preserving gallery for the next scheduled sync.",
+                      file=sys.stderr, flush=True)
+                raise
+            total_wait += wait
+            print(f"WARNING: Steam HTTP 429 on {workshop_id}; waiting {wait}s "
+                  f"before recovery attempt {attempt + 1}/{RATE_LIMIT_RETRIES}.",
                   file=sys.stderr, flush=True)
-            raise
-        wait = max(RATE_LIMIT_COOLDOWN_SECONDS, requested_wait)
-        print(f"WARNING: Steam HTTP 429 on {workshop_id}; cooling down for {wait}s before one retry.",
-              file=sys.stderr, flush=True)
-        time.sleep(wait)
-        return fetch_page_gallery(workshop_id, preview)
+            time.sleep(wait)
 
 def image_extension(data):
     if data.startswith(b"\xff\xd8\xff"):
@@ -329,6 +347,8 @@ def main(argv=None):
               "page_lookups_paused": page_lookups_paused,
               "page_request_gap_seconds": PAGE_REQUEST_GAP_SECONDS,
               "rate_limit_cooldown_seconds": RATE_LIMIT_COOLDOWN_SECONDS,
+              "rate_limit_retry_interval_seconds": RATE_LIMIT_RETRY_INTERVAL_SECONDS,
+              "rate_limit_retries": RATE_LIMIT_RETRIES,
               "gallery_preserved": sum(x["gallery"] == "saved" for x in statuses),
               "image_cache_complete": sum(x["cache_status"] == "complete" for x in statuses),
               "request_error": request_error, "items": statuses}

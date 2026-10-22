@@ -56,13 +56,13 @@ class SyncTests(unittest.TestCase):
 
     def test_other_vessel_rate_limited_retains_previous_gallery(self):
         cfg = {"id": "3658866132", "route": "ship-outlander"}
-        with patch.object(mod, "fetch_page_gallery",
-                          side_effect=mod.urllib.error.HTTPError("url", 429, "Rate limited", {}, None)) as fetch, \
+        err = mod.urllib.error.HTTPError("url", 429, "Rate limited", {}, None)
+        with patch.object(mod, "fetch_page_gallery", side_effect=err) as fetch, \
              patch.object(mod.time, "sleep") as sleeper:
             result = mod.build_listing(cfg, self.prior, {},
                                        {"result": 1, "previews": []}, {}, "", False)
-        self.assertEqual(fetch.call_count, 2)
-        sleeper.assert_called_once_with(mod.RATE_LIMIT_COOLDOWN_SECONDS)
+        self.assertEqual(fetch.call_count, 4)
+        self.assertEqual([call.args[0] for call in sleeper.call_args_list], [300, 600, 600])
         self.assertEqual(result["gallery_source"], "saved")
         self.assertTrue(result["gallery_page_rate_limited"])
         self.assertEqual(result["gallery_urls"], self.prior["gallery_urls"])
@@ -70,22 +70,33 @@ class SyncTests(unittest.TestCase):
     def test_request_gap_matches_legacy_interval(self):
         self.assertEqual(mod.PAGE_REQUEST_GAP_SECONDS, 10)
 
-    def test_429_retry_after_cooldown_recovers(self):
+    def test_recovery_after_second_attempt(self):
+        err = mod.urllib.error.HTTPError("url", 429, "Rate limited", {}, None)
+        with patch.object(mod, "fetch_page_gallery",
+                          side_effect=[err, err, ["https://images.steamusercontent.com/new"]]) as fetch, \
+             patch.object(mod.time, "sleep") as sleeper:
+            result = mod.build_listing(self.config, self.prior, {},
+                                       {"result": 1, "previews": []}, {}, "", False)
+        self.assertEqual(fetch.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleeper.call_args_list], [300, 600])
+        self.assertEqual(result["gallery_source"], "steam-page")
+        self.assertFalse(result["gallery_page_rate_limited"])
+
+    def test_retry_after_header_extends_cooldown(self):
         err = mod.urllib.error.HTTPError("url", 429, "Rate limited",
-                                          {"Retry-After": "90"}, None)
+                                         {"Retry-After": "420"}, None)
         with patch.object(mod, "fetch_page_gallery",
                           side_effect=[err, ["https://images.steamusercontent.com/new"]]) as fetch, \
              patch.object(mod.time, "sleep") as sleeper:
             result = mod.build_listing(self.config, self.prior, {},
                                        {"result": 1, "previews": []}, {}, "", False)
         self.assertEqual(fetch.call_count, 2)
-        sleeper.assert_called_once_with(90)
+        sleeper.assert_called_once_with(420)
         self.assertEqual(result["gallery_source"], "steam-page")
-        self.assertFalse(result["gallery_page_rate_limited"])
 
     def test_long_retry_after_defers_remaining_gallery_checks(self):
         err = mod.urllib.error.HTTPError("url", 429, "Rate limited",
-                                          {"Retry-After": "600"}, None)
+                                         {"Retry-After": "3600"}, None)
         with patch.object(mod, "fetch_page_gallery", side_effect=err) as fetch, \
              patch.object(mod.time, "sleep") as sleeper:
             result = mod.build_listing(self.config, self.prior, {},
@@ -93,6 +104,17 @@ class SyncTests(unittest.TestCase):
         fetch.assert_called_once()
         sleeper.assert_not_called()
         self.assertEqual(result["gallery_source"], "saved")
+        self.assertTrue(result["gallery_page_rate_limited"])
+
+    def test_total_backoff_budget_prevents_excessive_wait(self):
+        err = mod.urllib.error.HTTPError("url", 429, "Rate limited",
+                                         {"Retry-After": "900"}, None)
+        with patch.object(mod, "fetch_page_gallery", side_effect=err) as fetch, \
+             patch.object(mod.time, "sleep") as sleeper:
+            result = mod.build_listing(self.config, self.prior, {},
+                                       {"result": 1, "previews": []}, {}, "", False)
+        self.assertEqual(fetch.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleeper.call_args_list], [900, 900])
         self.assertTrue(result["gallery_page_rate_limited"])
 
     def test_manual_gallery_bypasses_steam_page(self):
