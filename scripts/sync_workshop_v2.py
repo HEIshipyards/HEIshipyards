@@ -26,7 +26,9 @@ IMAGE_HOSTS = {"images.steamusercontent.com", "steamuserimages-a.akamaihd.net",
                "steamuserimages.akamaihd.net", "steamcommunity-a.akamaihd.net"}
 MAX_IMAGE_BYTES = 5_000_000
 MAX_IMAGES_PER_ITEM = 16
-PAGE_REQUEST_GAP_SECONDS = 2  # Courtesy delay between different Steam Workshop pages.
+PAGE_REQUEST_GAP_SECONDS = 10  # Match the legacy sync's 10-second Workshop interval.
+RATE_LIMIT_COOLDOWN_SECONDS = 60  # Wait once on HTTP 429, then pause remaining pages if rejected.
+MAX_RATE_LIMIT_WAIT_SECONDS = 180  # Respect longer Retry-After values by deferring the run.
 
 def load(path, default):
     if not path.exists():
@@ -109,6 +111,28 @@ def fetch_page_gallery(workshop_id, preview):
     values = re.findall(r"['\"]url['\"]\s*:\s*['\"](https://[^'\"]+)['\"]", match.group(1))
     return unique_images(values, preview)
 
+def fetch_page_gallery_with_cooldown(workshop_id, preview):
+    """Retry a 429 just once after a cooldown; do not hammer a rate-limited Steam page."""
+    try:
+        return fetch_page_gallery(workshop_id, preview)
+    except urllib.error.HTTPError as exc:
+        if exc.code != 429:
+            raise
+        retry_after = exc.headers.get("Retry-After") if exc.headers else None
+        try:
+            requested_wait = max(0, int(retry_after)) if retry_after is not None else 0
+        except (TypeError, ValueError):
+            requested_wait = 0
+        if requested_wait > MAX_RATE_LIMIT_WAIT_SECONDS:
+            print(f"WARNING: Steam requests a {requested_wait}s cooldown; postponing remaining screenshot checks.",
+                  file=sys.stderr, flush=True)
+            raise
+        wait = max(RATE_LIMIT_COOLDOWN_SECONDS, requested_wait)
+        print(f"WARNING: Steam HTTP 429 on {workshop_id}; cooling down for {wait}s before one retry.",
+              file=sys.stderr, flush=True)
+        time.sleep(wait)
+        return fetch_page_gallery(workshop_id, preview)
+
 def image_extension(data):
     if data.startswith(b"\xff\xd8\xff"):
         return ".jpg"
@@ -186,7 +210,7 @@ def build_listing(cfg, previous, legacy, details, override, checked, mirror, all
         if not latest and not has_manual_gallery:
             if allow_page_lookup:
                 try:
-                    gallery = fetch_page_gallery(key, preview)
+                    gallery = fetch_page_gallery_with_cooldown(key, preview)
                     source = "steam-page"
                     note = ("Current still photos from Steam screenshot list." if gallery
                             else "Steam screenshot list confirms no additional still photos.")
@@ -251,7 +275,12 @@ def main(argv=None):
     statuses = []
     page_attempts = 0
     page_lookups_paused = False
-    for c in configs:
+    # Verify previously unrefreshed galleries first so rate limits cannot
+    # consistently starve later-listed vessels on every daily sync.
+    prioritized = sorted(configs, key=lambda c: (
+        0 if previous.get(str(c["id"]), {}).get("gallery_source") in ("saved", "missing") else 1
+    ))
+    for c in prioritized:
         key = str(c["id"])
         if c not in selected and key in output:
             continue
@@ -298,6 +327,8 @@ def main(argv=None):
               "gallery_from_api": sum(x["gallery"] == "steam-api" for x in statuses),
               "gallery_from_page": sum(x["gallery"] == "steam-page" for x in statuses),
               "page_lookups_paused": page_lookups_paused,
+              "page_request_gap_seconds": PAGE_REQUEST_GAP_SECONDS,
+              "rate_limit_cooldown_seconds": RATE_LIMIT_COOLDOWN_SECONDS,
               "gallery_preserved": sum(x["gallery"] == "saved" for x in statuses),
               "image_cache_complete": sum(x["cache_status"] == "complete" for x in statuses),
               "request_error": request_error, "items": statuses}
