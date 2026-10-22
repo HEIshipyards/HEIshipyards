@@ -36,6 +36,21 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(mod.full_resolution_url(url), "https://images.steamusercontent.com/ugc/123/ABC/")
         self.assertEqual(mod.unique_images([url, url.replace("116", "268")]), ["https://images.steamusercontent.com/ugc/123/ABC/"])
 
+    def test_steam_page_only_stills(self):
+        import io
+        from unittest.mock import patch
+        html = b"""var rgFullScreenshotURLs = [
+         { 'previewid': '1', 'url': 'https://images.steamusercontent.com/ugc/111/AAA/?imw=5000' },
+         { 'previewid': '2', 'url': 'https://images.steamusercontent.com/ugc/222/BBB/?imw=5000' },
+        ]; var rgMovieFlashvars = {'url': 'https://images.steamusercontent.com/ugc/333/VIDEO/'};"""
+        class FakeResponse(io.BytesIO):
+            def __enter__(self): return self
+            def __exit__(self, *args): self.close()
+        with patch.object(mod.urllib.request, "urlopen", return_value=FakeResponse(html)):
+            result = mod.fetch_page_gallery("3718140217", None)
+        self.assertEqual(result, ["https://images.steamusercontent.com/ugc/111/AAA/",
+                                  "https://images.steamusercontent.com/ugc/222/BBB/"])
+
     def test_deny_unapproved_image_hosts(self):
         self.assertIsNone(mod.valid_url("https://example.com/image.png"))
         self.assertIsNone(mod.valid_url("http://images.steamusercontent.com/file"))
