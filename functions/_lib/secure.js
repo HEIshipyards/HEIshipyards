@@ -101,6 +101,20 @@ export async function saveImage(env, path, base64, title) {
     message: "Fleet Manager: upload image for " + title
   });
 }
+export async function loadShipPages(env) {
+  const file = await github("data/ship-pages.json", env);
+  const items = JSON.parse(textFromBase64(file.content));
+  if (!items || Array.isArray(items) || typeof items !== "object")
+    throw Object.assign(Error("Invalid ship-page registry."), {status: 502});
+  return {items, sha: file.sha};
+}
+export async function saveShipPages(env, items, sha, route) {
+  return github("data/ship-pages.json", env, "PUT", {
+    branch: BRANCH, sha,
+    content: bodyToBase64(JSON.stringify(items, null, 2) + "\n"),
+    message: "Fleet Manager: update specs and lore for " + String(route).slice(0, 80)
+  });
+}
 export function validMediaUrl(value) {
   if (typeof value !== "string") return false;
   if (/^\/assets\/fleet\/\d{8,12}\/[0-9a-f]{32}\.(?:png|jpg|webp)$/.test(value)) return true;
