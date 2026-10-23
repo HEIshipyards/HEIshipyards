@@ -21,6 +21,17 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .note,#status{color:var(--muted)}#status{min-height:1.6em;white-space:pre-wrap}.danger{color:#ffc6bc}
 hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 @media(max-width:800px){.layout{grid-template-columns:1fr}#vesselList{max-height:190px}header{padding:16px}}
+.ship-edit{border:1px solid var(--line);border-radius:8px;margin:16px 0;padding:12px 15px;background:#17242d}
+.ship-edit>summary{font-size:18px;font-weight:700;cursor:pointer;padding:6px 0;color:#e7c0a0}
+.ship-edit[open]>summary{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.edit-pair{border:1px solid #495b65;background:#202f39;border-radius:7px;padding:12px;margin-top:12px}
+.edit-pair .pair-grid{display:grid;grid-template-columns:minmax(130px,1fr) minmax(0,2fr);gap:10px;align-items:start}
+.edit-pair label{margin:0}
+.edit-pair input,.edit-pair textarea{margin-top:4px}
+.edit-pair textarea{min-height:76px}
+.edit-pair .remove-line{margin-top:8px;padding:5px 10px}
+#shipStatus{white-space:pre-wrap;min-height:1.4em}
+@media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
 </style></head>
 <body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>FLEET MANAGER</span></h1></div><a href="/">View public website ↗</a></header>
 <main><p class="note">Manage fleet images and Workshop listing details. Changes publish through GitHub after you sign in with Cloudflare Access.</p>
@@ -34,6 +45,23 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 <hr><h2>Gallery photographs</h2><p class="note">Upload images, move them left/right, or remove them. Up to 16 gallery images per vessel.</p>
 <div id="gallery" class="gallery"></div>
 <div class="row"><button id="addPhoto" type="button">+ Add gallery photo</button></div>
+<hr>
+<details class="ship-edit" id="shipSpecsSection">
+ <summary>Technical specifications</summary>
+ <p class="note">Edit the specification fields shown on this vessel's public ship page. Existing categories are prefilled; add your own as needed.</p>
+ <div id="shipSpecRows"></div>
+ <div class="row"><button type="button" id="addShipSpec">+ Add specification</button></div>
+</details>
+<details class="ship-edit" id="shipLoreSection">
+ <summary>Ship lore</summary>
+ <p class="note">Edit the vessel's introduction and history independently of HEI's company lore and Steam Workshop listing.</p>
+ <label for="shipIntro">Vessel introduction</label><textarea id="shipIntro" maxlength="6000"></textarea>
+ <h3>History chapters</h3>
+ <div id="shipLoreRows"></div>
+ <div class="row"><button type="button" id="addShipLore">+ Add history section</button></div>
+</details>
+<div class="row"><button type="button" class="primary" id="publishShipPage">Publish specifications &amp; lore</button><button type="button" id="resetShipPage">Discard ship page edits</button></div>
+<p id="shipStatus" class="note" role="status" aria-live="polite">Loading vessel page editor…</p>
 <hr><h2>Preview & publish</h2>
 <div class="row"><button type="button" id="previewBtn">Preview edits</button><button id="publish" class="primary" type="button">Publish updates</button><button id="revert" type="button">Discard edits</button></div>
 <div id="preview" hidden></div>
@@ -48,7 +76,7 @@ function status(message,error=false){$('status').textContent=message;$('status')
 async function api(path,options={}){const r=await fetch(path,{cache:'no-store',credentials:'same-origin',...options});let j;try{j=await r.json()}catch{throw Error('Backend is not responding. Configure Cloudflare Pages Functions and Access.')}if(!r.ok)throw Error(j.error||'Request failed');return j;}
 function syncFields(){if(!working)return;working.title=$('title').value;working.category=$('category').value;working.description=$('description').value;}
 function list(){const root=$('vesselList');root.replaceChildren();records.forEach(item=>{const b=document.createElement('button');b.type='button';b.textContent=item.title||item.id;b.className=selected===String(item.id)?'active':'';b.onclick=()=>select(String(item.id));root.append(b)});}
-function select(id){const item=records.find(i=>String(i.id)===id);if(!item)return;selected=id;working={...item,gallery_urls:[...(item.gallery_urls||[])]};$('editor').hidden=false;$('setupMessage').hidden=true;$('heading').textContent=working.title;$('title').value=working.title||'';$('category').value=working.category||'Other';$('description').value=working.description||'';$('preview').hidden=true;status('');draw();list();}
+function select(id){const item=records.find(i=>String(i.id)===id);if(!item)return;selected=id;working={...item,gallery_urls:[...(item.gallery_urls||[])]};$('editor').hidden=false;$('setupMessage').hidden=true;$('heading').textContent=working.title;$('title').value=working.title||'';$('category').value=working.category||'Other';$('description').value=working.description||'';$('preview').hidden=true;status('');draw();list();window.heiLoadSelectedShip?.();}
 function draw(){$('cover').src=isImage(working.preview_url)?working.preview_url:'';const root=$('gallery');root.replaceChildren();working.gallery_urls.forEach((u,i)=>{const panel=document.createElement('div');panel.className='photo';const im=document.createElement('img');im.src=u;im.alt='Gallery photo '+(i+1);panel.append(im);const actions=document.createElement('div');actions.className='photo-actions';[['←',()=>move(i,-1),i===0],['→',()=>move(i,1),i===working.gallery_urls.length-1],['×',()=>{working.gallery_urls.splice(i,1);draw()},false]].forEach(([label,fn,disabled])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b)});panel.append(actions);root.append(panel)});}
 function move(i,offset){const gallery=working.gallery_urls;[gallery[i],gallery[i+offset]]=[gallery[i+offset],gallery[i]];draw();}
 $('uploadCover').onclick=()=>choose('cover');$('addPhoto').onclick=()=>choose('gallery');$('clearCover').onclick=()=>{working.preview_url='';draw()};
@@ -64,4 +92,84 @@ $('previewBtn').onclick=()=>{syncFields();$('preview').hidden=false;const p=$('p
 $('revert').onclick=()=>select(selected);
 $('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$('publish').disabled=true;status('Publishing changes…');try{const result=await api('/api/fleet',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:selected,version,changes:{title:working.title,category:working.category,description:working.description,preview_url:working.preview_url||'',gallery_urls:working.gallery_urls}})});version=result.version;const idx=records.findIndex(x=>String(x.id)===selected);records[idx]=result.item;select(selected);status('Published to GitHub. Cloudflare will deploy the update automatically.')}catch(e){status(e.message,true)}finally{busy=false;$('publish').disabled=false}};
 (async()=>{try{const data=await api('/api/fleet');records=data.items;version=data.version;list();if(records.length)select(String(records[0].id));}catch(e){$('vesselList').textContent='Administration unavailable';$('setupMessage').textContent=e.message+' — See ADMIN_SETUP.md for one-time setup.'}})();
-</script></body></html>
+</script>
+<script>
+(function(){
+  let shipPages={},shipVersion="",shipBusy=false,shipError="";
+  const specNames=["Classification","Dimensions","Baseline mass","Crew complement","Operating environment","Main propulsion","Cargo capacity","Power systems","Primary equipment","Armament","Mission systems","Workshop variant"];
+  function routeForSelection(){
+    const item=records.find(item=>String(item.id)===String(selected));
+    return item ? (item.route || "workshop-"+String(item.id)) : "";
+  }
+  function message(value,isError=false){
+    const el=$("shipStatus"); el.textContent=value;el.className=isError?"danger":"note";
+  }
+  function createFieldPair(target,leftLabel,rightLabel,leftValue,rightValue,kind){
+    const row=document.createElement("div");row.className="edit-pair";
+    const fields=document.createElement("div");fields.className="pair-grid";
+    const left=document.createElement("label");left.textContent=leftLabel;
+    const leftInput=document.createElement("input");leftInput.value=leftValue||"";leftInput.maxLength=kind==="spec"?100:150;
+    leftInput.className="edit-title";left.append(leftInput);
+    const right=document.createElement("label");right.textContent=rightLabel;
+    const rightInput=document.createElement("textarea");rightInput.value=rightValue||"";
+    rightInput.maxLength=kind==="spec"?2000:6000;rightInput.className="edit-body";right.append(rightInput);
+    fields.append(left,right);row.append(fields);
+    const remove=document.createElement("button");remove.type="button";remove.className="remove-line";remove.textContent="Remove";
+    remove.onclick=()=>row.remove();row.append(remove);target.append(row);
+    return row;
+  }
+  function appendSpec(title="",value=""){
+    createFieldPair($("shipSpecRows"),"Specification","Value",title,value,"spec");
+  }
+  function appendLore(title="",text=""){
+    createFieldPair($("shipLoreRows"),"Section heading","Story / history",title,text,"lore");
+  }
+  function displayShip(){
+    if(!selected)return;
+    const key=routeForSelection();
+    if(!shipVersion){
+      message(shipError||"Loading editable ship specifications and lore…",!!shipError);
+      $("publishShipPage").disabled=true;return;
+    }
+    const page=shipPages[key]||{specs:specNames.map(x=>[x,"N/A"]),lore:{intro:"",sections:[]}};
+    $("shipSpecRows").replaceChildren();
+    $("shipLoreRows").replaceChildren();
+    (page.specs||[]).forEach(pair=>appendSpec(pair[0],pair[1]));
+    $("shipIntro").value=page.lore?.intro||"";
+    (page.lore?.sections||[]).forEach(pair=>appendLore(pair[0],pair[1]));
+    $("publishShipPage").disabled=false;
+    message("Editing "+key+". These fields are independent of Workshop listings; publish them with the button above.");
+  }
+  window.heiLoadSelectedShip=displayShip;
+  $("addShipSpec").onclick=()=>appendSpec();
+  $("addShipLore").onclick=()=>appendLore();
+  $("resetShipPage").onclick=displayShip;
+  $("publishShipPage").onclick=async()=>{
+    if(shipBusy||!selected||!shipVersion)return;
+    const key=routeForSelection();
+    const pairs=(target)=>[...target.querySelectorAll(".edit-pair")].map(row=>[
+      row.querySelector(".edit-title").value.trim(),row.querySelector(".edit-body").value.trim()
+    ]);
+    const page={
+      specs:pairs($("shipSpecRows")).filter(([name])=>name!==""),
+      lore:{intro:$("shipIntro").value,sections:pairs($("shipLoreRows")).filter(([name])=>name!=="")}
+    };
+    if(page.specs.length>35||page.lore.sections.length>30){message("Too many specifications or history sections.",true);return;}
+    shipBusy=true;$("publishShipPage").disabled=true;message("Publishing ship specifications and lore…");
+    try{
+      const res=await api("/api/ship-pages",{method:"PUT",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({route:key,version:shipVersion,page})});
+      shipVersion=res.version;shipPages[key]=res.page;displayShip();
+      message("Published specifications and lore to GitHub. Cloudflare will deploy the public ship-page update automatically.");
+    }catch(error){message(error.message,true);}
+    finally{shipBusy=false;$("publishShipPage").disabled=false;}
+  };
+  (async()=>{
+    try{
+      const d=await api("/api/ship-pages");
+      shipPages=d.items;shipVersion=d.version;displayShip();
+    }catch(error){shipError=error.message;displayShip();}
+  })();
+})();
+</script>
+</body></html>
