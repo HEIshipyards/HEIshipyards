@@ -208,7 +208,10 @@ function syncFeaturedVesselPhotos(){
 function heiHeroMarkup(route,name){
  // Excalibur follows the current Workshop preview; other vessels retain their curated hero art.
  const workshopItem=route==='ship-excalibur'?syncedWorkshop.find(w=>w.route===route):null;
- const livePreview=workshopItem&&typeof workshopItem.preview_url==='string'&&/^https:\/\/images\.steamusercontent\.com\//.test(workshopItem.preview_url)?workshopItem.preview_url:null;
+ const livePreview=workshopItem&&typeof workshopItem.preview_url==='string'&&(
+  /^https:\/\/images\.steamusercontent\.com\//.test(workshopItem.preview_url)||
+  /^\/assets\/fleet\/[0-9]{8,12}\/[a-f0-9]{32}\.(?:jpg|png|webp)$/.test(workshopItem.preview_url)
+ )?workshopItem.preview_url:null;
  const src=livePreview||workshopImages[route];
  if(!src)return `<div class="hei-vessel-hero"><div class="hei-vessel-hero-label">${name} · Featured image pending</div></div>`;
  return `<div class="hei-vessel-hero"><img src="${safeWorkshopText(src)}" alt="${safeWorkshopText(name)} featured vessel image" loading="eager" referrerpolicy="no-referrer"><div class="hei-vessel-hero-label">${safeWorkshopText(name)} / H-E-I Shipyards</div></div>`;
@@ -350,7 +353,8 @@ function heiGalleryMarkup(w,name){
  // V2 caches media on our own site. Accept our verified local image paths as well as Steam HTTPS media.
  const allowedImage=x=>typeof x==='string'&&(
   /^https:\/\/(?:images\.steamusercontent\.com|steamuserimages-a\.akamaihd\.net|steamuserimages\.akamaihd\.net|steamcommunity-a\.akamaihd\.net)\//.test(x)||
-  /^\/assets\/workshop\/[0-9]+\/[a-f0-9]{20}\.(?:jpg|png|webp)$/.test(x)
+  /^\/assets\/workshop\/[0-9]+\/[a-f0-9]{20}\.(?:jpg|png|webp)$/.test(x)||
+  /^\/assets\/fleet\/[0-9]{8,12}\/[a-f0-9]{32}\.(?:jpg|png|webp)$/.test(x)
  );
  const extras=Array.isArray(w.gallery_urls)?w.gallery_urls.filter(allowedImage):[];
  const urls=[...new Set(extras.filter(x=>x!==w.preview_url))];
