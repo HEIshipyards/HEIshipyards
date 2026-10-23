@@ -1,0 +1,655 @@
+{
+  "ship-sojourner": {
+    "specs": [
+      [
+        "Classification",
+        "Modern frontier utility craft"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "1 individual engineer"
+      ],
+      [
+        "Operating environment",
+        "Space and planetary operations"
+      ],
+      [
+        "Main propulsion",
+        "4 medium main rear thrusters (2 × 2) and additional lift / secondary thrusters"
+      ],
+      [
+        "Cargo capacity",
+        "2 small cargo containers"
+      ],
+      [
+        "Power systems",
+        "Top-mounted solar panel"
+      ],
+      [
+        "Primary equipment",
+        "Survival kit; O2/H2 generator; 4 small hydrogen tanks"
+      ],
+      [
+        "Armament",
+        "2 Gatling guns; 2 rocket launchers"
+      ],
+      [
+        "Mission systems",
+        "N/A"
+      ],
+      [
+        "Workshop variant",
+        "Sojourner-class Frontier Utility Craft"
+      ]
+    ],
+    "lore": {
+      "intro": "Created for new Almagest frontier settlers, the Sojourner brings independence and simple construction within reach of a single engineer. The craft represents HEI’s effort to put a reliable, serviceable ship into the hands of colonists working far from established infrastructure.",
+      "sections": [
+        [
+          "Role in HEI",
+          "Created for new Almagest frontier settlers, the Sojourner brings independence and simple construction within reach of a single engineer. The craft represents HEI’s effort to put a reliable, serviceable ship into the hands of colonists working far from established infrastructure."
+        ],
+        [
+          "Modernization context",
+          "Created after the Borehole’s long service and the Outlander overhaul, several years into the Excalibur refit program."
+        ],
+        [
+          "Design objective",
+          "A tough, easy-to-build ship with enough self-sufficiency for an individual frontier engineer."
+        ],
+        [
+          "Operating philosophy",
+          "Reliable, maintainable and capable of independent local operations rather than highly specialized performance."
+        ]
+      ]
+    }
+  },
+  "ship-outlander": {
+    "specs": [
+      [
+        "Classification",
+        "Modernized mobile industrial support platform"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "N/A"
+      ],
+      [
+        "Operating environment",
+        "Space and planetary operations"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "N/A"
+      ],
+      [
+        "Primary equipment",
+        "Full industrial suite; carries Borehole between forward arms"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "External landing pads for Featherfall freighters and shuttles"
+      ],
+      [
+        "Workshop variant",
+        "Outlander-class Modernized Industrial Platform"
+      ]
+    ],
+    "lore": {
+      "intro": "A frontier logistics and industrial support platform designed to remain useful where dependable infrastructure does not yet exist. The Outlander prioritizes continuity, repairability and practical payload over elegance.",
+      "sections": [
+        [
+          "Role in HEI",
+          "A frontier logistics and industrial support platform designed to remain useful where dependable infrastructure does not yet exist. The Outlander prioritizes continuity, repairability and practical payload over elegance."
+        ],
+        [
+          "Paired industrial program",
+          "Originally developed with Borehole as a coordinated mining and support system, expanding into cargo, transport and mobile industrial work."
+        ],
+        [
+          "Modernization",
+          "The upgraded Outlander is intended to provide approximately twice the thrust and twice the range of the previous design."
+        ],
+        [
+          "Mission flexibility",
+          "Supports operations in space and in gravity, can carry a Borehole between its forward arms, and provides external landing facilities for smaller craft."
+        ]
+      ]
+    }
+  },
+  "ship-borehole": {
+    "specs": [
+      [
+        "Classification",
+        "Modernized two-person industrial mining craft"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "2 personnel"
+      ],
+      [
+        "Operating environment",
+        "N/A"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "8 small angled solar panels"
+      ],
+      [
+        "Primary equipment",
+        "Central mining drill"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "Two-person crew cabin with full amenities"
+      ],
+      [
+        "Workshop variant",
+        "Borehole-class Modernized Mining Craft"
+      ]
+    ],
+    "lore": {
+      "intro": "A purpose-built HEI mining craft focused on practical extraction, durability and long-duration industrial work. It forms a closely integrated operational pair with the Outlander support platform.",
+      "sections": [
+        [
+          "Role in HEI",
+          "A purpose-built HEI mining craft focused on practical extraction, durability and long-duration industrial work. It forms a closely integrated operational pair with the Outlander support platform."
+        ],
+        [
+          "Original mining design",
+          "A central drill remained the defining mining system across the ship’s evolution."
+        ],
+        [
+          "Structural modernization",
+          "Stronger frame and simplified overall architecture, retaining the characteristic central drill."
+        ],
+        [
+          "Endurance upgrades",
+          "Higher onboard fuel and oxygen capacity plus approximately five times the original thrust."
+        ]
+      ]
+    }
+  },
+  "ship-featherfall": {
+    "specs": [
+      [
+        "Classification",
+        "Civilian logistics and cargo transport"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "N/A"
+      ],
+      [
+        "Operating environment",
+        "N/A"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "N/A"
+      ],
+      [
+        "Primary equipment",
+        "N/A"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "Civilian cargo transport"
+      ],
+      [
+        "Workshop variant",
+        "Featherfall Freighter · Mk 5"
+      ]
+    ],
+    "lore": {
+      "intro": "The Featherfall is HEI’s smaller-scale freighter, bridging the gap between personal shuttles and larger industrial cargo platforms. Its role is to move useful payloads within a wider frontier logistics network.",
+      "sections": [
+        [
+          "Role in HEI",
+          "The Featherfall is HEI’s smaller-scale freighter, bridging the gap between personal shuttles and larger industrial cargo platforms. Its role is to move useful payloads within a wider frontier logistics network."
+        ],
+        [
+          "Role in fleet",
+          "Moves material, equipment and cargo between HEI facilities and ships, bridging shuttles and heavier industrial platforms."
+        ],
+        [
+          "Operational relationship",
+          "Supported by Outlander external landing facilities and connected to the wider mining-to-industry logistics system."
+        ]
+      ]
+    }
+  },
+  "ship-shuttle-mod6": {
+    "specs": [
+      [
+        "Classification",
+        "General-purpose personnel and utility shuttle"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "N/A"
+      ],
+      [
+        "Operating environment",
+        "N/A"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "N/A"
+      ],
+      [
+        "Primary equipment",
+        "N/A"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "N/A"
+      ],
+      [
+        "Workshop variant",
+        "HEI Shuttle · Mod 6"
+      ]
+    ],
+    "lore": {
+      "intro": "A general-purpose HEI shuttle blueprint representing the company’s small-craft transport and utility capability. Shuttles support personnel movement and short-duration transfers around larger operations.",
+      "sections": [
+        [
+          "Role in HEI",
+          "A general-purpose HEI shuttle blueprint representing the company’s small-craft transport and utility capability. Shuttles support personnel movement and short-duration transfers around larger operations."
+        ],
+        [
+          "Shuttle lineage",
+          "Represents an iterative refinement within HEI’s utility shuttle family."
+        ],
+        [
+          "Fleet context",
+          "Shuttles support personnel transfers and short-duration transport across the fleet."
+        ]
+      ]
+    }
+  },
+  "ship-shuttle-h": {
+    "specs": [
+      [
+        "Classification",
+        "Published specialized shuttle variant"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "N/A"
+      ],
+      [
+        "Operating environment",
+        "N/A"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "N/A"
+      ],
+      [
+        "Primary equipment",
+        "Fighter Cockpit Mod required (Workshop dependency)"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "N/A"
+      ],
+      [
+        "Workshop variant",
+        "HEI Shuttle H"
+      ]
+    ],
+    "lore": {
+      "intro": "A compact HEI shuttle variant in the company’s expanding fleet of utility craft. This page preserves its Workshop identity until additional technical and historical information is supplied.",
+      "sections": [
+        [
+          "Role in HEI",
+          "A compact HEI shuttle variant in the company’s expanding fleet of utility craft. This page preserves its Workshop identity until additional technical and historical information is supplied."
+        ],
+        [
+          "Registry status",
+          "Recognized Workshop variant within the HEI shuttle family."
+        ],
+        [
+          "Known limits",
+          "A complete canonical technical history has not yet been established."
+        ]
+      ]
+    }
+  },
+  "ship-shuttle-mod2": {
+    "specs": [
+      [
+        "Classification",
+        "Earlier HEI shuttle development variant"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "N/A"
+      ],
+      [
+        "Operating environment",
+        "N/A"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "N/A"
+      ],
+      [
+        "Primary equipment",
+        "No onboard hydrogen processing (Workshop note)"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "N/A"
+      ],
+      [
+        "Workshop variant",
+        "HEI Shuttle · Mod 2"
+      ]
+    ],
+    "lore": {
+      "intro": "An earlier numbered design in the HEI shuttle series, offering a smaller-scale transport option in the wider civilian fleet.",
+      "sections": [
+        [
+          "Role in HEI",
+          "An earlier numbered design in the HEI shuttle series, offering a smaller-scale transport option in the wider civilian fleet."
+        ],
+        [
+          "Design lineage",
+          "An earlier numbered design within the published HEI shuttle family."
+        ],
+        [
+          "Operational consideration",
+          "The Workshop author notes that onboard hydrogen processing is not fitted."
+        ]
+      ]
+    }
+  },
+  "ship-asteroid-base": {
+    "specs": [
+      [
+        "Classification",
+        "Asteroid installation / infrastructure"
+      ],
+      [
+        "Dimensions",
+        "N/A"
+      ],
+      [
+        "Baseline mass",
+        "N/A"
+      ],
+      [
+        "Crew complement",
+        "N/A"
+      ],
+      [
+        "Operating environment",
+        "N/A"
+      ],
+      [
+        "Main propulsion",
+        "N/A"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "N/A"
+      ],
+      [
+        "Primary equipment",
+        "N/A"
+      ],
+      [
+        "Armament",
+        "N/A"
+      ],
+      [
+        "Mission systems",
+        "N/A"
+      ],
+      [
+        "Workshop variant",
+        "All-in-One Asteroid Base (S)"
+      ]
+    ],
+    "lore": {
+      "intro": "A compact HEI asteroid outpost for Space Engineers 2. Included in the registry as infrastructure rather than a spacecraft.",
+      "sections": [
+        [
+          "Role in HEI",
+          "A compact HEI asteroid outpost for Space Engineers 2. Included in the registry as infrastructure rather than a spacecraft."
+        ],
+        [
+          "Infrastructure role",
+          "Permanent sites complement mobile industry by providing points for repair, storage and local frontier support."
+        ],
+        [
+          "Known publication",
+          "The linked release is an All-in-One Asteroid Base (S) blueprint for Space Engineers 2."
+        ]
+      ]
+    }
+  },
+  "ship-excalibur": {
+    "specs": [
+      [
+        "Classification",
+        "Compact multi-role combat and expedition vessel / Starchaser"
+      ],
+      [
+        "Dimensions",
+        "79.5 m length × 45 m width × 17.5 m height"
+      ],
+      [
+        "Baseline mass",
+        "Approx. 5,500,000 kg, excluding optional external propulsion kits"
+      ],
+      [
+        "Crew complement",
+        "6–8 personnel"
+      ],
+      [
+        "Operating environment",
+        "Space and planetary operations"
+      ],
+      [
+        "Primary weapon",
+        "1 × XR-9 Godspear spinal railgun"
+      ],
+      [
+        "Point defense",
+        "10 × PDCs in the R-2.0 configuration (up from six)"
+      ],
+      [
+        "Optional strike fit",
+        "Up to 4 external anti-capital torpedoes, carried as a mission-dependent loadout"
+      ],
+      [
+        "Mission equipment",
+        "7 configurable external pylons for deployables, cargo, auxiliary vehicles, fuel, mission equipment, or weapons"
+      ],
+      [
+        "Lateral thrusters",
+        "16 total in R-2.0 (+4 relative to the earlier 12-thruster arrangement)"
+      ],
+      [
+        "Optional ALK-4",
+        "Hydrogen nacelle kit: 4 nacelles with 3 medium hydrogen thrusters each (12 medium thrusters total)"
+      ],
+      [
+        "Optional ETIK-2",
+        "Extended Thrust Integration Kit, an auxiliary ion-thruster package; thruster count not finalized"
+      ],
+      [
+        "Main reactor installation",
+        "4 main reactors in individually armored housings within the citadel"
+      ],
+      [
+        "Interior facilities",
+        "Internal hangar, cargo space, expanded commons and full kitchen, bridge, enlarged CIC"
+      ],
+      [
+        "Shipboard automation",
+        "Automated landing gear with closely fitting armored housings; hallway status readout"
+      ]
+    ],
+    "lore": {
+      "intro": "A compact, independent multi-role combat vessel designed for long-range patrol, remote station protection, escort operations, reconnaissance, search and rescue, and frontier response. Excalibur is as much an expedition platform as it is a fighting ship.",
+      "sections": [
+        [
+          "Program origins",
+          "The Excalibur program began as a compact combat vessel concept. Its purpose expanded beyond direct combat into an independent, adaptable spacecraft capable of operating far from major support facilities. Patrol, escort, reconnaissance, inspection, search and rescue, protection of remote installations, and limited transport all became part of the Starchaser mission profile."
+        ],
+        [
+          "The original Excalibur lineage",
+          "Mod 6 established the recognizable shape of the modern Excalibur and introduced the XR-9 Godspear spinal railgun as a defining system. A long series of continuous revisions followed, leading through the mature Mk 11 design and the final Mk 12 of the original hull family. Rather than one abrupt redesign, the old series evolved through accumulated operational and engineering lessons."
+        ],
+        [
+          "The clean-sheet 1-M program",
+          "After the limits of the original hull became apparent, HEI initiated a clean-sheet replacement. Approximately 18 months of development produced the 1-M Starchaser: a larger, more practical spacecraft with a dedicated hangar, internal cargo facilities, accommodation for a 6–8-person crew, and the ability to operate in both space and planetary environments."
+        ],
+        [
+          "R-1.0 — Initial production configuration",
+          "The first production 1-M paired the XR-9 Godspear with six point-defense cannons. Its design emphasized a heavy monocoque structure, an armored reactor citadel, internal cargo and hangar space, and two command positions: an exposed bridge for direct visibility and a protected combat information center (CIC) for operations under threat."
+        ],
+        [
+          "R-2.0 — Current modernization standard",
+          "HEI's parallel modernization work on the Borehole, Outlander, and Sojourner reinforced five core design priorities: modularity, endurance, habitability, automation, and survivability. Excalibur's R-2.0 development translated those priorities into mission pylons, stronger defensive coverage, an updated reactor citadel, expanded crew spaces, optional external propulsion systems, and more capable shipboard systems."
+        ]
+      ]
+    }
+  }
+}
