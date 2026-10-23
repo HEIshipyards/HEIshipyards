@@ -30,6 +30,7 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 .edit-pair input,.edit-pair textarea{margin-top:4px}
 .edit-pair textarea{min-height:76px}
 .edit-pair .remove-line{margin-top:8px;padding:5px 10px}
+.lore-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.lore-toolbar button{padding:5px 10px;min-width:36px}.lore-document{background:#131e25;border:1px solid #586c77;border-radius:6px;min-height:350px;max-height:680px;overflow:auto;padding:18px;outline-offset:3px;line-height:1.65}.lore-document:focus{outline:2px solid var(--orange)}.lore-document h2,.lore-document h3{margin:1em 0 .4em}.lore-document p{margin:.5em 0}.lore-document ul{padding-left:25px}.lore-document:empty:before{content:"Write the vessel's history here…";color:var(--muted)}
 #shipStatus{white-space:pre-wrap;min-height:1.4em}
 @media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
 </style></head>
@@ -54,11 +55,13 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 </details>
 <details class="ship-edit" id="shipLoreSection">
  <summary>Ship lore</summary>
- <p class="note">Edit the vessel's introduction and history independently of HEI's company lore and Steam Workshop listing.</p>
- <label for="shipIntro">Vessel introduction</label><textarea id="shipIntro" maxlength="6000"></textarea>
- <h3>History chapters</h3>
- <div id="shipLoreRows"></div>
- <div class="row"><button type="button" id="addShipLore">+ Add history section</button></div>
+ <p class="note">One continuous document for this vessel only. Existing history is retained automatically. Select text and use the formatting toolbar.</p>
+ <div class="lore-toolbar" id="shipLoreToolbar" role="toolbar" aria-label="Ship lore formatting">
+ <button type="button" data-format="bold" title="Bold"><b>B</b></button><button type="button" data-format="italic" title="Italic"><i>I</i></button>
+ <button type="button" data-format="h2">Heading</button><button type="button" data-format="h3">Subheading</button>
+ <button type="button" data-format="p">Paragraph</button><button type="button" data-format="insertUnorderedList">• List</button>
+ </div>
+ <div id="shipLoreDocument" class="lore-document" contenteditable="true" role="textbox" aria-label="Ship lore document" aria-multiline="true" spellcheck="true"></div>
 </details>
 <div class="row"><button type="button" class="primary" id="publishShipPage">Publish specifications &amp; lore</button><button type="button" id="resetShipPage">Discard ship page edits</button></div>
 <p id="shipStatus" class="note" role="status" aria-live="polite">Loading vessel page editor…</p>
@@ -121,9 +124,43 @@ $('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$
   function appendSpec(title="",value=""){
     createFieldPair($("shipSpecRows"),"Specification","Value",title,value,"spec");
   }
-  function appendLore(title="",text=""){
-    createFieldPair($("shipLoreRows"),"Section heading","Story / history",title,text,"lore");
+  const loreDoc=$("shipLoreDocument");
+  const permitted=new Set(["P","DIV","H2","H3","B","STRONG","I","EM","UL","OL","LI","BR"]);
+  function safeLore(html){
+    const source=document.createElement("template");source.innerHTML=html||"";
+    function copy(node){
+      if(node.nodeType===Node.TEXT_NODE)return document.createTextNode(node.textContent);
+      if(node.nodeType!==Node.ELEMENT_NODE)return document.createDocumentFragment();
+      const tag=permitted.has(node.tagName)?node.tagName.toLowerCase():"span";
+      const output=document.createElement(tag);
+      [...node.childNodes].forEach(child=>output.append(copy(child)));
+      return output;
+    }
+    const holder=document.createElement("div");
+    [...source.content.childNodes].forEach(child=>holder.append(copy(child)));
+    return holder.innerHTML;
   }
+  function oldLoreHTML(lore){
+    const parts=[];
+    if(lore?.intro)parts.push("<p>"+escapeHTML(lore.intro).replace(/\\n/g,"<br>")+"</p>");
+    for(const [heading,body] of lore?.sections||[]){
+      if(heading)parts.push("<h3>"+escapeHTML(heading)+"</h3>");
+      if(body)parts.push("<p>"+escapeHTML(body).replace(/\\n/g,"<br>")+"</p>");
+    }
+    return parts.join("\\n");
+  }
+  $("shipLoreToolbar").addEventListener("click",event=>{
+    const button=event.target.closest("button[data-format]");if(!button)return;
+    loreDoc.focus();
+    const type=button.dataset.format;
+    if(["h2","h3","p"].includes(type))document.execCommand("formatBlock",false,type);
+    else document.execCommand(type,false,null);
+  });
+  loreDoc.addEventListener("paste",event=>{
+    event.preventDefault();
+    const text=event.clipboardData.getData("text/plain");
+    document.execCommand("insertText",false,text);
+  });
   function displayShip(){
     if(!selected)return;
     const key=routeForSelection();
@@ -133,16 +170,13 @@ $('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$
     }
     const page=shipPages[key]||{specs:specNames.map(x=>[x,"N/A"]),lore:{intro:"",sections:[]}};
     $("shipSpecRows").replaceChildren();
-    $("shipLoreRows").replaceChildren();
     (page.specs||[]).forEach(pair=>appendSpec(pair[0],pair[1]));
-    $("shipIntro").value=page.lore?.intro||"";
-    (page.lore?.sections||[]).forEach(pair=>appendLore(pair[0],pair[1]));
+    loreDoc.innerHTML=safeLore(page.lore?.html||oldLoreHTML(page.lore));
     $("publishShipPage").disabled=false;
     message("Editing "+key+". These fields are independent of Workshop listings; publish them with the button above.");
   }
   window.heiLoadSelectedShip=displayShip;
   $("addShipSpec").onclick=()=>appendSpec();
-  $("addShipLore").onclick=()=>appendLore();
   $("resetShipPage").onclick=displayShip;
   $("publishShipPage").onclick=async()=>{
     if(shipBusy||!selected||!shipVersion)return;
@@ -152,9 +186,9 @@ $('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$
     ]);
     const page={
       specs:pairs($("shipSpecRows")).filter(([name])=>name!==""),
-      lore:{intro:$("shipIntro").value,sections:pairs($("shipLoreRows")).filter(([name])=>name!=="")}
+      lore:{...((shipPages[key]||{}).lore||{intro:"",sections:[]}),html:safeLore(loreDoc.innerHTML)}
     };
-    if(page.specs.length>35||page.lore.sections.length>30){message("Too many specifications or history sections.",true);return;}
+    if(page.specs.length>35||page.lore.html.length>60000){message("Too many specifications or lore exceeds 60,000 characters.",true);return;}
     shipBusy=true;$("publishShipPage").disabled=true;message("Publishing ship specifications and lore…");
     try{
       const res=await api("/api/ship-pages",{method:"PUT",headers:{"Content-Type":"application/json"},
