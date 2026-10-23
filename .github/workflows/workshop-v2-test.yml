@@ -1,132 +1,44 @@
-name: HEI Workshop Sync V2
+name: HEI Fleet Registry Validation
 on:
   push:
-    branches:
-      - main
-      - test/workshop-sync-v2
+    branches: [main]
     paths:
-      - '.github/workflows/workshop-v2-test.yml'
       - 'scripts/sync_workshop_v2.py'
       - 'tests/test_sync_v2.py'
-      - 'data/gallery-overrides.json'
-      - 'index.html'
-      - 'scripts/audit_workshop_images.py'
+      - '.github/workflows/workshop-v2-test.yml'
+      - 'data/workshop-v2.json'
   pull_request:
     paths:
-      - '.github/workflows/workshop-v2-test.yml'
       - 'scripts/sync_workshop_v2.py'
       - 'tests/test_sync_v2.py'
-      - 'index.html'
-  schedule:
-    # One live Steam refresh per day at 8 AM Pacific (DST-aware gate below).
-    # Two UTC cron hours are needed for the seasonal Pacific offset change.
-    - cron: '0 15,16 * * *'
+      - '.github/workflows/workshop-v2-test.yml'
+      - 'data/workshop-v2.json'
   workflow_dispatch:
-    inputs:
-      mode:
-        description: "Choose a test or real sync"
-        required: true
-        type: choice
-        default: live-api-cache
-        options:
-          - live-api-cache
-          - live-api
-          - offline-seed
 
 permissions:
-  contents: write
-
-# Serialize only real Steam requests. PR and code-push checks never call Steam.
-concurrency:
-  group: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'hei-workshop-v2-live' || github.ref }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  sync:
+  validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-      - name: Run V2 regression tests
+      - name: Run offline registry regression tests
         run: python -m unittest discover -s tests -p 'test_sync_v2.py' -v
-
-      - name: Audit cached image dimensions
+      - name: Audit existing image files
         run: python scripts/audit_workshop_images.py
-
-      - name: Check Pacific scheduled run
-        id: pacific
-        env:
-          TRIGGER: ${{ github.event_name }}
+      - name: Validate fleet registry JSON
         run: |
-          if [ "$TRIGGER" != "schedule" ] || [ "$(TZ=America/Los_Angeles date +%H)" = "08" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping duplicate timezone schedule."
-          fi
-
-      - name: Synchronize V2 fleet data
-        if: github.event_name != 'pull_request' && steps.pacific.outputs.run == 'true'
-        env:
-          SYNC_MODE: ${{ inputs.mode }}
-          GIT_REF: ${{ github.ref }}
-          TRIGGER: ${{ github.event_name }}
-        run: |
-          if [ "$TRIGGER" = "push" ] || [ "$GIT_REF" != "refs/heads/main" ]; then
-            echo "Code push / test branch: verifying saved data without contacting Steam."
-            python scripts/sync_workshop_v2.py --offline-seed
-          elif [ "$SYNC_MODE" = "offline-seed" ]; then
-            python scripts/sync_workshop_v2.py --offline-seed
-          elif [ "$SYNC_MODE" = "live-api" ]; then
-            python scripts/sync_workshop_v2.py
-          else
-            python scripts/sync_workshop_v2.py --cache-images
-          fi
-
-      - name: Commit V2 data and mirrored pictures to main
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && steps.pacific.outputs.run == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Another run may have published newer galleries while this job queried Steam.
-          # Never rebase stale generated data over more recently published images.
-          git fetch origin main
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "::warning::main advanced during this sync. Skipping stale results to protect newer galleries."
-            echo "## Stale sync skipped" >> "$GITHUB_STEP_SUMMARY"
-            echo "Another run updated main first; this run did not overwrite its fleet data." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          git add data/workshop-v2.json data/workshop-v2-report.json
-          if [ -d assets/workshop ]; then git add assets/workshop; fi
-          if ! git diff --cached --quiet; then
-            git commit -m "Update HEI Workshop V2 data and image cache"
-            if ! git push; then
-              # Covers the last-second race after the check above.
-              git fetch origin main
-              echo "::warning::main moved during push. Kept other run's data; stale result was not published."
-              echo "## Concurrent sync detected" >> "$GITHUB_STEP_SUMMARY"
-              echo "Another run pushed first. This run preserved its artifact without overwriting main." >> "$GITHUB_STEP_SUMMARY"
-              exit 0
-            fi
-          else
-            echo "No V2 changes."
-          fi
-
-      - name: Upload V2 test data and status report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: workshop-v2-results
-          path: |
-            data/workshop-v2.json
-            data/workshop-v2-report.json
-          if-no-files-found: warn
-          retention-days: 14
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          items = json.loads(Path('data/workshop-v2.json').read_text())
+          assert isinstance(items, list) and len(items) >= 1
+          ids = [str(v['id']) for v in items]
+          assert len(ids) == len(set(ids)), 'Duplicate Workshop IDs'
+          print(f'Validated {len(ids)} manual fleet entries. No Steam requests made.')
+          PY
