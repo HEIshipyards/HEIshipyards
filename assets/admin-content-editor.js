@@ -2,7 +2,7 @@
 "use strict";
 const panel=document.createElement("section");
 panel.id="heiCompanyEditor";
-panel.hidden=false;
+panel.hidden=true;
 panel.innerHTML=`<div class="hei-content-intro"><h2 id="heiContentHeading">Company Lore</h2><p class="note">Edit the public page below. Existing content is preloaded; changes are only live after publishing.</p></div>
 <div class="hei-content-toolbar" role="toolbar" aria-label="Content formatting">
 <button type="button" data-format="bold"><b>B</b></button><button type="button" data-format="italic"><i>I</i></button>
@@ -12,20 +12,21 @@ panel.innerHTML=`<div class="hei-content-intro"><h2 id="heiContentHeading">Compa
 <div id="heiCompanyDocument" class="hei-company-document" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true"></div>
 <div class="row"><button type="button" id="heiCompanyPublish" class="primary">Publish page updates</button><button type="button" id="heiCompanyReset">Discard edits</button><a href="/#lore" id="heiViewCompany" target="_blank" rel="noopener">View public page ↗</a></div>
 <p id="heiCompanyStatus" class="note" role="status" aria-live="polite"></p>`;
-document.querySelector("main").append(panel);
+const fleetArea=document.querySelector("main > .layout");
+fleetArea.before(panel);
 const intro=document.querySelector("main > p.note");
 const tabs=document.createElement("nav");
 tabs.className="hei-editor-tabs";
 tabs.setAttribute("aria-label","Choose website section to edit");
-tabs.innerHTML='<a href="/admin.html" data-hei-tab="fleet">The Fleet</a><a href="/admin-lore.html" data-hei-tab="lore">Lore</a><a href="/admin-crews.html" data-hei-tab="crews">Crews of the Almagest</a>';
+tabs.innerHTML='<button type="button" data-hei-tab="fleet">The Fleet</button><button type="button" data-hei-tab="lore">Lore</button><button type="button" data-hei-tab="crews">Crews of the Almagest</button>';
 intro?.after(tabs);
 
 const style=document.createElement("style");
-style.textContent=`.hei-editor-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:24px 0}.hei-editor-tabs a{display:inline-block;text-decoration:none;color:var(--text);font-weight:700;padding:12px 20px;border:1px solid var(--line);border-radius:6px;background:#354751}.hei-editor-tabs a.active{border-color:var(--orange);background:#49392a;color:#fff}.hei-content-intro{margin-bottom:16px}.hei-content-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.hei-content-toolbar button{padding:8px 12px}.hei-company-document{min-height:440px;max-height:76vh;overflow:auto;border:1px solid var(--line);background:#1b2832;border-radius:10px;padding:22px;line-height:1.7;overflow-wrap:anywhere}.hei-company-document:focus{outline:2px solid var(--orange)}.hei-company-document h2,.hei-company-document h3{color:#e6b188}.hei-company-document a{color:#e6b188}.hei-company-document .lore-index{padding:14px}.hei-company-document .crews-restricted{text-align:center;padding:50px 20px}.hei-company-document img{max-width:100%;height:auto}#heiCompanyEditor{margin:0 auto;max-width:1100px}#heiCompanyStatus{min-height:1.5em;white-space:pre-wrap}`;
+style.textContent=`.layout[hidden],#heiCompanyEditor[hidden]{display:none!important}#heiCompanyEditor{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;width:100%} .hei-editor-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:24px 0}.hei-editor-tabs button{display:inline-block;text-decoration:none;color:var(--text);font-weight:700;padding:12px 20px;border:1px solid var(--line);border-radius:6px;background:#354751}.hei-editor-tabs button.active{border-color:var(--orange);background:#49392a;color:#fff}.hei-content-intro{margin-bottom:16px}.hei-content-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.hei-content-toolbar button{padding:8px 12px}.hei-company-document{min-height:440px;max-height:76vh;overflow:auto;border:1px solid var(--line);background:#1b2832;border-radius:10px;padding:22px;line-height:1.7;overflow-wrap:anywhere}.hei-company-document:focus{outline:2px solid var(--orange)}.hei-company-document h2,.hei-company-document h3{color:#e6b188}.hei-company-document a{color:#e6b188}.hei-company-document .lore-index{padding:14px}.hei-company-document .crews-restricted{text-align:center;padding:50px 20px}.hei-company-document img{max-width:100%;height:auto}#heiCompanyEditor{margin:0 auto;max-width:1100px}#heiCompanyStatus{min-height:1.5em;white-space:pre-wrap}`;
 document.head.append(style);
 const $=id=>document.getElementById(id);
 const doc=$("heiCompanyDocument");
-let active=location.pathname.endsWith("admin-lore.html")?"lore":location.pathname.endsWith("admin-crews.html")?"crews":"fleet",pages=null,version="",busy=false,loaded={};
+let active="fleet",pages=null,version="",busy=false,loaded={};
 function showMessage(msg,error){$("heiCompanyStatus").textContent=msg;$("heiCompanyStatus").className=error?"danger":"note";}
 function fromBase64(value){const raw=atob(value);return new TextDecoder().decode(Uint8Array.from(raw,c=>c.charCodeAt(0)));}
 function pageHTML(key){const record=pages?.[key]||{};return typeof record.html==="string"?record.html:(record.base64?fromBase64(record.base64):"");}
@@ -56,16 +57,29 @@ async function loadPages(){
  const data=await res.json();if(!res.ok)throw Error(data.error||"Unable to load page content");
  pages=data.pages;version=data.version;showMessage("Current content loaded. Select and edit text, then publish.");
 }
-async function initializePage(){
- for(const link of tabs.querySelectorAll("a")){const selected=link.dataset.heiTab===active;link.classList.toggle("active",selected);if(selected)link.setAttribute("aria-current","page");}
- if(active==="fleet"){panel.hidden=true;return;}
- panel.hidden=false;
- $("heiContentHeading").textContent=active==="lore"?"Company Lore":"Crews of the Almagest";
- $("heiViewCompany").href="/#"+active;
- try{await loadPages();doc.innerHTML=pageHTML(active);}
+async function switchArea(next){
+ if(!["fleet","lore","crews"].includes(next))return;
+ if(active!=="fleet"&&pages)loaded[active]=cleanHTML(doc.innerHTML);
+ active=next;
+ fleetArea.hidden=next!=="fleet";
+ panel.hidden=next==="fleet";
+ for(const button of tabs.querySelectorAll("button")){
+  const selected=button.dataset.heiTab===next;
+  button.classList.toggle("active",selected);
+  button.setAttribute("aria-pressed",String(selected));
+ }
+ if(next==="fleet")return;
+ $("heiContentHeading").textContent=next==="lore"?"Company Lore":"Crews of the Almagest";
+ $("heiViewCompany").href="/#"+next;
+ $("heiCompanyPublish").disabled=false;
+ try{await loadPages();if(active===next)doc.innerHTML=loaded[next]??pageHTML(next);}
  catch(e){showMessage(e.message,true);doc.innerHTML="";$("heiCompanyPublish").disabled=true;}
 }
-initializePage();
+tabs.addEventListener("click",event=>{
+ const button=event.target.closest("button[data-hei-tab]");
+ if(button)switchArea(button.dataset.heiTab);
+});
+switchArea("fleet");
 panel.querySelector(".hei-content-toolbar").addEventListener("click",e=>{
  const button=e.target.closest("button[data-format]");if(!button)return;
  doc.focus();const cmd=button.dataset.format;document.execCommand(["h2","h3","p"].includes(cmd)?"formatBlock":cmd,false,["h2","h3","p"].includes(cmd)?cmd:null);
