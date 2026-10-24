@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HEI · Fleet Manager</title>
+<title>HEI · Website Content Manager</title>
 <style>
 :root{color-scheme:dark;--bg:#121b22;--panel:#202d36;--line:#445866;--orange:#d97d35;--text:#e9eef0;--muted:#a9b8c1}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,Segoe UI,sans-serif}
@@ -34,8 +34,8 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 #shipStatus{white-space:pre-wrap;min-height:1.4em}
 @media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
 </style></head>
-<body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>FLEET MANAGER</span></h1></div><a href="/">View public website ↗</a></header>
-<main><p class="note">Manage fleet images and Workshop listing details. Changes publish through GitHub after you sign in with Cloudflare Access.</p>
+<body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>WEBSITE EDITOR</span></h1></div><a href="/">View public website ↗</a></header>
+<main><p class="note">Choose an area to edit. Publish updates securely through GitHub after signing in with Cloudflare Access.</p>
 <div class="layout"><aside class="card"><h2>Vessel registry</h2><div id="vesselList">Connecting…</div></aside>
 <section class="card"><h2 id="heading">Select a vessel</h2><div id="editor" hidden>
 <label for="title">Vessel name</label><input id="title" maxlength="160">
@@ -206,4 +206,4 @@ $('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$
   })();
 })();
 </script>
-</body></html>
+<script defer src="/assets/admin-content-editor.js"></script></body></html>
