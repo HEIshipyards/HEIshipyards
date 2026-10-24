@@ -62,6 +62,7 @@ function cleanHTML(markup){
  function clean(node){
   if(node.nodeType===Node.TEXT_NODE)return document.createTextNode(node.textContent);
   if(node.nodeType!==Node.ELEMENT_NODE)return document.createDocumentFragment();
+  if(["SCRIPT","STYLE","IFRAME","OBJECT","EMBED","SVG","MATH","FORM","INPUT","BUTTON","META","LINK","BASE","TEMPLATE"].includes(node.tagName))return document.createDocumentFragment();
   const tag=allowed.has(node.tagName)?node.tagName.toLowerCase():"span";
   const n=document.createElement(tag);
   for(const key of ["class","id","title","alt","colspan","rowspan","open","width","height"]){
