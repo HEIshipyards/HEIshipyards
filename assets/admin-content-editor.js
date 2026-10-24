@@ -22,7 +22,7 @@ tabs.innerHTML='<button type="button" data-hei-tab="fleet">The Fleet</button><bu
 intro?.after(tabs);
 
 const style=document.createElement("style");
-style.textContent=`.layout[hidden],#heiCompanyEditor[hidden]{display:none!important}#heiCompanyEditor{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;width:100%} .hei-editor-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:24px 0}.hei-editor-tabs button{display:inline-block;text-decoration:none;color:var(--text);font-weight:700;padding:12px 20px;border:1px solid var(--line);border-radius:6px;background:#354751}.hei-editor-tabs button.active{border-color:var(--orange);background:#49392a;color:#fff}.hei-content-intro{margin-bottom:16px}.hei-content-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.hei-content-toolbar button{padding:8px 12px}.hei-company-document{min-height:440px;max-height:76vh;overflow:auto;border:1px solid var(--line);background:#1b2832;border-radius:10px;padding:22px;line-height:1.7;overflow-wrap:anywhere}.hei-company-document:focus{outline:2px solid var(--orange)}.hei-company-document h2,.hei-company-document h3{color:#e6b188}.hei-company-document a{color:#e6b188}.hei-company-document .lore-index{padding:14px}.hei-company-document .crews-restricted{text-align:center;padding:50px 20px}.hei-company-document img{max-width:100%;height:auto}#heiCompanyEditor{margin:0 auto;max-width:1100px}#heiCompanyStatus{min-height:1.5em;white-space:pre-wrap}`;
+style.textContent=`.layout[hidden],#heiCompanyEditor[hidden]{display:none!important}#heiCompanyEditor{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;width:100%} .hei-editor-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:24px 0}.hei-editor-tabs button{display:inline-block;text-decoration:none;color:var(--text);font-weight:700;padding:12px 20px;border:1px solid var(--line);border-radius:6px;background:#354751}.hei-editor-tabs button.active,.hei-editor-tabs button[aria-pressed="true"]{border-color:var(--orange);background:var(--orange);color:#161b20}.hei-content-intro{margin-bottom:16px}.hei-content-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.hei-content-toolbar button{padding:8px 12px}.hei-company-document{min-height:440px;max-height:76vh;overflow:auto;border:1px solid var(--line);background:#1b2832;border-radius:10px;padding:22px;line-height:1.7;overflow-wrap:anywhere}.hei-company-document:focus{outline:2px solid var(--orange)}.hei-company-document h2,.hei-company-document h3{color:#e6b188}.hei-company-document a{color:#e6b188}.hei-company-document .lore-index{padding:14px}.hei-company-document .crews-restricted{text-align:center;padding:50px 20px}.hei-company-document img{max-width:100%;height:auto}#heiCompanyEditor{margin:0 auto;max-width:1100px}#heiCompanyStatus{min-height:1.5em;white-space:pre-wrap}`;
 document.head.append(style);
 const $=id=>document.getElementById(id);
 const doc=$("heiCompanyDocument");
@@ -50,27 +50,40 @@ function cleanHTML(markup){
  const result=document.createElement("div");for(const child of [...holder.content.childNodes])result.append(clean(child));
  return result.innerHTML;
 }
-async function loadPages(){
- if(pages)return;
+function loadEmbeddedPages(){
+ if(pages)return true;
  const embedded=document.getElementById("heiEditorEmbeddedData");
  if(embedded){
-  try{pages=JSON.parse(embedded.textContent);showMessage("Page content loaded. Checking publishing access…");}
-  catch(error){showMessage("Embedded content could not be parsed: "+error.message,true);}
- }
- if(!pages){
   try{
-   const response=await fetch("/data/editor-pages.json",{cache:"no-store"});
-   if(!response.ok)throw Error("HTTP "+response.status);
-   pages=await response.json();
-  }catch(error){showMessage("Unable to load page content: "+error.message,true);throw error;}
+   const data=JSON.parse(embedded.textContent);
+   if(data&&data.lore&&data.crews){pages=data;return true;}
+  }catch(error){showMessage("Embedded page content could not be read: "+error.message,true);}
  }
- // The published document is editable even if the API session is not available.
+ return false;
+}
+async function checkPublishingAccess(){
  try{
   const response=await fetch("/api/editor-pages",{cache:"no-store",credentials:"same-origin"});
   if(!response.ok)throw Error("HTTP "+response.status);
   const data=await response.json();
-  if(data.pages&&data.version){pages=data.pages;version=data.version;showMessage("Ready to edit and publish.");}
- }catch(error){version="";showMessage("Content loaded, but publishing authentication could not be verified ("+error.message+").",true);}
+  if(!data.version||!data.pages)throw Error("Incomplete publishing response.");
+  version=data.version;
+  pages=data.pages;
+  $("heiCompanyPublish").disabled=false;
+  showMessage("Page content loaded. Ready to publish.");
+  // Do not overwrite an editor that may already contain unsaved edits.
+ }catch(error){
+  version="";
+  $("heiCompanyPublish").disabled=true;
+  showMessage("Page loaded, but publishing is unavailable: "+error.message,true);
+ }
+}
+async function loadPages(){
+ if(!loadEmbeddedPages()){
+  const response=await fetch("/data/editor-pages.json",{cache:"no-store"});
+  if(!response.ok)throw Error("Published content unavailable (HTTP "+response.status+").");
+  pages=await response.json();
+ }
 }
 async function switchArea(next){
  if(!["fleet","lore","crews"].includes(next))return;
@@ -86,9 +99,20 @@ async function switchArea(next){
  if(next==="fleet")return;
  $("heiContentHeading").textContent=next==="lore"?"Company Lore":"Crews of the Almagest";
  $("heiViewCompany").href="/#"+next;
- $("heiCompanyPublish").disabled=false;
- try{await loadPages();if(active===next){doc.innerHTML=loaded[next]??pageHTML(next);$("heiCompanyPublish").disabled=!version;}}
- catch(e){showMessage(e.message,true);doc.innerHTML="";$("heiCompanyPublish").disabled=true;}
+ $("heiCompanyPublish").disabled=!version;
+ if(!loadEmbeddedPages())showMessage("Loading published page content…");
+ try{
+  await loadPages();
+  if(active!==next)return;
+  const html=loaded[next]??pageHTML(next);
+  doc.innerHTML=html;
+  showMessage(html?"Content loaded. Edit the document below.":"This page has no saved content yet.");
+  if(!version)checkPublishingAccess();
+ }catch(error){
+  showMessage("Could not load "+next+" content: "+error.message,true);
+  doc.textContent="Unable to load the saved page content.";
+  $("heiCompanyPublish").disabled=true;
+ }
 }
 tabs.addEventListener("click",event=>{
  const button=event.target.closest("button[data-hei-tab]");
@@ -99,6 +123,7 @@ panel.querySelector(".hei-content-toolbar").addEventListener("click",e=>{
  const button=e.target.closest("button[data-format]");if(!button)return;
  doc.focus();const cmd=button.dataset.format;document.execCommand(["h2","h3","p"].includes(cmd)?"formatBlock":cmd,false,["h2","h3","p"].includes(cmd)?cmd:null);
 });
+doc.addEventListener("click",e=>{if(e.target.closest("a"))e.preventDefault();});
 doc.addEventListener("paste",e=>{e.preventDefault();document.execCommand("insertText",false,e.clipboardData.getData("text/plain"));});
 $("heiCompanyReset").onclick=()=>{if(!pages)return;loaded[active]=pageHTML(active);doc.innerHTML=loaded[active];showMessage("Unpublished edits discarded.");};
 $("heiCompanyPublish").onclick=async()=>{
