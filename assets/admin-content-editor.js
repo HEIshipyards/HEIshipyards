@@ -52,10 +52,27 @@ function cleanHTML(markup){
 }
 async function loadPages(){
  if(pages)return;
- showMessage("Loading current published content…");
- const res=await fetch("/api/editor-pages",{credentials:"same-origin",cache:"no-store"});
- const data=await res.json();if(!res.ok)throw Error(data.error||"Unable to load page content");
- pages=data.pages;version=data.version;showMessage("Current content loaded. Select and edit text, then publish.");
+ showMessage("Loading published page content…");
+ // Public content is the same data displayed on the website. Never leave the editor empty
+ // merely because the authenticated publishing endpoint is temporarily unavailable.
+ const contentResponse=await fetch("/data/editor-pages.json",{cache:"no-store"});
+ if(!contentResponse.ok)throw Error("Published page content could not be loaded (HTTP "+contentResponse.status+").");
+ const content=await contentResponse.json();
+ if(!content||typeof content!=="object"||!content.lore||!content.crews)
+  throw Error("Published page data is incomplete.");
+ pages=content;
+ showMessage("Page content loaded. Checking publishing access…");
+ try{
+  const res=await fetch("/api/editor-pages",{credentials:"same-origin",cache:"no-store"});
+  const data=await res.json();
+  if(!res.ok)throw Error(data.error||"Publishing API returned HTTP "+res.status);
+  version=data.version;
+  pages=data.pages;
+  showMessage("Ready to edit and publish.");
+ }catch(error){
+  version="";
+  showMessage("Published content loaded, but publishing is unavailable: "+error.message+". The editor is still readable; publishing requires the secure API.",true);
+ }
 }
 async function switchArea(next){
  if(!["fleet","lore","crews"].includes(next))return;
@@ -72,7 +89,7 @@ async function switchArea(next){
  $("heiContentHeading").textContent=next==="lore"?"Company Lore":"Crews of the Almagest";
  $("heiViewCompany").href="/#"+next;
  $("heiCompanyPublish").disabled=false;
- try{await loadPages();if(active===next)doc.innerHTML=loaded[next]??pageHTML(next);}
+ try{await loadPages();if(active===next){doc.innerHTML=loaded[next]??pageHTML(next);$("heiCompanyPublish").disabled=!version;}}
  catch(e){showMessage(e.message,true);doc.innerHTML="";$("heiCompanyPublish").disabled=true;}
 }
 tabs.addEventListener("click",event=>{
@@ -87,7 +104,7 @@ panel.querySelector(".hei-content-toolbar").addEventListener("click",e=>{
 doc.addEventListener("paste",e=>{e.preventDefault();document.execCommand("insertText",false,e.clipboardData.getData("text/plain"));});
 $("heiCompanyReset").onclick=()=>{if(!pages)return;loaded[active]=pageHTML(active);doc.innerHTML=loaded[active];showMessage("Unpublished edits discarded.");};
 $("heiCompanyPublish").onclick=async()=>{
- if(busy||!pages||active==="fleet")return;
+ if(busy||!pages||!version||active==="fleet")return;
  const key=active,html=cleanHTML(doc.innerHTML);
  if(html.length>180000){showMessage("This document is too large to publish.",true);return;}
  busy=true;$("heiCompanyPublish").disabled=true;showMessage("Publishing "+key+" page to GitHub…");
