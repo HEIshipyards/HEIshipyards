@@ -33,7 +33,8 @@ export async function onRequestPut({request, env}) {
       !lore || typeof lore !== "object" || Array.isArray(lore) ||
       typeof lore.intro !== "string" || lore.intro.length > 6000 ||
       !Array.isArray(lore.sections) || lore.sections.length > 30 ||
-      (lore.html !== undefined && (typeof lore.html !== "string" || lore.html.length > 60000 || /<\\s*\\/?\\s*(?:script|style|iframe|svg|math|object|embed|form)\\b/i.test(lore.html) || /<[^>]+\\s+[a-z-]+\\s*=/i.test(lore.html) || /<\\/?(?!p\\b|div\\b|h2\\b|h3\\b|b\\b|strong\\b|i\\b|em\\b|ul\\b|ol\\b|li\\b|br\\b|span\\b)[^>]*>/i.test(lore.html))) ||\n      lore.sections.some(x => !Array.isArray(x) || x.length !== 2 ||
+      (lore.html !== undefined && (typeof lore.html !== "string" || lore.html.length > 60000 || /<\s*\/?\s*(?:script|style|iframe|svg|math|object|embed|form)\b/i.test(lore.html) || /<[^>]+\s+[a-z-]+\s*=/i.test(lore.html) || /<\/?(?!p\b|div\b|h2\b|h3\b|b\b|strong\b|i\b|em\b|ul\b|ol\b|li\b|br\b|span\b)[^>]*>/i.test(lore.html))) || 
+      lore.sections.some(x => !Array.isArray(x) || x.length !== 2 ||
         typeof x[0] !== "string" || !x[0].trim() || x[0].length > 150 ||
         typeof x[1] !== "string" || x[1].length > 6000))
     return respond({error: "Check technical specifications and lore fields."}, 400);
@@ -44,7 +45,8 @@ export async function onRequestPut({request, env}) {
     items[route] = {
       specs: specs.map(([key, value]) => [key.trim(), value.trim()]),
       lore: {intro: lore.intro.trim(),
-        sections: lore.sections.map(([heading, body]) => [heading.trim(), body.trim()]),\n        ...(typeof lore.html === "string" ? {html: lore.html.trim()} : {})}
+        sections: lore.sections.map(([heading, body]) => [heading.trim(), body.trim()]), 
+        ...(typeof lore.html === "string" ? {html: lore.html.trim()} : {})}
     };
     await saveShipPages(env, items, sha, route);
     const fresh = await loadShipPages(env);
