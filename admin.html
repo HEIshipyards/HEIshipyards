@@ -36,6 +36,22 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 </style></head>
 <body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>WEBSITE EDITOR</span></h1></div><a href="/">View public website ↗</a></header>
 <main><p class="note">Choose an area to edit. Publish updates securely through GitHub after signing in with Cloudflare Access.</p>
+<section id="heiConnectionNotice" hidden role="status" aria-live="polite" style="border:1px solid #d97d35;border-radius:8px;background:#222d35;padding:16px;margin:16px 0">
+ <strong style="color:#f3b27e">Admin connection needs attention</strong>
+ <p id="heiConnectionReason" class="note" style="margin:8px 0">The secure publishing service could not be reached.</p>
+ <div class="row"><a href="/api/fleet" target="_blank" rel="noopener noreferrer" style="background:#d97d35;color:#121b22;border-radius:6px;padding:9px 12px;font-weight:750;text-decoration:none">Reconnect Cloudflare Access</a><button type="button" id="heiRetryConnection" onclick="location.reload()">Retry editor connection</button></div>
+ <p class="note" style="margin:0">If prompted, sign in using your existing Cloudflare Access login. If a JSON list of vessels appears instead, the session is active; return here and retry. No new admin page or separate account is needed.</p>
+</section>
+<script>
+window.heiBackendError=function(error){
+ const box=document.getElementById("heiConnectionNotice");
+ const reason=document.getElementById("heiConnectionReason");
+ if(!box||!reason)return;
+ box.hidden=false;
+ const detail=error&&error.message?error.message:String(error||"Unknown connection error");
+ reason.textContent="The secure admin API could not complete its request ("+detail+"). Your public website content has not been deleted. Sign in again if Cloudflare requests it, then retry.";
+};
+</script>
 <div class="layout"><aside class="card"><h2>Vessel registry</h2><div id="vesselList">Connecting…</div></aside>
 <section class="card"><h2 id="heading">Select a vessel</h2><div id="editor" hidden>
 <label for="title">Vessel name</label><input id="title" maxlength="160">
@@ -94,7 +110,7 @@ catch(e){status(e.message,true)}};
 $('previewBtn').onclick=()=>{syncFields();$('preview').hidden=false;const p=$('preview');p.replaceChildren();const h=document.createElement('h3');h.textContent=working.title;p.append(h);const m=document.createElement('p');m.textContent=working.category+' · '+working.gallery_urls.length+' gallery pictures';p.append(m);if(working.preview_url){const im=document.createElement('img');im.src=working.preview_url;im.className='cover';p.append(im)}};
 $('revert').onclick=()=>select(selected);
 $('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$('publish').disabled=true;status('Publishing changes…');try{const result=await api('/api/fleet',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:selected,version,changes:{title:working.title,category:working.category,description:working.description,preview_url:working.preview_url||'',gallery_urls:working.gallery_urls}})});version=result.version;const idx=records.findIndex(x=>String(x.id)===selected);records[idx]=result.item;select(selected);status('Published to GitHub. Cloudflare will deploy the update automatically.')}catch(e){status(e.message,true)}finally{busy=false;$('publish').disabled=false}};
-(async()=>{try{const data=await api('/api/fleet');records=data.items;version=data.version;list();if(records.length)select(String(records[0].id));}catch(e){$('vesselList').textContent='Administration unavailable';$('setupMessage').textContent=e.message+' — See ADMIN_SETUP.md for one-time setup.'}})();
+(async()=>{try{const data=await api('/api/fleet');records=data.items;version=data.version;list();if(records.length)select(String(records[0].id));}catch(e){$('vesselList').textContent='Administration unavailable';$('setupMessage').textContent=e.message+' — Try reconnecting your Cloudflare Access session above.';window.heiBackendError?.(e)}})();
 </script>
 <script>
 (function(){
