@@ -52,27 +52,25 @@ function cleanHTML(markup){
 }
 async function loadPages(){
  if(pages)return;
- showMessage("Loading published page content…");
- // Public content is the same data displayed on the website. Never leave the editor empty
- // merely because the authenticated publishing endpoint is temporarily unavailable.
- const contentResponse=await fetch("/data/editor-pages.json",{cache:"no-store"});
- if(!contentResponse.ok)throw Error("Published page content could not be loaded (HTTP "+contentResponse.status+").");
- const content=await contentResponse.json();
- if(!content||typeof content!=="object"||!content.lore||!content.crews)
-  throw Error("Published page data is incomplete.");
- pages=content;
- showMessage("Page content loaded. Checking publishing access…");
- try{
-  const res=await fetch("/api/editor-pages",{credentials:"same-origin",cache:"no-store"});
-  const data=await res.json();
-  if(!res.ok)throw Error(data.error||"Publishing API returned HTTP "+res.status);
-  version=data.version;
-  pages=data.pages;
-  showMessage("Ready to edit and publish.");
- }catch(error){
-  version="";
-  showMessage("Published content loaded, but publishing is unavailable: "+error.message+". The editor is still readable; publishing requires the secure API.",true);
+ const embedded=document.getElementById("heiEditorEmbeddedData");
+ if(embedded){
+  try{pages=JSON.parse(embedded.textContent);showMessage("Page content loaded. Checking publishing access…");}
+  catch(error){showMessage("Embedded content could not be parsed: "+error.message,true);}
  }
+ if(!pages){
+  try{
+   const response=await fetch("/data/editor-pages.json",{cache:"no-store"});
+   if(!response.ok)throw Error("HTTP "+response.status);
+   pages=await response.json();
+  }catch(error){showMessage("Unable to load page content: "+error.message,true);throw error;}
+ }
+ // The published document is editable even if the API session is not available.
+ try{
+  const response=await fetch("/api/editor-pages",{cache:"no-store",credentials:"same-origin"});
+  if(!response.ok)throw Error("HTTP "+response.status);
+  const data=await response.json();
+  if(data.pages&&data.version){pages=data.pages;version=data.version;showMessage("Ready to edit and publish.");}
+ }catch(error){version="";showMessage("Content loaded, but publishing authentication could not be verified ("+error.message+").",true);}
 }
 async function switchArea(next){
  if(!["fleet","lore","crews"].includes(next))return;
