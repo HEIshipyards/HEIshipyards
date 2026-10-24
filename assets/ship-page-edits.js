@@ -2,8 +2,19 @@
 (function(){
   "use strict";
   let pages=Object.create(null);
+  let companyPages=Object.create(null);
   function apply(route){
     const key=route||decodeURIComponent(location.hash.slice(1));
+    if(key==="lore"||key==="crews"){
+      const edit=companyPages[key],root=document.getElementById("page-content");
+      if(root&&edit){
+        if(typeof edit.html==="string")root.innerHTML=edit.html;
+        else if(typeof edit.base64==="string"){
+          try{const binary=atob(edit.base64);root.innerHTML=new TextDecoder().decode(Uint8Array.from(binary,c=>c.charCodeAt(0)));}catch(e){console.warn("Unable to decode lore",e);}
+        }
+      }
+      return;
+    }
     const edit=pages[key];
     const root=document.getElementById("page-content");
     if(!root||!edit||!root.querySelector(".ship-section"))return;
@@ -36,6 +47,10 @@
     }
   }
   window.heiApplyShipPageEdits=apply;
+  fetch("/data/editor-pages.json",{cache:"no-store"})
+    .then(r=>{if(!r.ok)throw Error("Company pages unavailable");return r.json()})
+    .then(data=>{if(data&&typeof data==="object"&&!Array.isArray(data)){companyPages=data;apply();}})
+    .catch(error=>console.warn("Using built-in company pages.",error));
   fetch("/data/ship-pages.json",{cache:"no-store"})
     .then(r=>{if(!r.ok)throw Error("Ship-page content unavailable.");return r.json()})
     .then(json=>{
