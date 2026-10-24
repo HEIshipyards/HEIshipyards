@@ -19,11 +19,23 @@ export async function onRequestPut({request,env}){
  const {page,html,version}=body||{};
  if(!["lore","crews"].includes(page)||typeof version!=="string"||!/^[a-f0-9]{40}$/.test(version)||typeof html!=="string"||html.length>180000)
    return respond({error:"Invalid content update."},400);
- // Keep editable company HTML free of executable code or unsafe URLs.
- if(/<\s*\/?\s*(?:script|iframe|object|embed|svg|math|form|input|button|meta|link|base|style)\b/i.test(html)||
-    /\bon[a-z]+\s*=/i.test(html)||/\b(?:srcdoc|formaction)\s*=/i.test(html)||
-    /\b(?:href|src|xlink:href)\s*=\s*['"]?\s*(?:javascript:|data:|vbscript:)/i.test(html))
-   return respond({error:"Unsupported HTML or unsafe link found. Remove executable content."},400);
+ // Imported articles use a restricted HTML subset. Reject scripts, event handlers,
+ // active elements, data/javascript URLs, CSS expressions and remote stylesheets.
+ const forbidden=/<\s*\/?\s*(?:script|iframe|object|embed|svg|math|form|input|button|meta|link|base|style|video|audio|source|canvas|template)\b/i;
+ const unsafe=/\bon[a-z]+\s*=|\b(?:srcdoc|formaction)\s*=|(?:javascript:|vbscript:|data:|expression\s*\(|@import|url\s*\(|behavior\s*:|position\s*:\s*fixed)/i;
+ const tags=html.match(/<[^>]*>/g)||[];
+ const allowedTags=new Set(["div","section","article","nav","header","footer","details","summary","span","p","h1","h2","h3","h4","h5","h6","strong","b","em","i","u","s","br","hr","ul","ol","li","blockquote","a","small","sup","sub","table","thead","tbody","tfoot","tr","th","td","img","figure","figcaption","pre","code"]);
+ const allowedAttrs=new Set(["class","id","title","alt","colspan","rowspan","open","href","src","target","rel","style","width","height"]);
+ if(forbidden.test(html)||unsafe.test(html)||tags.some(tag=>{
+   const match=tag.match(/^<\s*\/?\s*([a-z][a-z0-9-]*)\b/i);
+   if(!match||!allowedTags.has(match[1].toLowerCase()))return true;
+   const attrs=[...tag.matchAll(/\s+([a-z][a-z0-9-]*)\s*=/gi)];
+   return attrs.some(x=>!allowedAttrs.has(x[1].toLowerCase()));
+ })||/<(?:a|img)\b[^>]*(?:href|src)\s*=\s*(?!["'])/i.test(html)||
+   /<a\b[^>]*href\s*=\s*["'](?!https:\/\/|#|\/#)[^"']*["']/i.test(html)||
+   /<img\b[^>]*src\s*=\s*["'](?!\/assets\/articles\/|https:\/\/)[^"']*["']/i.test(html)||
+   /style\s*=\s*["'][^"']*(?:[{}<>]|--|\\|var\s*\()/i.test(html))
+   return respond({error:"Unsupported or unsafe HTML. Use the import tool to clean formatting before publishing."},400);
  try{
   const f=await file(env);
   if(f.sha!==version)return respond({error:"Page content changed since loading. Refresh before publishing."},409);
