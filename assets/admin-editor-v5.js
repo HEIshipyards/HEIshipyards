@@ -137,7 +137,7 @@ async function checkPublishingAccess(){
   }catch(error){
    version="";
    $("heiCompanyPublish").disabled=true;
-   showMessage("Saved fallback displayed. Could not verify latest GitHub content: "+error.message,true);
+   showMessage("Saved document loaded, but the publishing API is unavailable: "+error.message+". Use the reconnect option above, then retry.",true);window.heiBackendError?.(error);
   }finally{publishingCheck=null;}
  })();
  return publishingCheck;
