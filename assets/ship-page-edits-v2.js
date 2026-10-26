@@ -27,8 +27,8 @@
     return entry?entry[0]:null;
   }
   function isUnspecified(value){
-    return !String(value??"").trim()||
-      /^(?:n\\s*[\\/.]\\s*a\\.?|not\\s+(?:available|applicable|provided|specified|yet\\s+specified)|unknown|tbd|to\\s+be\\s+determined|[-—–]+)$/i.test(String(value).trim());
+    const text=String(value??"").trim();
+    return !text||/^(?:n\s*[\/.]\s*a\.?|not\s+(?:available|applicable|provided|specified|yet\s+specified)|unknown|tbd|to\s+be\s+determined|[-—–]+)$/i.test(text);
   }
   function canonicalSpecs(pairs){
     // Exactly eleven core fields, followed by nonempty vessel-specific details.
@@ -67,8 +67,13 @@
     body.replaceChildren(fragment);
   }
   function renderSpecCarousel(body,pairs){
-    const standard=pairs.slice(0,standardSpecs.length);
-    const vesselSpecific=pairs.slice(standardSpecs.length);
+    // Standard fields occupy page one. Subsequent pages contain at most
+    // eleven populated vessel-specific fields each, created automatically.
+    const pageSize=standardSpecs.length;
+    const specPages=[pairs.slice(0,pageSize)];
+    for(let offset=pageSize;offset<pairs.length;offset+=pageSize){
+      specPages.push(pairs.slice(offset,offset+pageSize));
+    }
     const table=body.closest("table");
     if(!table)return;
     let controls=table.parentElement.querySelector(".hei-spec-page-nav");
@@ -92,17 +97,17 @@
       table.insertAdjacentElement("afterend",controls);
     }
     const [left,status,right]=controls.children;
-    const hasSecondPage=vesselSpecific.length>0;
-    controls.hidden=!hasSecondPage;
-    controls.style.display=hasSecondPage?"flex":"none";
+    const hasExtraPages=specPages.length>1;
+    controls.hidden=!hasExtraPages;
+    controls.style.display=hasExtraPages?"flex":"none";
     let page=0;
     function showPage(next){
-      page=hasSecondPage?(next+2)%2:0;
-      renderSpecTable(body,page===0?standard:vesselSpecific);
-      table.setAttribute("aria-label",page===0?"Standard technical specifications":"Vessel-specific specifications");
-      status.textContent=page===0?"Standard Specifications · 1 / 2":"Vessel-Specific Specifications · 2 / 2";
+      page=hasExtraPages?(next+specPages.length)%specPages.length:0;
+      renderSpecTable(body,specPages[page]);
+      const title=page===0?"Standard Specifications":"Vessel-Specific Specifications";
+      table.setAttribute("aria-label",title);
+      status.textContent=title+" · "+(page+1)+" / "+specPages.length;
     }
-    // Replacing the old controls on reapplication avoids stale click handlers.
     left.onclick=()=>showPage(page-1);
     right.onclick=()=>showPage(page+1);
     showPage(0);
