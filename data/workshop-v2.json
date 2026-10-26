@@ -94,12 +94,7 @@
     "title": "(H-E-I) Featherfall Freighter MK 6",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3631594269",
     "preview_url": "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/",
-    "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/",
-      "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/",
-      "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/",
-      "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/"
-    ],
+    "gallery_urls": [],
     "time_updated": 1792438654,
     "metadata_status": "verified",
     "gallery_source": "manual",
@@ -115,7 +110,7 @@
     "image_cache_status": "complete",
     "image_errors": [],
     "description": "",
-    "manual_updated_at": "2026-10-26T20:02:34.798Z"
+    "manual_updated_at": "2026-10-26T20:03:04.846Z"
   },
   {
     "id": "3616196196",
