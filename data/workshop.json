@@ -48,19 +48,12 @@
     "route": "ship-borehole"
   },
   {
-    "id": "3631594269",
-    "title": "(H-E-I) Featherfall Freighter MK 6",
+    "id": "3827822181",
+    "title": "Featherfall Freighter",
     "description": "",
-    "preview_url": "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/",
-    "gallery_urls": [
-      "https://images.steamusercontent.com/ugc/16479652609396003477/63B2FA12A3626EDC981F6F4456E59ACE80C6489D/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/12560764734282776440/52DF14BAC0A3636E84CD535C38243FB1D8E572EB/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/16064772492949340935/D157D97965DBF39F588132279748F573CF44AAA1/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/?imw=116&imh=65&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-      "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/?imw=268&imh=151&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
-    ],
-    "time_updated": 1792438654,
-    "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3631594269",
+    "preview_url": "",
+    "gallery_urls": [],
+    "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3827822181",
     "category": "Civilian",
     "route": "ship-featherfall"
   },
