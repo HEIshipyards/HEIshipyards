@@ -33,7 +33,7 @@ export async function onRequestPut({request, env}) {
       !lore || typeof lore !== "object" || Array.isArray(lore) ||
       typeof lore.intro !== "string" || lore.intro.length > 6000 ||
       !Array.isArray(lore.sections) || lore.sections.length > 30 ||
-      (lore.html !== undefined && (typeof lore.html !== "string" || lore.html.length > 60000 || /<\s*\/?\s*(?:script|style|iframe|svg|math|object|embed|form)\b/i.test(lore.html) || /<[^>]+\s+[a-z-]+\s*=/i.test(lore.html) || /<\/?(?!p\b|div\b|h2\b|h3\b|b\b|strong\b|i\b|em\b|ul\b|ol\b|li\b|br\b|span\b)[^>]*>/i.test(lore.html))) || 
+      (lore.html !== undefined && (typeof lore.html !== "string" || lore.html.length > 60000 || /<\s*\/?\s*(?:script|style|iframe|svg|math|object|embed|form)\b/i.test(lore.html) || /<[^>]+\s+[a-z-]+\s*=/i.test(lore.html) || /<(?!\/?(?:p|div|h2|h3|b|strong|i|em|ul|ol|li|br|span)\s*\/?>)[^>]*>/i.test(lore.html))) || 
       lore.sections.some(x => !Array.isArray(x) || x.length !== 2 ||
         typeof x[0] !== "string" || !x[0].trim() || x[0].length > 150 ||
         typeof x[1] !== "string" || x[1].length > 6000))
