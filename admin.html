@@ -32,6 +32,18 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 .edit-pair .remove-line{margin-top:8px;padding:5px 10px}
 .lore-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.lore-toolbar button{padding:5px 10px;min-width:36px}.lore-document{background:#131e25;border:1px solid #586c77;border-radius:6px;min-height:350px;max-height:680px;overflow:auto;padding:18px;outline-offset:3px;line-height:1.65}.lore-document:focus{outline:2px solid var(--orange)}.lore-document h2,.lore-document h3{margin:1em 0 .4em}.lore-document p{margin:.5em 0}.lore-document ul{padding-left:25px}.lore-document:empty:before{content:"Write the vessel's history here…";color:var(--muted)}
 #shipStatus{white-space:pre-wrap;min-height:1.4em}
+.upload-feedback{margin:4px 0 14px;padding:10px 12px;border-radius:7px;border:1px solid var(--line);background:#162630;max-width:600px}
+.upload-feedback[hidden]{display:none}
+.upload-feedback-line{display:flex;align-items:center;gap:9px;min-height:22px}
+.upload-feedback .upload-message{overflow-wrap:anywhere;font-weight:600}
+.upload-feedback[data-state="success"]{border-color:#608a70}.upload-feedback[data-state="success"] .upload-message{color:#bce6c6}
+.upload-feedback[data-state="error"]{border-color:#ae6a61}.upload-feedback[data-state="error"] .upload-message{color:#ffc6bc}
+.upload-spinner{display:none;width:17px;height:17px;flex:none;border:2px solid #5f7682;border-top-color:var(--orange);border-radius:50%}
+.upload-feedback[data-state="loading"] .upload-spinner{display:inline-block;animation:hei-upload-spin .8s linear infinite}
+.upload-feedback progress{display:none;width:100%;height:11px;margin-top:9px;accent-color:var(--orange)}
+.upload-feedback[data-state="loading"] progress{display:block}
+@keyframes hei-upload-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.upload-feedback[data-state="loading"] .upload-spinner{animation:none;border-top-color:#f0b77e}}
 @media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
 </style></head>
 <body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>WEBSITE EDITOR</span></h1></div><a href="/">View public website ↗</a></header>
@@ -59,9 +71,17 @@ window.heiBackendError=function(error){
 <label for="description">Workshop listing description (optional)</label><textarea id="description" maxlength="4000"></textarea>
 <label>Cover / fleet thumbnail</label><img id="cover" class="cover" alt="Selected cover">
 <div class="row"><button type="button" id="uploadCover">Upload cover</button><button type="button" id="clearCover">Remove cover</button></div>
+<div id="coverUploadFeedback" class="upload-feedback" hidden>
+ <div class="upload-feedback-line"><span class="upload-spinner" aria-hidden="true"></span><span class="upload-message" role="status" aria-live="polite"></span></div>
+ <progress max="100" aria-label="Cover image upload progress"></progress>
+</div>
 <hr><h2>Gallery photographs</h2><p class="note">Upload images, move them left/right, or remove them. Up to 16 gallery images per vessel.</p>
 <div id="gallery" class="gallery"></div>
 <div class="row"><button id="addPhoto" type="button">+ Add gallery photo</button></div>
+<div id="galleryUploadFeedback" class="upload-feedback" hidden>
+ <div class="upload-feedback-line"><span class="upload-spinner" aria-hidden="true"></span><span class="upload-message" role="status" aria-live="polite"></span></div>
+ <progress max="100" aria-label="Gallery photograph upload progress"></progress>
+</div>
 <hr>
 <details class="ship-edit" id="shipSpecsSection">
  <summary>Technical specifications</summary>
@@ -88,28 +108,121 @@ window.heiBackendError=function(error){
 </div><p id="setupMessage" class="note">Loading secure fleet backend…</p>
 </section></div><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></main>
 <script>
-const $=id=>document.getElementById(id);let records=[],version='',selected=null,working=null,uploadMode='gallery',busy=false;
+const $=id=>document.getElementById(id);let records=[],version='',selected=null,working=null,uploadMode='gallery',busy=false,uploadBusy=false;
 const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const isImage=u=>typeof u==='string'&&(u.startsWith('/assets/')||u.startsWith('https://images.steamusercontent.com/')||u.startsWith('https://steamuserimages-'));
 function status(message,error=false){$('status').textContent=message;$('status').className=error?'danger':'';}
 async function api(path,options={}){const r=await fetch(path,{cache:'no-store',credentials:'same-origin',...options});let j;try{j=await r.json()}catch{throw Error('Backend is not responding. Configure Cloudflare Pages Functions and Access.')}if(!r.ok)throw Error(j.error||'Request failed');return j;}
 function syncFields(){if(!working)return;working.title=$('title').value;working.category=$('category').value;working.description=$('description').value;}
-function list(){const root=$('vesselList');root.replaceChildren();records.forEach(item=>{const b=document.createElement('button');b.type='button';b.textContent=item.title||item.id;b.className=selected===String(item.id)?'active':'';b.onclick=()=>select(String(item.id));root.append(b)});}
-function select(id){const item=records.find(i=>String(i.id)===id);if(!item)return;selected=id;working={...item,gallery_urls:[...(item.gallery_urls||[])]};$('editor').hidden=false;$('setupMessage').hidden=true;$('heading').textContent=working.title;$('title').value=working.title||'';$('category').value=working.category||'Other';$('description').value=working.description||'';$('preview').hidden=true;status('');draw();list();window.heiLoadSelectedShip?.();}
+function list(){const root=$('vesselList');root.replaceChildren();records.forEach(item=>{const b=document.createElement('button');b.type='button';b.textContent=item.title||item.id;b.className=selected===String(item.id)?'active':'';b.disabled=uploadBusy;b.onclick=()=>select(String(item.id));root.append(b)});}
+function select(id){if(uploadBusy)return;const item=records.find(i=>String(i.id)===id);if(!item)return;selected=id;working={...item,gallery_urls:[...(item.gallery_urls||[])]};$('editor').hidden=false;$('setupMessage').hidden=true;$('heading').textContent=working.title;$('title').value=working.title||'';$('category').value=working.category||'Other';$('description').value=working.description||'';$('preview').hidden=true;status('');resetUploadFeedback();draw();list();window.heiLoadSelectedShip?.();}
 function draw(){$('cover').src=isImage(working.preview_url)?working.preview_url:'';const root=$('gallery');root.replaceChildren();working.gallery_urls.forEach((u,i)=>{const panel=document.createElement('div');panel.className='photo';const im=document.createElement('img');im.src=u;im.alt='Gallery photo '+(i+1);panel.append(im);const actions=document.createElement('div');actions.className='photo-actions';[['←',()=>move(i,-1),i===0],['→',()=>move(i,1),i===working.gallery_urls.length-1],['×',()=>{working.gallery_urls.splice(i,1);draw()},false]].forEach(([label,fn,disabled])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b)});panel.append(actions);root.append(panel)});}
 function move(i,offset){const gallery=working.gallery_urls;[gallery[i],gallery[i+offset]]=[gallery[i+offset],gallery[i]];draw();}
-$('uploadCover').onclick=()=>choose('cover');$('addPhoto').onclick=()=>choose('gallery');$('clearCover').onclick=()=>{working.preview_url='';draw()};
-function choose(mode){uploadMode=mode;$('imageInput').value='';$('imageInput').click();}
-$('imageInput').onchange=async()=>{const file=$('imageInput').files[0];if(!file||!working)return;if(file.size>3500000){status('Use an image under 3.5 MB.',true);return}
-if(!['image/jpeg','image/png','image/webp'].includes(file.type)){status('Use PNG, JPEG or WebP.',true);return}
-if(uploadMode==='gallery'&&working.gallery_urls.length>=16){status('Gallery limit reached.',true);return}
-status('Uploading image to your site…');try{const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=()=>reject(Error('Unable to read image'));reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.readAsDataURL(file)});
-const result=await api('/api/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:selected,base64})});
-if(uploadMode==='cover')working.preview_url=result.url;else working.gallery_urls.push(result.url);draw();status('Image uploaded. Click Publish updates to use it on the public website.');}
-catch(e){status(e.message,true)}};
+
+function uploadFeedback(mode,state,message,percent){
+ const el=$(mode==='cover'?'coverUploadFeedback':'galleryUploadFeedback');
+ el.hidden=false;
+ el.dataset.state=state;
+ el.querySelector('.upload-message').textContent=message;
+ const progress=el.querySelector('progress');
+ if(state==='loading'&&Number.isFinite(percent))progress.value=percent;
+ else progress.removeAttribute('value');
+}
+function resetUploadFeedback(){
+ for(const id of ['coverUploadFeedback','galleryUploadFeedback']){
+  const el=$(id);
+  el.hidden=true;
+  el.dataset.state='';
+  el.querySelector('.upload-message').textContent='';
+ }
+}
+function lockUploads(locked){
+ uploadBusy=locked;
+ for(const id of ['uploadCover','addPhoto','clearCover','revert'])$(id).disabled=locked;
+ $('publish').disabled=locked||busy;
+ $('vesselList').querySelectorAll('button').forEach(b=>b.disabled=locked);
+ $('gallery').querySelectorAll('.photo-actions button').forEach(b=>b.disabled=locked);
+}
+function uploadToGitHub(id,base64,mode){
+ return new Promise((resolve,reject)=>{
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST','/api/upload',true);
+  xhr.responseType='json';
+  xhr.withCredentials=true;
+  xhr.timeout=120000;
+  xhr.setRequestHeader('Content-Type','application/json');
+  let lastMilestone=-1;
+  xhr.upload.onprogress=e=>{
+   if(!e.lengthComputable||!e.total)return;
+   const percent=Math.min(100,Math.round(e.loaded/e.total*100));
+   const milestone=Math.floor(percent/10);
+   const el=$(mode==='cover'?'coverUploadFeedback':'galleryUploadFeedback');
+   if(milestone!==lastMilestone){
+    lastMilestone=milestone;
+    uploadFeedback(mode,'loading','Uploading image… '+percent+'%',percent);
+   }else el.querySelector('progress').value=percent;
+  };
+  xhr.upload.onload=()=>uploadFeedback(mode,'loading','Upload transferred. Waiting for GitHub to save the image…');
+  xhr.onerror=()=>reject(Error('Network connection failed. Check your connection and retry.'));
+  xhr.ontimeout=()=>reject(Error('The server took too long. Check whether your image was saved before retrying.'));
+  xhr.onabort=()=>reject(Error('The upload was interrupted.'));
+  xhr.onload=()=>{
+   const response=xhr.response;
+   if(xhr.status>=200&&xhr.status<300&&response&&typeof response.url==='string'&&response.url.startsWith('/assets/fleet/')){
+    resolve(response);
+   }else{
+    const message=response&&typeof response.error==='string'?response.error:
+     xhr.status===401||xhr.status===403?'Your admin session may have expired. Reconnect Cloudflare Access and retry.':
+     'The server did not confirm the image was saved (HTTP '+xhr.status+').';
+    reject(Error(message));
+   }
+  };
+  try{xhr.send(JSON.stringify({id,base64}));}catch(error){reject(error);}
+ });
+}
+$('uploadCover').onclick=()=>choose('cover');
+$('addPhoto').onclick=()=>choose('gallery');
+$('clearCover').onclick=()=>{
+ if(uploadBusy)return;
+ working.preview_url='';
+ draw();
+ uploadFeedback('cover','success','Cover removed from the draft. Click Publish updates to apply the change.');
+};
+function choose(mode){
+ if(uploadBusy||!working)return;
+ uploadMode=mode;
+ $('imageInput').value='';
+ $('imageInput').click();
+}
+$('imageInput').onchange=async()=>{
+ const file=$('imageInput').files[0];
+ if(!file||!working||uploadBusy)return;
+ const mode=uploadMode,id=selected;
+ if(file.size>3500000){uploadFeedback(mode,'error','Upload failed: image must be under 3.5 MB.');return;}
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)){uploadFeedback(mode,'error','Upload failed: use JPEG, PNG or WebP.');return;}
+ if(mode==='gallery'&&working.gallery_urls.length>=16){uploadFeedback(mode,'error','Upload failed: the gallery already has 16 images.');return;}
+ lockUploads(true);
+ uploadFeedback(mode,'loading','Preparing '+file.name+'…');
+ try{
+  const base64=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();
+   reader.onerror=()=>reject(Error('The selected image could not be read.'));
+   reader.onload=()=>resolve(String(reader.result).split(',')[1]);
+   reader.readAsDataURL(file);
+  });
+  uploadFeedback(mode,'loading','Starting upload…',0);
+  const result=await uploadToGitHub(id,base64,mode);
+  if(mode==='cover')working.preview_url=result.url;
+  else working.gallery_urls.push(result.url);
+  draw();
+  uploadFeedback(mode,'success','Upload passed: image saved. Click Publish updates below to show it on the website.');
+ }catch(error){
+  uploadFeedback(mode,'error','Upload failed: '+(error?.message||'Unknown error')+'. The current images were not changed.');
+ }finally{lockUploads(false);}
+};
 $('previewBtn').onclick=()=>{syncFields();$('preview').hidden=false;const p=$('preview');p.replaceChildren();const h=document.createElement('h3');h.textContent=working.title;p.append(h);const m=document.createElement('p');m.textContent=working.category+' · '+working.gallery_urls.length+' gallery pictures';p.append(m);if(working.preview_url){const im=document.createElement('img');im.src=working.preview_url;im.className='cover';p.append(im)}};
-$('revert').onclick=()=>select(selected);
-$('publish').onclick=async()=>{if(busy||!working)return;syncFields();busy=true;$('publish').disabled=true;status('Publishing changes…');try{const result=await api('/api/fleet',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:selected,version,changes:{title:working.title,category:working.category,description:working.description,preview_url:working.preview_url||'',gallery_urls:working.gallery_urls}})});version=result.version;const idx=records.findIndex(x=>String(x.id)===selected);records[idx]=result.item;select(selected);status('Published to GitHub. Cloudflare will deploy the update automatically.')}catch(e){status(e.message,true)}finally{busy=false;$('publish').disabled=false}};
+$('revert').onclick=()=>{if(!uploadBusy)select(selected)};
+$('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields();busy=true;$('publish').disabled=true;status('Publishing changes…');try{const result=await api('/api/fleet',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:selected,version,changes:{title:working.title,category:working.category,description:working.description,preview_url:working.preview_url||'',gallery_urls:working.gallery_urls}})});version=result.version;const idx=records.findIndex(x=>String(x.id)===selected);records[idx]=result.item;select(selected);status('Published to GitHub. Cloudflare will deploy the update automatically.')}catch(e){status(e.message,true)}finally{busy=false;$('publish').disabled=uploadBusy}};
 (async()=>{try{const data=await api('/api/fleet');records=data.items;version=data.version;list();if(records.length)select(String(records[0].id));}catch(e){$('vesselList').textContent='Administration unavailable';$('setupMessage').textContent=e.message+' — Try reconnecting your Cloudflare Access session above.';window.heiBackendError?.(e)}})();
 </script>
 <script>
