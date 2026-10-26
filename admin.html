@@ -92,8 +92,8 @@ window.heiBackendError=function(error){
  <summary>Technical specifications</summary>
  <p class="note">Every vessel has the same standard technical specifications. Their names are fixed; edit their values below. The four overview cards above the public ship image use Dimensions, Baseline mass, Crew complement, and Classification from this list.</p>
  <div id="shipStandardSpecRows" class="standard-spec-grid"></div>
- <h3>Additional specifications</h3>
- <p class="note">Add any unique engineering details for this vessel. Existing custom entries are preserved.</p>
+ <h3>Vessel-Specific Specifications</h3>
+ <p class="note">Only specifications with real information appear on the second page of the public technical specifications carousel. Blank or N/A custom entries are excluded automatically.</p>
  <div id="shipSpecRows"></div>
  <div class="row"><button type="button" id="addShipSpec">+ Add custom specification</button></div>
 </details>
@@ -251,6 +251,10 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
     ["Shipboard automation","automation","automation systems"]
   ];
   const normalizeSpecName=name=>String(name||"").trim().toLowerCase().replace(/\s+/g," ");
+  const hasCustomSpecValue=value=>{
+    const text=String(value??"").trim();
+    return !!text&&!/^(?:n\s*[\/.]\s*a\.?|not\s+(?:available|applicable|provided|specified|yet\s+specified)|unknown|tbd|to\s+be\s+determined|[-—–]+)$/i.test(text);
+  };
   const standardNameFor=name=>{
     const needle=normalizeSpecName(name);
     const entry=standardSpecs.find(spec=>spec.some(alias=>normalizeSpecName(alias)===needle));
@@ -263,7 +267,7 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
       const name=String(pair[0]||""),value=String(pair[1]||"");
       const standard=standardNameFor(name);
       if(standard&&!existing.has(standard))existing.set(standard,value);
-      else custom.push([name,value]);
+      else if(hasCustomSpecValue(value))custom.push([name,value]);
     }
     const parent=$("shipStandardSpecRows");
     parent.replaceChildren();
@@ -371,7 +375,7 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
       row.querySelector(".edit-title").value.trim(),row.querySelector(".edit-body").value.trim()
     ]);
     const page={
-      specs:[...getStandardSpecPairs(),...pairs($("shipSpecRows")).filter(([name])=>name!=="")],
+      specs:[...getStandardSpecPairs(),...pairs($("shipSpecRows")).filter(([name,value])=>name!==""&&hasCustomSpecValue(value))],
       lore:{...((shipPages[key]||{}).lore||{intro:"",sections:[]}),html:safeLore(loreDoc.innerHTML)}
     };
     const customDuplicates=pairs($("shipSpecRows")).filter(([name])=>name&&standardNameFor(name));
