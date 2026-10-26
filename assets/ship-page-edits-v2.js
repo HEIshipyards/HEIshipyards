@@ -26,16 +26,23 @@
     const entry=standardSpecs.find(spec=>spec.some(alias=>normalizeSpecName(alias)===normalized));
     return entry?entry[0]:null;
   }
+  function isUnspecified(value){
+    return !String(value??"").trim()||
+      /^(?:n\\s*[\\/.]\\s*a\\.?|not\\s+(?:available|applicable|provided|specified|yet\\s+specified)|unknown|tbd|to\\s+be\\s+determined|[-—–]+)$/i.test(String(value).trim());
+  }
   function canonicalSpecs(pairs){
-    // Fill all standard fields; carry every unique ship-specific field through unchanged.
+    // Exactly eleven core fields, followed by nonempty vessel-specific details.
     const fixed=new Map(),extras=[];
     for(const pair of pairs||[]){
       if(!Array.isArray(pair)||pair.length!==2||!String(pair[0]).trim())continue;
       const label=String(pair[0]).trim();
-      const value=String(pair[1]||"").trim()||"N/A";
+      const value=String(pair[1]||"").trim();
       const canonical=canonicalSpecName(label);
-      if(canonical&&!fixed.has(canonical))fixed.set(canonical,value);
-      else extras.push([label,value]);
+      if(canonical){
+        if(!fixed.has(canonical))fixed.set(canonical,value||"N/A");
+      }else if(!isUnspecified(value)){
+        extras.push([label,value]);
+      }
     }
     return [
       ...standardSpecs.map(([name])=>[name,fixed.get(name)||"N/A"]),
@@ -58,6 +65,47 @@
       row.append(heading,info);fragment.append(row);
     }
     body.replaceChildren(fragment);
+  }
+  function renderSpecCarousel(body,pairs){
+    const standard=pairs.slice(0,standardSpecs.length);
+    const vesselSpecific=pairs.slice(standardSpecs.length);
+    const table=body.closest("table");
+    if(!table)return;
+    let controls=table.parentElement.querySelector(".hei-spec-page-nav");
+    if(!controls){
+      controls=document.createElement("nav");
+      controls.className="hei-spec-page-nav";
+      controls.setAttribute("aria-label","Technical specifications pages");
+      controls.style.cssText="display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;margin:19px 0 0";
+      const left=document.createElement("button");
+      left.type="button";left.textContent="‹";left.setAttribute("aria-label","Previous specifications");
+      const status=document.createElement("span");
+      status.className="hei-spec-page-status";
+      status.setAttribute("role","status");status.setAttribute("aria-live","polite");
+      status.style.cssText="min-width:220px;text-align:center;font-size:.85rem;letter-spacing:.04em;color:var(--steel-light, #d5dfe6)";
+      const right=document.createElement("button");
+      right.type="button";right.textContent="›";right.setAttribute("aria-label","Next specifications");
+      for(const button of [left,right]){
+        button.style.cssText="min-width:42px;min-height:42px;border:1px solid var(--line, #4d5d68);background:var(--surface2, #24323b);color:var(--text, #e9eef0);border-radius:4px;font-size:1.5rem;cursor:pointer";
+      }
+      controls.append(left,status,right);
+      table.insertAdjacentElement("afterend",controls);
+    }
+    const [left,status,right]=controls.children;
+    const hasSecondPage=vesselSpecific.length>0;
+    controls.hidden=!hasSecondPage;
+    controls.style.display=hasSecondPage?"flex":"none";
+    let page=0;
+    function showPage(next){
+      page=hasSecondPage?(next+2)%2:0;
+      renderSpecTable(body,page===0?standard:vesselSpecific);
+      table.setAttribute("aria-label",page===0?"Standard technical specifications":"Vessel-specific specifications");
+      status.textContent=page===0?"Standard Specifications · 1 / 2":"Vessel-Specific Specifications · 2 / 2";
+    }
+    // Replacing the old controls on reapplication avoids stale click handlers.
+    left.onclick=()=>showPage(page-1);
+    right.onclick=()=>showPage(page+1);
+    showPage(0);
   }
   function renderShipSummary(root,pairs){
     const parent=root.querySelector(".ship-section.exc-hero .ship-stats");
@@ -133,17 +181,16 @@
     if(!root||!root.querySelector(".ship-section.exc-hero"))return;
     const specifications=root.querySelector(".ship-section[id$='-specs'] table.spec-table tbody");
     if(specifications){
-      if(!shipPagesReady){
-        // Keep the built-in engineering record visible until published data loads.
-        const fallback=canonicalSpecs(builtInSpecs(specifications));
-        renderSpecTable(specifications,fallback);
-        renderShipSummary(root,fallback);
-      }else{
-        const source=Array.isArray(edit?.specs)?edit.specs:builtInSpecs(specifications);
-        const unified=canonicalSpecs(source);
-        renderSpecTable(specifications,unified);
-        renderShipSummary(root,unified);
+      // Preserve the original rows across asynchronous refreshes, even when a
+      // ship has no published record and the user is on page two.
+      if(!specifications._heiOriginalSpecs){
+        specifications._heiOriginalSpecs=builtInSpecs(specifications);
       }
+      const source=shipPagesReady&&Array.isArray(edit?.specs)
+        ?edit.specs:specifications._heiOriginalSpecs;
+      const unified=canonicalSpecs(source);
+      renderSpecCarousel(specifications,unified);
+      renderShipSummary(root,unified);
     }
     if(edit?.lore&&typeof edit.lore==="object"){
       const lead=root.querySelector(".ship-section.exc-hero .ship-lead");
