@@ -59,7 +59,12 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 .hei-tag{position:relative;display:inline-flex;cursor:pointer;margin:0}
 .hei-tag input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .hei-tag span{display:inline-flex;align-items:center;border:1px solid #566b78;border-radius:18px;padding:7px 11px;background:#131e25;color:#e8f0f2;font-size:13px;min-height:34px}
-.hei-tag input:checked+span{background:var(--orange);color:#161b20;border-color:var(--orange);font-weight:750}
+.hei-tag input:checked+span{background:var(--orange);color:#161b20;border-color:#ffd0a0;font-weight:800;box-shadow:0 0 0 2px rgba(217,125,53,.25),0 0 16px rgba(217,125,53,.3)}
+.hei-tag input:checked+span::before{content:"✓";font-weight:900;font-size:14px;margin-right:6px}
+.hei-tag-selection-count{font-size:12px;color:#ffd0a0;margin-left:8px;font-weight:700}
+.hei-tag-selection-summary{border:1px solid #566b78;background:#14232c;border-radius:6px;padding:10px 12px;margin-top:10px;font-size:13px}
+.hei-tag-selection-summary strong{color:#ffbe8e}
+.hei-tag-selection-summary[data-empty="true"]{color:var(--muted);border-style:dashed}
 .hei-tag input:focus-visible+span{outline:2px solid #fff;outline-offset:3px}
 .hei-existing-spec{margin:10px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
 .hei-clear-size{padding:5px 9px;font-size:12px}
@@ -124,10 +129,10 @@ window.heiBackendError=function(error){
  </div>
  <div id="shipLoreDocument" class="lore-document" contenteditable="true" role="textbox" aria-label="Ship lore document" aria-multiline="true" spellcheck="true"></div>
 </details>
-<div class="row"><button type="button" class="primary" id="publishShipPage">Publish specifications &amp; lore</button><button type="button" id="resetShipPage">Discard ship page edits</button></div>
+<p class="note">Use the single <strong>Publish updates</strong> button below to save this vessel’s listing, classification, technical specifications, and lore together.</p>
 <p id="shipStatus" class="note" role="status" aria-live="polite">Loading vessel page editor…</p>
 <hr><h2>Preview & publish</h2>
-<div class="row"><button type="button" id="previewBtn">Preview edits</button><button id="publish" class="primary" type="button">Publish updates</button><button id="revert" type="button">Discard edits</button></div>
+<div class="row"><button type="button" id="previewBtn">Preview edits</button><button id="publish" class="primary" type="button">Publish all vessel updates</button><button id="revert" type="button">Discard edits</button></div>
 <div id="preview" hidden></div>
 <p id="status" role="status" aria-live="polite"></p>
 </div><p id="setupMessage" class="note">Loading secure fleet backend…</p>
@@ -139,8 +144,8 @@ const isImage=u=>typeof u==='string'&&(u.startsWith('/assets/')||u.startsWith('h
 function status(message,error=false){$('status').textContent=message;$('status').className=error?'danger':'';}
 async function api(path,options={}){const r=await fetch(path,{cache:'no-store',credentials:'same-origin',...options});let j;try{j=await r.json()}catch{throw Error('Backend is not responding. Configure Cloudflare Pages Functions and Access.')}if(!r.ok)throw Error(j.error||'Request failed');return j;}
 function syncFields(){if(!working)return;working.title=$('title').value;working.category=$('category').value;working.description=$('description').value;}
-function list(){const root=$('vesselList');root.replaceChildren();records.forEach(item=>{const b=document.createElement('button');b.type='button';b.textContent=item.title||item.id;b.className=selected===String(item.id)?'active':'';b.disabled=uploadBusy;b.onclick=()=>select(String(item.id));root.append(b)});}
-function select(id){if(uploadBusy)return;const item=records.find(i=>String(i.id)===id);if(!item)return;selected=id;working={...item,gallery_urls:[...(item.gallery_urls||[])]};$('editor').hidden=false;$('setupMessage').hidden=true;$('heading').textContent=working.title;$('title').value=working.title||'';$('category').value=working.category||'Other';$('description').value=working.description||'';$('preview').hidden=true;status('');resetUploadFeedback();draw();list();window.heiLoadSelectedShip?.();}
+function list(){const root=$('vesselList');root.replaceChildren();records.forEach(item=>{const b=document.createElement('button');b.type='button';b.textContent=item.title||item.id;b.className=selected===String(item.id)?'active':'';b.disabled=uploadBusy||busy;b.onclick=()=>select(String(item.id));root.append(b)});}
+function select(id,force=false){if((uploadBusy||busy)&&!force)return;const item=records.find(i=>String(i.id)===id);if(!item)return;selected=id;working={...item,gallery_urls:[...(item.gallery_urls||[])]};$('editor').hidden=false;$('setupMessage').hidden=true;$('heading').textContent=working.title;$('title').value=working.title||'';$('category').value=working.category||'Other';$('description').value=working.description||'';$('preview').hidden=true;status('');resetUploadFeedback();draw();list();window.heiLoadSelectedShip?.();}
 function draw(){$('cover').src=isImage(working.preview_url)?working.preview_url:'';const root=$('gallery');root.replaceChildren();working.gallery_urls.forEach((u,i)=>{const panel=document.createElement('div');panel.className='photo';const im=document.createElement('img');im.src=u;im.alt='Gallery photo '+(i+1);panel.append(im);const actions=document.createElement('div');actions.className='photo-actions';[['←',()=>move(i,-1),i===0],['→',()=>move(i,1),i===working.gallery_urls.length-1],['×',()=>{working.gallery_urls.splice(i,1);draw()},false]].forEach(([label,fn,disabled])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=disabled;b.onclick=fn;actions.append(b)});panel.append(actions);root.append(panel)});}
 function move(i,offset){const gallery=working.gallery_urls;[gallery[i],gallery[i+offset]]=[gallery[i+offset],gallery[i]];draw();}
 
@@ -246,8 +251,49 @@ $('imageInput').onchange=async()=>{
  }finally{lockUploads(false);}
 };
 $('previewBtn').onclick=()=>{syncFields();$('preview').hidden=false;const p=$('preview');p.replaceChildren();const h=document.createElement('h3');h.textContent=working.title;p.append(h);const m=document.createElement('p');m.textContent=working.category+' · '+working.gallery_urls.length+' gallery pictures';p.append(m);if(working.preview_url){const im=document.createElement('img');im.src=working.preview_url;im.className='cover';p.append(im)}};
-$('revert').onclick=()=>{if(!uploadBusy)select(selected)};
-$('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields();busy=true;$('publish').disabled=true;status('Publishing changes…');try{const result=await api('/api/fleet',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:selected,version,changes:{title:working.title,category:working.category,description:working.description,preview_url:working.preview_url||'',gallery_urls:working.gallery_urls}})});version=result.version;const idx=records.findIndex(x=>String(x.id)===selected);records[idx]=result.item;select(selected);status('Published to GitHub. Cloudflare will deploy the update automatically.')}catch(e){status(e.message,true)}finally{busy=false;$('publish').disabled=uploadBusy}};
+$('revert').onclick=()=>{if(!uploadBusy&&!busy)select(selected)};
+$('publish').onclick=async()=>{
+ if(busy||uploadBusy||!working)return;
+ syncFields();
+ const vesselId=selected;
+ const snapshot={...working,gallery_urls:[...(working.gallery_urls||[])]};
+ busy=true;
+ $('publish').disabled=true;
+ $('vesselList').querySelectorAll('button').forEach(button=>button.disabled=true);
+ let specificationsSaved=false, fleetSaved=false;
+ try{
+  if(typeof window.heiPublishSelectedShipPage!=='function'){
+    throw Error('Technical specifications editor is not ready. Reload the editor before publishing.');
+  }
+  status('Saving classification, specifications, and lore…');
+  await window.heiPublishSelectedShipPage(vesselId);
+  specificationsSaved=true;
+  status('Specifications saved. Publishing the fleet listing…');
+  const result=await api('/api/fleet',{method:'PUT',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:vesselId,version,changes:{
+      title:snapshot.title,category:snapshot.category,description:snapshot.description,
+      preview_url:snapshot.preview_url||'',gallery_urls:snapshot.gallery_urls
+    }})});
+  version=result.version;
+  const index=records.findIndex(item=>String(item.id)===vesselId);
+  if(index>=0)records[index]=result.item;
+  fleetSaved=true;
+ }catch(error){
+  const prefix=specificationsSaved
+    ?'Specifications and classification saved, but the fleet listing FAILED. '
+    :'No vessel changes published. ';
+  status(prefix+(error?.message||String(error)),true);
+ }finally{
+  busy=false;
+  $('publish').disabled=uploadBusy;
+  if(fleetSaved){
+    select(vesselId);
+    status('All vessel changes published to GitHub: fleet listing, classification, specifications, and lore. Cloudflare will deploy the public update.');
+  }else{
+    list();
+  }
+ }
+};
 (async()=>{try{const data=await api('/api/fleet');records=data.items;version=data.version;list();if(records.length)select(String(records[0].id));}catch(e){$('vesselList').textContent='Administration unavailable';$('setupMessage').textContent=e.message+' — Try reconnecting your Cloudflare Access session above.';window.heiBackendError?.(e)}})();
 </script>
 <script>
@@ -338,10 +384,16 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
     const recognized=tokens.length>0&&tokens.every(tag=>exact.has(tag.toLowerCase()));
     const selected=new Set(recognized?tokens.map(tag=>exact.get(tag.toLowerCase())):[]);
     const legacy=!recognized&&hasCustomSpecValue(original)?original:null;
+    const summary=document.createElement("div");
+    summary.className="hei-tag-selection-summary";summary.setAttribute("role","status");
+    summary.setAttribute("aria-live","polite");
+    const sections=[];
     for(const group of groups){
       const box=document.createElement("div");box.className="hei-tag-group";
-      const heading=document.createElement("div");
-      heading.className="hei-tag-heading";heading.textContent=group.label;
+      const heading=document.createElement("div");heading.className="hei-tag-heading";
+      heading.textContent=group.label;
+      const count=document.createElement("span");
+      count.className="hei-tag-selection-count";heading.append(count);
       const tags=document.createElement("div");tags.className="hei-tag-list";
       for(const tag of group.tags){
         const label=document.createElement("label");label.className="hei-tag";
@@ -357,14 +409,30 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
             }
           }
           row.dataset.heiChanged="true";
+          refreshTagHighlights();
         });
         label.append(input,caption);tags.append(label);
       }
-      box.append(heading,tags);row.append(box);
+      box.append(heading,tags);row.append(box);sections.push({tags,count});
     }
+    row.append(summary);
+    function refreshTagHighlights(){
+      const chosen=[...row.querySelectorAll(".hei-tag-input:checked")];
+      for(const {tags,count} of sections){
+        const n=tags.querySelectorAll(".hei-tag-input:checked").length;
+        count.textContent=n?(" · "+n+" selected"):" · none selected";
+      }
+      summary.dataset.empty=chosen.length?"false":"true";
+      summary.replaceChildren();
+      const strong=document.createElement("strong");
+      strong.textContent=chosen.length?"Selected tags: ":"Selected tags: none";
+      summary.append(strong);
+      if(chosen.length)summary.append(document.createTextNode(chosen.map(input=>input.dataset.tag).join(" · ")));
+    }
+    refreshTagHighlights();
     if(legacy){
       const note=document.createElement("p");note.className="hei-existing-spec";
-      note.textContent="Existing "+name.toLowerCase()+" retained until tags are changed: "+legacy;
+      note.textContent="Existing "+name.toLowerCase()+" is a legacy description, not saved tags. It remains unchanged until tags are selected: "+legacy;
       row.append(note);
     }
     row._heiGetSpecValue=()=>{
@@ -513,40 +581,53 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
     const key=routeForSelection();
     if(!shipVersion){
       message(shipError||"Loading editable ship specifications and lore…",!!shipError);
-      $("publishShipPage").disabled=true;return;
+      return;
     }
     const page=shipPages[key]||{specs:[],lore:{intro:"",sections:[]}};
     renderStandardSpecs(page.specs);
     loreDoc.innerHTML=safeLore(page.lore?.html||oldLoreHTML(page.lore));
-    $("publishShipPage").disabled=false;
-    message("Editing "+key+". These fields are independent of Workshop listings; publish them with the button above.");
+    message("Editing "+key+". Use the single Publish all vessel updates button below to save everything.");
   }
   window.heiLoadSelectedShip=displayShip;
   $("addShipSpec").onclick=()=>appendSpec();
-  $("resetShipPage").onclick=displayShip;
-  $("publishShipPage").onclick=async()=>{
-    if(shipBusy||!selected||!shipVersion)return;
+  window.heiPublishSelectedShipPage=async vesselId=>{
+    if(shipBusy)throw Error("Technical specifications are already being published.");
+    if(!selected||String(selected)!==String(vesselId))throw Error("Selected vessel changed. Please try again.");
+    if(!shipVersion)throw Error(shipError||"Technical specifications are still loading. Retry after the editor loads.");
     const key=routeForSelection();
+    if(!key)throw Error("Cannot identify the ship page to publish.");
     const validationError=validateStructuredSpecs();
-    if(validationError){message(validationError,true);return;}
-    const pairs=(target)=>[...target.querySelectorAll(".edit-pair")].map(row=>[
+    if(validationError){message(validationError,true);throw Error(validationError);}
+    const pairs=target=>[...target.querySelectorAll(".edit-pair")].map(row=>[
       row.querySelector(".edit-title").value.trim(),row.querySelector(".edit-body").value.trim()
     ]);
     const page={
       specs:[...getStandardSpecPairs(),...pairs($("shipSpecRows")).filter(([name,value])=>name!==""&&hasCustomSpecValue(value))],
       lore:{...((shipPages[key]||{}).lore||{intro:"",sections:[]}),html:safeLore(loreDoc.innerHTML)}
     };
-    const customDuplicates=pairs($("shipSpecRows")).filter(([name])=>name&&standardNameFor(name));
-    if(customDuplicates.length){message("Custom fields cannot reuse a standard field name. Remove or rename: "+customDuplicates.map(x=>x[0]).join(", "),true);return;}
-    if(page.specs.length>35||page.lore.html.length>60000){message("Maximum 35 total specifications (11 standard plus up to 24 custom), or lore exceeds 60,000 characters.",true);return;}
-    shipBusy=true;$("publishShipPage").disabled=true;message("Publishing ship specifications and lore…");
+    const duplicates=pairs($("shipSpecRows")).filter(([name])=>name&&standardNameFor(name));
+    if(duplicates.length){
+      const detail="Custom fields cannot reuse standardized field names: "+duplicates.map(x=>x[0]).join(", ");
+      message(detail,true);throw Error(detail);
+    }
+    if(page.specs.length>35||page.lore.html.length>60000){
+      const detail="Limit: 35 specifications and 60,000 lore characters.";
+      message(detail,true);throw Error(detail);
+    }
+    shipBusy=true;
+    message("Publishing vessel technical specifications and lore…");
     try{
       const res=await api("/api/ship-pages",{method:"PUT",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({route:key,version:shipVersion,page})});
-      shipVersion=res.version;shipPages[key]=res.page;displayShip();
-      message("Published specifications and lore to GitHub. Cloudflare will deploy the public ship-page update automatically.");
-    }catch(error){message(error.message,true);}
-    finally{shipBusy=false;$("publishShipPage").disabled=false;}
+      shipVersion=res.version;shipPages[key]=res.page;
+      message("Specifications and classification saved. Publishing fleet listing next…");
+      return res;
+    }catch(error){
+      message("Technical specifications failed to publish: "+error.message,true);
+      throw error;
+    }finally{
+      shipBusy=false;
+    }
   };
   (async()=>{
     try{
