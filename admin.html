@@ -48,6 +48,23 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 .standard-spec-row{border:1px solid #495b65;background:#202f39;border-radius:7px;padding:12px}
 .standard-spec-row label{margin:0 0 6px;font-size:14px;color:#f2c59e}
 .standard-spec-row textarea{min-height:62px;resize:vertical}
+.hei-dimensions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:9px}
+.hei-dimension-field{display:flex;align-items:center;gap:6px}
+.hei-dimension-field label{margin:0;min-width:16px;color:var(--muted)}
+.hei-dimension-field input{min-width:0;flex:1}
+.hei-dimension-field .hei-unit{color:var(--muted)}
+.hei-tag-group{margin:11px 0}
+.hei-tag-heading{font-size:13px;font-weight:700;color:var(--steel-light,#d9e6ec);margin-bottom:8px}
+.hei-tag-list{display:flex;flex-wrap:wrap;gap:7px}
+.hei-tag{position:relative;display:inline-flex;cursor:pointer;margin:0}
+.hei-tag input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.hei-tag span{display:inline-flex;align-items:center;border:1px solid #566b78;border-radius:18px;padding:7px 11px;background:#131e25;color:#e8f0f2;font-size:13px;min-height:34px}
+.hei-tag input:checked+span{background:var(--orange);color:#161b20;border-color:var(--orange);font-weight:750}
+.hei-tag input:focus-visible+span{outline:2px solid #fff;outline-offset:3px}
+.hei-existing-spec{margin:10px 0 0;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.hei-clear-size{padding:5px 9px;font-size:12px}
+@media(max-width:560px){.hei-dimensions{grid-template-columns:1fr}}
+
 #shipSpecsSection h3{margin:24px 0 6px;color:#e9eef0}
 @media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
 </style></head>
@@ -260,6 +277,124 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
     const entry=standardSpecs.find(spec=>spec.some(alias=>normalizeSpecName(alias)===needle));
     return entry?entry[0]:null;
   };
+  // Structured selection uses the original string-based specification schema.
+  // Unrecognized historical values remain untouched until explicitly edited.
+  const classificationGroups=[
+    {label:"Size (choose one)",single:true,tags:["Small","Medium","Large","Extra Large","Capital"]},
+    {label:"Fleet type",tags:["Civilian","Industrial","Combat","Infrastructure"]},
+    {label:"Mission / role",tags:["Starchaser","Expedition","Exploration","Patrol","Escort","Reconnaissance","Survey","Mining","Cargo","Freight","Logistics","Transport","Shuttle","Utility","Support","Search & Rescue","Security","Defense","Carrier","Construction","Research","Station","Outpost"]}
+  ];
+  const tagGroups={
+    "Classification":classificationGroups,
+    "Main propulsion":[{label:"Propulsion types",tags:["Ion","Hydrogen","Atmospheric"]}],
+    "Power systems":[{label:"Power sources",tags:["Battery","Solar","Reactor"]}]
+  };
+  function parseDimensions(value){
+    const source=String(value??"").trim();
+    if(!hasCustomSpecValue(source))return [];
+    const unitMatches=[...source.matchAll(/(\d+(?:\.\d+)?)\s*(?:m|meters?|metres?)\b/gi)].map(match=>match[1]);
+    if(unitMatches.length===3)return unitMatches;
+    if(/[×]|\s[xX]\s/.test(source)&&/\b(?:m|meters?|metres?)\b/i.test(source)){
+      const values=source.match(/\d+(?:\.\d+)?/g)||[];
+      if(values.length===3)return values;
+    }
+    return [];
+  }
+  function renderDimensionsField(row,value){
+    const parsed=parseDimensions(value);
+    const legacy=parsed.length?null:(hasCustomSpecValue(value)?String(value).trim():null);
+    const group=document.createElement("div");
+    group.className="hei-dimensions";
+    for(const [index,axis] of ["X","Y","Z"].entries()){
+      const wrap=document.createElement("div");wrap.className="hei-dimension-field";
+      const label=document.createElement("label");label.textContent=axis;
+      const input=document.createElement("input");
+      input.type="number";input.min="0.001";input.step="any";input.inputMode="decimal";
+      input.className="hei-dimension-input";input.placeholder="0";
+      input.id="hei-dimension-"+axis.toLowerCase();label.htmlFor=input.id;
+      input.setAttribute("aria-label",axis+" dimension in meters");
+      input.value=parsed[index]||"";
+      const unit=document.createElement("span");unit.className="hei-unit";unit.textContent="m";
+      wrap.append(label,input,unit);group.append(wrap);
+    }
+    row.append(group);
+    if(legacy){
+      const note=document.createElement("p");note.className="hei-existing-spec";
+      note.textContent="Existing dimensions retained until all three measurements are entered: "+legacy;
+      row.append(note);
+    }
+    row._heiGetSpecValue=()=>{
+      const inputs=[...row.querySelectorAll(".hei-dimension-input")];
+      if(inputs.every(input=>!input.value.trim()))return legacy||"N/A";
+      return inputs.map(input=>String(Number(input.value))+" m").join(" × ");
+    };
+  }
+  function renderTagField(row,name,value){
+    const groups=tagGroups[name];
+    const allowed=groups.flatMap(group=>group.tags);
+    const exact=new Map(allowed.map(tag=>[tag.toLowerCase(),tag]));
+    const original=String(value??"").trim();
+    const tokens=original.split(/\s*(?:·|,|;|\|)\s*/).filter(Boolean);
+    const recognized=tokens.length>0&&tokens.every(tag=>exact.has(tag.toLowerCase()));
+    const selected=new Set(recognized?tokens.map(tag=>exact.get(tag.toLowerCase())):[]);
+    const legacy=!recognized&&hasCustomSpecValue(original)?original:null;
+    for(const group of groups){
+      const box=document.createElement("div");box.className="hei-tag-group";
+      const heading=document.createElement("div");
+      heading.className="hei-tag-heading";heading.textContent=group.label;
+      const tags=document.createElement("div");tags.className="hei-tag-list";
+      for(const tag of group.tags){
+        const label=document.createElement("label");label.className="hei-tag";
+        const input=document.createElement("input");
+        input.type="checkbox";input.className="hei-tag-input";input.dataset.tag=tag;
+        input.checked=selected.has(tag);
+        input.setAttribute("aria-label",tag);
+        const caption=document.createElement("span");caption.textContent=tag;
+        input.addEventListener("change",()=>{
+          if(group.single&&input.checked){
+            for(const peer of tags.querySelectorAll(".hei-tag-input")){
+              if(peer!==input)peer.checked=false;
+            }
+          }
+          row.dataset.heiChanged="true";
+        });
+        label.append(input,caption);tags.append(label);
+      }
+      box.append(heading,tags);row.append(box);
+    }
+    if(legacy){
+      const note=document.createElement("p");note.className="hei-existing-spec";
+      note.textContent="Existing "+name.toLowerCase()+" retained until tags are changed: "+legacy;
+      row.append(note);
+    }
+    row._heiGetSpecValue=()=>{
+      if(legacy&&row.dataset.heiChanged!=="true")return legacy;
+      return [...row.querySelectorAll(".hei-tag-input:checked")].map(input=>input.dataset.tag).join(" · ")||"N/A";
+    };
+  }
+  function renderJumpField(row,value){
+    const old=String(value??"").trim();
+    const current=/^(?:yes|no)$/i.test(old)?old.toLowerCase():"";
+    const legacy=!current&&hasCustomSpecValue(old)?old:null;
+    const select=document.createElement("select");
+    select.className="hei-jump-select";select.setAttribute("aria-label","Jump capability");
+    for(const [key,label] of [["","Not specified"],["Yes","Yes"],["No","No"]]){
+      const option=document.createElement("option");option.value=key;option.textContent=label;
+      select.append(option);
+    }
+    select.value=current?current==="yes"?"Yes":"No":"";
+    select.addEventListener("change",()=>{row.dataset.heiChanged="true";});
+    row.append(select);
+    if(legacy){
+      const note=document.createElement("p");note.className="hei-existing-spec";
+      note.textContent="Existing jump capability retained until a selection is made: "+legacy;
+      row.append(note);
+    }
+    row._heiGetSpecValue=()=>{
+      if(legacy&&row.dataset.heiChanged!=="true")return legacy;
+      return select.value||"N/A";
+    };
+  }
   function renderStandardSpecs(specs){
     const existing=new Map(),custom=[];
     for(const pair of specs||[]){
@@ -276,20 +411,41 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
       row.dataset.specName=name;
       const label=document.createElement("label");
       label.textContent=name;
-      const input=document.createElement("textarea");
-      input.maxLength=2000;input.value=existing.get(name)||"";
-      input.placeholder="N/A — enter this vessel's specification";
-      const inputId="standard-spec-"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-");
-      input.id=inputId;label.htmlFor=inputId;
-      row.append(label,input);parent.append(row);
+      row.append(label);
+      const value=existing.get(name)||"";
+      if(name==="Dimensions")renderDimensionsField(row,value);
+      else if(tagGroups[name])renderTagField(row,name,value);
+      else if(name==="Jump capability")renderJumpField(row,value);
+      else{
+        const input=document.createElement("textarea");
+        input.maxLength=2000;input.value=value;
+        input.placeholder="N/A — enter this vessel's specification";
+        const inputId="standard-spec-"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+        input.id=inputId;label.htmlFor=inputId;
+        row.append(input);
+        row._heiGetSpecValue=()=>input.value.trim()||"N/A";
+      }
+      parent.append(row);
     }
     $("shipSpecRows").replaceChildren();
     for(const [name,value] of custom)appendSpec(name,value);
   }
   function getStandardSpecPairs(){
     return [...$("shipStandardSpecRows").querySelectorAll(".standard-spec-row")].map(row=>[
-      row.dataset.specName,row.querySelector("textarea").value.trim()||"N/A"
+      row.dataset.specName,row._heiGetSpecValue()
     ]);
+  }
+  function validateStructuredSpecs(){
+    const row=[...$("shipStandardSpecRows").querySelectorAll(".standard-spec-row")].find(item=>item.dataset.specName==="Dimensions");
+    if(!row)return "";
+    const fields=[...row.querySelectorAll(".hei-dimension-input")];
+    if(!fields.length)return "";
+    const entered=fields.filter(input=>input.value.trim()).length;
+    if(entered>0&&entered!==3)return "Dimensions: enter all three X, Y, and Z measurements in meters.";
+    if(entered===3&&fields.some(input=>!Number.isFinite(Number(input.value))||Number(input.value)<=0)){
+      return "Dimensions must contain three positive numbers in meters.";
+    }
+    return "";
   }
   function routeForSelection(){
     const item=records.find(item=>String(item.id)===String(selected));
@@ -371,6 +527,8 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
   $("publishShipPage").onclick=async()=>{
     if(shipBusy||!selected||!shipVersion)return;
     const key=routeForSelection();
+    const validationError=validateStructuredSpecs();
+    if(validationError){message(validationError,true);return;}
     const pairs=(target)=>[...target.querySelectorAll(".edit-pair")].map(row=>[
       row.querySelector(".edit-title").value.trim(),row.querySelector(".edit-body").value.trim()
     ]);
