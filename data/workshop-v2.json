@@ -94,7 +94,9 @@
     "title": "Featherfall Freighter MK 6",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3827822181",
     "preview_url": "/assets/fleet/3827822181/591cba0c47da46bb8d233c8412e62d3e.png",
-    "gallery_urls": [],
+    "gallery_urls": [
+      "/assets/fleet/3827822181/db0029888f0c43fd9592db90e5cd1f8d.png"
+    ],
     "time_updated": null,
     "metadata_status": "pending",
     "gallery_source": "manual",
@@ -104,7 +106,7 @@
     "image_cache_status": "uncached",
     "image_errors": [],
     "description": "",
-    "manual_updated_at": "2026-10-26T21:46:30.031Z"
+    "manual_updated_at": "2026-10-26T21:56:20.323Z"
   },
   {
     "id": "3616196196",
