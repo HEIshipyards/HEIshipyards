@@ -214,7 +214,7 @@
     }
   }
   window.heiApplyShipPageEdits=apply;
-  fetch("/data/ship-pages.json",{cache:"no-store"})
+  fetch("/data/ship-pages.json?revision="+Date.now(),{cache:"no-store"})
     .then(r=>{if(!r.ok)throw Error("Ship-page content unavailable.");return r.json();})
     .then(json=>{if(json&&typeof json==="object"&&!Array.isArray(json)){
       pages=json;
