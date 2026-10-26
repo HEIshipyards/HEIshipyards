@@ -44,6 +44,11 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 .upload-feedback[data-state="loading"] progress{display:block}
 @keyframes hei-upload-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.upload-feedback[data-state="loading"] .upload-spinner{animation:none;border-top-color:#f0b77e}}
+.standard-spec-grid{display:grid;gap:10px;margin:16px 0 22px}
+.standard-spec-row{border:1px solid #495b65;background:#202f39;border-radius:7px;padding:12px}
+.standard-spec-row label{margin:0 0 6px;font-size:14px;color:#f2c59e}
+.standard-spec-row textarea{min-height:62px;resize:vertical}
+#shipSpecsSection h3{margin:24px 0 6px;color:#e9eef0}
 @media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
 </style></head>
 <body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>WEBSITE EDITOR</span></h1></div><a href="/">View public website ↗</a></header>
@@ -85,9 +90,12 @@ window.heiBackendError=function(error){
 <hr>
 <details class="ship-edit" id="shipSpecsSection">
  <summary>Technical specifications</summary>
- <p class="note">Edit the specification fields shown on this vessel's public ship page. Existing categories are prefilled; add your own as needed.</p>
+ <p class="note">Every vessel has the same standard technical specifications. Their names are fixed; edit their values below. The four overview cards above the public ship image use Dimensions, Baseline mass, Crew complement, and Classification from this list.</p>
+ <div id="shipStandardSpecRows" class="standard-spec-grid"></div>
+ <h3>Additional specifications</h3>
+ <p class="note">Add any unique engineering details for this vessel. Existing custom entries are preserved.</p>
  <div id="shipSpecRows"></div>
- <div class="row"><button type="button" id="addShipSpec">+ Add specification</button></div>
+ <div class="row"><button type="button" id="addShipSpec">+ Add custom specification</button></div>
 </details>
 <details class="ship-edit" id="shipLoreSection">
  <summary>Ship lore</summary>
@@ -228,7 +236,57 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
 <script>
 (function(){
   let shipPages={},shipVersion="",shipBusy=false,shipError="";
-  const specNames=["Classification","Dimensions","Baseline mass","Crew complement","Operating environment","Main propulsion","Cargo capacity","Power systems","Primary equipment","Armament","Mission systems","Workshop variant"];
+  // Standard names are fixed across the fleet; values are edited per vessel.
+  const standardSpecs=[
+    ["Classification","vessel classification","class"],
+    ["Dimensions","size","hull dimensions"],
+    ["Baseline mass","base mass","mass"],
+    ["Crew complement","crew capacity","crew","nominal crew"],
+    ["Operating environment","environment"],
+    ["Main propulsion","propulsion"],
+    ["Cargo capacity","cargo"],
+    ["Power systems","power generation"],
+    ["Jump capability","jump drive","jump drives","jump system"],
+    ["Weapon complement","weapons complement","armament","weaponry"],
+    ["Shipboard automation","automation","automation systems"]
+  ];
+  const normalizeSpecName=name=>String(name||"").trim().toLowerCase().replace(/\s+/g," ");
+  const standardNameFor=name=>{
+    const needle=normalizeSpecName(name);
+    const entry=standardSpecs.find(spec=>spec.some(alias=>normalizeSpecName(alias)===needle));
+    return entry?entry[0]:null;
+  };
+  function renderStandardSpecs(specs){
+    const existing=new Map(),custom=[];
+    for(const pair of specs||[]){
+      if(!Array.isArray(pair)||pair.length<2)continue;
+      const name=String(pair[0]||""),value=String(pair[1]||"");
+      const standard=standardNameFor(name);
+      if(standard&&!existing.has(standard))existing.set(standard,value);
+      else custom.push([name,value]);
+    }
+    const parent=$("shipStandardSpecRows");
+    parent.replaceChildren();
+    for(const [name] of standardSpecs){
+      const row=document.createElement("div");row.className="standard-spec-row";
+      row.dataset.specName=name;
+      const label=document.createElement("label");
+      label.textContent=name;
+      const input=document.createElement("textarea");
+      input.maxLength=2000;input.value=existing.get(name)||"";
+      input.placeholder="N/A — enter this vessel's specification";
+      const inputId="standard-spec-"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+      input.id=inputId;label.htmlFor=inputId;
+      row.append(label,input);parent.append(row);
+    }
+    $("shipSpecRows").replaceChildren();
+    for(const [name,value] of custom)appendSpec(name,value);
+  }
+  function getStandardSpecPairs(){
+    return [...$("shipStandardSpecRows").querySelectorAll(".standard-spec-row")].map(row=>[
+      row.dataset.specName,row.querySelector("textarea").value.trim()||"N/A"
+    ]);
+  }
   function routeForSelection(){
     const item=records.find(item=>String(item.id)===String(selected));
     return item ? (item.route || "workshop-"+String(item.id)) : "";
@@ -297,9 +355,8 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
       message(shipError||"Loading editable ship specifications and lore…",!!shipError);
       $("publishShipPage").disabled=true;return;
     }
-    const page=shipPages[key]||{specs:specNames.map(x=>[x,"N/A"]),lore:{intro:"",sections:[]}};
-    $("shipSpecRows").replaceChildren();
-    (page.specs||[]).forEach(pair=>appendSpec(pair[0],pair[1]));
+    const page=shipPages[key]||{specs:[],lore:{intro:"",sections:[]}};
+    renderStandardSpecs(page.specs);
     loreDoc.innerHTML=safeLore(page.lore?.html||oldLoreHTML(page.lore));
     $("publishShipPage").disabled=false;
     message("Editing "+key+". These fields are independent of Workshop listings; publish them with the button above.");
@@ -314,10 +371,12 @@ $('publish').onclick=async()=>{if(busy||uploadBusy||!working)return;syncFields()
       row.querySelector(".edit-title").value.trim(),row.querySelector(".edit-body").value.trim()
     ]);
     const page={
-      specs:pairs($("shipSpecRows")).filter(([name])=>name!==""),
+      specs:[...getStandardSpecPairs(),...pairs($("shipSpecRows")).filter(([name])=>name!=="")],
       lore:{...((shipPages[key]||{}).lore||{intro:"",sections:[]}),html:safeLore(loreDoc.innerHTML)}
     };
-    if(page.specs.length>35||page.lore.html.length>60000){message("Too many specifications or lore exceeds 60,000 characters.",true);return;}
+    const customDuplicates=pairs($("shipSpecRows")).filter(([name])=>name&&standardNameFor(name));
+    if(customDuplicates.length){message("Custom fields cannot reuse a standard field name. Remove or rename: "+customDuplicates.map(x=>x[0]).join(", "),true);return;}
+    if(page.specs.length>35||page.lore.html.length>60000){message("Maximum 35 total specifications (11 standard plus up to 24 custom), or lore exceeds 60,000 characters.",true);return;}
     shipBusy=true;$("publishShipPage").disabled=true;message("Publishing ship specifications and lore…");
     try{
       const res=await api("/api/ship-pages",{method:"PUT",headers:{"Content-Type":"application/json"},
