@@ -535,7 +535,7 @@
     "specs": [
       [
         "Classification",
-        "Compact multi-role combat and expedition vessel / Starchaser"
+        "Medium · Combat · Starchaser · Expedition · Exploration · Patrol · Escort · Cargo · Freight · Shuttle · Utility · Search & Rescue · Security · Defense · Construction"
       ],
       [
         "Dimensions",
@@ -552,6 +552,30 @@
       [
         "Operating environment",
         "Space and planetary operations"
+      ],
+      [
+        "Main propulsion",
+        "Ion · Hydrogen"
+      ],
+      [
+        "Cargo capacity",
+        "N/A"
+      ],
+      [
+        "Power systems",
+        "Battery · Solar · Reactor"
+      ],
+      [
+        "Jump capability",
+        "Yes"
+      ],
+      [
+        "Weapon complement",
+        "10 PDC 1 RAILGUN 1INTERRIOR TURRET"
+      ],
+      [
+        "Shipboard automation",
+        "Automated landing gear with closely fitting armored housings; hallway status readout; ALK-4 INROTOR INTEGRATION; SHUTTLE HANGER AUTOMATION"
       ],
       [
         "Primary weapon",
@@ -588,10 +612,6 @@
       [
         "Interior facilities",
         "Internal hangar, cargo space, expanded commons and full kitchen, bridge, enlarged CIC"
-      ],
-      [
-        "Shipboard automation",
-        "Automated landing gear with closely fitting armored housings; hallway status readout"
       ]
     ],
     "lore": {
@@ -617,7 +637,8 @@
           "R-2.0 — Current modernization standard",
           "HEI's parallel modernization work on the Borehole, Outlander, and Sojourner reinforced five core design priorities: modularity, endurance, habitability, automation, and survivability. Excalibur's R-2.0 development translated those priorities into mission pylons, stronger defensive coverage, an updated reactor citadel, expanded crew spaces, optional external propulsion systems, and more capable shipboard systems."
         ]
-      ]
+      ],
+      "html": "<p>A compact, independent multi-role combat vessel designed for long-range patrol, remote station protection, escort operations, reconnaissance, search and rescue, and frontier response. Excalibur is as much an expedition platform as it is a fighting ship.</p>\\n<h3>Program origins</h3>\\n<p>The Excalibur program began as a compact combat vessel concept. Its purpose expanded beyond direct combat into an independent, adaptable spacecraft capable of operating far from major support facilities. Patrol, escort, reconnaissance, inspection, search and rescue, protection of remote installations, and limited transport all became part of the Starchaser mission profile.</p>\\n<h3>The original Excalibur lineage</h3>\\n<p>Mod 6 established the recognizable shape of the modern Excalibur and introduced the XR-9 Godspear spinal railgun as a defining system. A long series of continuous revisions followed, leading through the mature Mk 11 design and the final Mk 12 of the original hull family. Rather than one abrupt redesign, the old series evolved through accumulated operational and engineering lessons.</p>\\n<h3>The clean-sheet 1-M program</h3>\\n<p>After the limits of the original hull became apparent, HEI initiated a clean-sheet replacement. Approximately 18 months of development produced the 1-M Starchaser: a larger, more practical spacecraft with a dedicated hangar, internal cargo facilities, accommodation for a 6–8-person crew, and the ability to operate in both space and planetary environments.</p>\\n<h3>R-1.0 — Initial production configuration</h3>\\n<p>The first production 1-M paired the XR-9 Godspear with six point-defense cannons. Its design emphasized a heavy monocoque structure, an armored reactor citadel, internal cargo and hangar space, and two command positions: an exposed bridge for direct visibility and a protected combat information center (CIC) for operations under threat.</p>\\n<h3>R-2.0 — Current modernization standard</h3>\\n<p>HEI's parallel modernization work on the Borehole, Outlander, and Sojourner reinforced five core design priorities: modularity, endurance, habitability, automation, and survivability. Excalibur's R-2.0 development translated those priorities into mission pylons, stronger defensive coverage, an updated reactor citadel, expanded crew spaces, optional external propulsion systems, and more capable shipboard systems.</p>"
     }
   }
 }
