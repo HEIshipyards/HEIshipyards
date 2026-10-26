@@ -218,7 +218,7 @@
     "specs": [
       [
         "Classification",
-        "Civilian logistics and cargo transport"
+        "Medium"
       ],
       [
         "Dimensions",
@@ -238,7 +238,7 @@
       ],
       [
         "Main propulsion",
-        "N/A"
+        "Ion · Hydrogen"
       ],
       [
         "Cargo capacity",
@@ -246,19 +246,23 @@
       ],
       [
         "Power systems",
+        "Battery"
+      ],
+      [
+        "Jump capability",
+        "No"
+      ],
+      [
+        "Weapon complement",
         "N/A"
       ],
       [
-        "Armament",
+        "Shipboard automation",
         "N/A"
       ],
       [
-        "Mission systems",
-        "Civilian cargo transport"
-      ],
-      [
-        "Workshop variant",
-        "Featherfall Freighter · Mk 5"
+        "SURVIVAL READY",
+        "YES"
       ]
     ],
     "lore": {
@@ -276,7 +280,8 @@
           "Operational relationship",
           "Supported by Outlander external landing facilities and connected to the wider mining-to-industry logistics system."
         ]
-      ]
+      ],
+      "html": "<p>The Featherfall is HEI’s smaller-scale freighter, bridging the gap between personal shuttles and larger industrial cargo platforms. Its role is to move useful payloads within a wider frontier logistics network.</p>\\n<h3>Role in HEI</h3>\\n<p>The Featherfall is HEI’s smaller-scale freighter, bridging the gap between personal shuttles and larger industrial cargo platforms. Its role is to move useful payloads within a wider frontier logistics network.</p>\\n<h3>Role in fleet</h3>\\n<p>Moves material, equipment and cargo between HEI facilities and ships, bridging shuttles and heavier industrial platforms.</p>\\n<h3>Operational relationship</h3>\\n<p>Supported by Outlander external landing facilities and connected to the wider mining-to-industry logistics system.</p>"
     }
   },
   "ship-shuttle-mod6": {
