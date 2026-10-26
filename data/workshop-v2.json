@@ -102,8 +102,8 @@
     ],
     "time_updated": 1792438654,
     "metadata_status": "verified",
-    "gallery_source": "saved",
-    "gallery_note": "Steam page lookups paused after rate limiting; saved photos retained.",
+    "gallery_source": "manual",
+    "gallery_note": "Manually curated in HEI Fleet Manager.",
     "gallery_page_rate_limited": false,
     "images": {
       "https://images.steamusercontent.com/ugc/16761128111829316146/06483C75AE669E5681526CBB8B776153103030A4/": "/assets/workshop/3631594269/d5196e9a68555059512b.jpg",
@@ -113,7 +113,9 @@
       "https://images.steamusercontent.com/ugc/14326088423989369868/EEBAADE6FAD6A1BFD5D8F6C8F3136E626370575C/": "/assets/workshop/3631594269/ba93450c47ed126a8d40.jpg"
     },
     "image_cache_status": "complete",
-    "image_errors": []
+    "image_errors": [],
+    "description": "",
+    "manual_updated_at": "2026-10-26T20:02:34.798Z"
   },
   {
     "id": "3616196196",
