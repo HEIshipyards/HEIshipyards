@@ -1,5 +1,8 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HEI · Website Content Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
 <style>
 :root{color-scheme:dark;--bg:#1A252E;--panel:#253139;--line:#80817B;--orange:#994800;--text:#FFFFFF;--muted:#BFC0BD}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,Segoe UI,sans-serif}
@@ -72,6 +75,11 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 
 #shipSpecsSection h3{margin:24px 0 6px;color:#e9eef0}
 @media(max-width:550px){.edit-pair .pair-grid{grid-template-columns:1fr}}
+
+/* HEI admin interface display typography; leave editable document content and input fields readable. */
+:where(header h1,h1,h2,h3,h4,h5,h6,label,button,.primary,summary,.eyebrow,.tab,[role="tab"],.toolbar-title){font-family:'Orbitron',system-ui,sans-serif;font-weight:900}
+:where(button,[role="tab"]){letter-spacing:.025em}
+.lore-document :where(h1,h2,h3,h4,h5,h6),.lore-document :where(p,span,li){font-family:inherit;font-weight:revert}
 </style></head>
 <body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>WEBSITE EDITOR</span></h1></div><a href="/">View public website ↗</a></header>
 <main><p class="note">Choose an area to edit. Publish updates securely through GitHub after signing in with Cloudflare Access.</p>
