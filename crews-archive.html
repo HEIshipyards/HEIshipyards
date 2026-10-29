@@ -78,10 +78,12 @@ function render(){
  const prose=el('div','prose');
  const blocks=c.text.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean);
  for(const block of blocks){
-  const p=el('p','',block);
-  if(/^\*{3,}$/.test(block))p.className='scene';
-  else if(/^(?:Almagest Standard Date:|Year\s+\d+,\s*Day\s+\d+)/i.test(block) && !(c.number===1 && block===blocks[0]))p.className='date';
-  prose.append(p);
+  if(/^\*{3,}$/.test(block)){prose.append(el('p','scene',block));continue;}
+  const date=block.match(/^((?:Almagest Standard Date:|Year\s+\d+,\s*Day\s+\d+)[^\n]*)(?:\n([\s\S]*))?$/i);
+  if(date){
+   prose.append(el('p','date',date[1].trim()));
+   if(date[2]&&date[2].trim())prose.append(el('p','',date[2].trim()));
+  }else{prose.append(el('p','',block));}
  }
  page.append(prose);prev.disabled=index===0;next.disabled=index===chapters.length-1;
  const h='#record-'+c.number;if(location.hash!==h)history.replaceState(null,'',h);
