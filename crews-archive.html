@@ -80,7 +80,7 @@ function render(){
  for(const block of blocks){
   const p=el('p','',block);
   if(/^\*{3,}$/.test(block))p.className='scene';
-  else if(/^(?:Almagest Standard Date:|Year\s+\d+,\s*Day\s+\d+)/i.test(block))p.className='date';
+  else if(/^(?:Almagest Standard Date:|Year\s+\d+,\s*Day\s+\d+)/i.test(block) && !(c.number===1 && block===blocks[0]))p.className='date';
   prose.append(p);
  }
  page.append(prose);prev.disabled=index===0;next.disabled=index===chapters.length-1;
