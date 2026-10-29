@@ -17,7 +17,7 @@ panel.innerHTML=`<div class="hei-content-intro"><h2 id="heiContentHeading">Compa
 <div id="heiImportPreview" hidden><h3>Unpublished page preview</h3><iframe id="heiPreviewFrame" sandbox="" title="Unpublished page preview" style="width:100%;height:570px;background:#151d23;border:1px solid #586c77;border-radius:6px"></iframe></div>
 <div class="row"><button type="button" id="heiCompanyPublish" class="primary">Publish page updates</button><button type="button" id="heiCompanyReset">Discard edits</button><a href="/#lore" id="heiViewCompany" target="_blank" rel="noopener">View public page ↗</a></div>
 <p id="heiCompanyStatus" class="note" role="status" aria-live="polite"></p>`;
-const fleetArea=document.querySelector("main > .layout");
+const fleetArea=document.querySelector("#heiAuthenticatedApp > .layout") || document.querySelector("main > .layout");
 if(!fleetArea){
  document.querySelector("main")?.append(panel);
  panel.hidden=false;
@@ -25,7 +25,7 @@ if(!fleetArea){
  return;
 }
 fleetArea.before(panel);
-const intro=document.querySelector("main > p.note");
+const intro=document.querySelector("#heiAuthenticatedApp > p.note") || document.querySelector("main > p.note");
 const tabs=document.createElement("nav");
 tabs.className="hei-editor-tabs";
 tabs.setAttribute("aria-label","Choose website section to edit");
