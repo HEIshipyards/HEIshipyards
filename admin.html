@@ -80,9 +80,10 @@ hr{border:0;border-top:1px solid var(--line);margin:22px 0}
 :where(header h1,h1,h2,h3,h4,h5,h6,label,button,.primary,summary,.eyebrow,.tab,[role="tab"],.toolbar-title){font-family:'Orbitron',system-ui,sans-serif;font-weight:900}
 :where(button,[role="tab"]){letter-spacing:.025em}
 .lore-document :where(h1,h2,h3,h4,h5,h6),.lore-document :where(p,span,li){font-family:inherit;font-weight:revert}
+[hidden]{display:none!important}
 </style></head>
 <body><header><div><div class="eyebrow">HELIX ENGINEERING & INTEGRATION</div><h1>HEI <span>WEBSITE EDITOR</span></h1></div><a href="/">View public website ↗</a></header>
-<main><p class="note">Choose an area to edit. Publish updates securely through GitHub after signing in with Cloudflare Access.</p>
+<main><section id="heiAuthGate" style="max-width:680px;margin:40px auto;padding:28px;border:1px solid #a86a39;border-radius:9px;background:#22313a;text-align:center"><h2>HEI Admin — Restricted Access</h2><p id="heiAuthMessage" role="status">Checking your authorized session…</p><div class="row" style="justify-content:center"><a href="/api/fleet" style="padding:10px 16px;background:#d97d35;color:#161b20;border-radius:6px;font-weight:800;text-decoration:none">Sign in / reconnect</a><button id="heiAuthRetry" type="button">Check session again</button></div><p class="note">Only an authenticated HEI administrator can open the editing interface.</p></section><div id="heiAuthenticatedApp" hidden><p class="note">Choose an area to edit. Publish updates securely through GitHub after signing in with Cloudflare Access.</p>
 <section id="heiConnectionNotice" hidden role="status" aria-live="polite" style="border:1px solid #d97d35;border-radius:8px;background:#222d35;padding:16px;margin:16px 0">
  <strong style="color:#f3b27e">Admin connection needs attention</strong>
  <p id="heiConnectionReason" class="note" style="margin:8px 0">The secure publishing service could not be reached.</p>
@@ -654,5 +655,5 @@ $('publish').onclick=async()=>{
   }
 }
 </script>
-<script defer src="/assets/admin-editor-v5.js"></script>
-<script defer src="/assets/admin-crews-manuscript.js"></script></body></html>
+</div>
+<script defer src="/assets/admin-auth-gate.js"></script></body></html>
