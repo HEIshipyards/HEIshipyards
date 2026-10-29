@@ -39,19 +39,17 @@ a{color:var(--orange)}button{font:inherit;cursor:pointer}button:focus-visible,a:
 .action{background:#34291f;color:#ffcfaa;border:1px solid #b66a39;border-radius:3px;padding:10px 16px;font-size:13px;font-weight:bold}
 .action:hover:not(:disabled){background:#5b3525}.action:disabled{opacity:.35;cursor:not-allowed}
 .smallprint{margin-top:26px;text-align:center;font-size:12px;color:#91a6af}
-#warp{position:fixed;inset:0;z-index:10;background:#060c14;opacity:1;pointer-events:none;overflow:hidden;display:grid;place-items:center;animation:warp-out 1.15s ease-in forwards}
-#warp .stars{position:absolute;inset:-80%;background:repeating-conic-gradient(from 0deg at 50% 50%,transparent 0deg 11deg,#bce4fb 11.15deg 11.25deg,transparent 11.45deg 22deg);opacity:.28;transform:scale(.08);animation:warp-stars 1s ease-in forwards}
-#warp .core{width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 0 35px 15px #8ac8ff,0 0 110px 40px #5195d7;animation:warp-core 1.12s ease-in forwards}
-#warp .status{position:absolute;bottom:16%;font:700 12px Orbitron,Arial,sans-serif;letter-spacing:3px;color:#e6b88e}
-@keyframes warp-stars{0%{transform:scale(.03) rotate(0);opacity:0}40%{opacity:.5}100%{transform:scale(1.7) rotate(12deg);opacity:.1}}
-@keyframes warp-core{0%{transform:scale(.1);opacity:0}35%{opacity:.8}100%{transform:scale(35);opacity:1}}
-@keyframes warp-out{0%,75%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
 @media(max-width:750px){.screen{grid-template-columns:1fr}.chapter-list{display:flex;flex-direction:row;overflow:auto}.chapter{min-width:180px}.paper{padding:24px}.prose{font-size:16px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}#warp,#warp *{animation:none!important}#warp{display:none}}
 </style>
+<link rel="stylesheet" href="/assets/hei-wormhole.css?v=20261029a">
 </head>
 <body>
-<div id="warp" aria-hidden="true"><div class="stars"></div><div class="core"></div><div class="status">ARCHIVE CONNECTION ESTABLISHED</div></div>
+<div id="warp" aria-hidden="true"><canvas id="wormhole-canvas"></canvas><div class="warp-vignette"></div>
+<div class="warp-portal"><span class="warp-ring a"></span><span class="warp-ring b"></span><span class="warp-ring c"></span><span class="warp-ring d"></span><span class="warp-core"></span></div>
+<div class="warp-shockwave"></div><div class="warp-flash"></div>
+<div class="warp-readout"><div class="warp-overline">H-E-I // ALMAGEST ARCHIVE NETWORK</div>
+<div class="warp-statuses"><span class="s1">CALCULATING JUMP VECTOR</span><span class="s2">STABILIZING WORMHOLE GEOMETRY</span><span class="s3">SYNCHRONIZING ARCHIVE NODE</span><span class="s4">ARCHIVE CONNECTION ESTABLISHED</span></div><div class="warp-progress"></div></div></div>
 <div class="topline"></div>
 <header class="bar"><div class="brand"><span>H-E-I</span> // ALMAGEST DIVISION</div><a class="return" href="/#crews">← RETURN TO RESTRICTED ACCESS</a></header>
 <main class="shell">
@@ -98,5 +96,6 @@ fetch('/data/crews-manuscript.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 
 }).catch(err=>{page.replaceChildren(el('h2','','Archive temporarily unavailable'),el('p','', 'The story files could not be loaded. Please try again later.'));list.textContent='Archive connection error';console.error('HEI archive:',err);});
 })();
 </script>
+<script defer src="/assets/hei-wormhole.js?v=20261029a"></script>
 </body>
 </html>
