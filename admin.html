@@ -145,7 +145,7 @@ window.heiBackendError=function(error){
 <div id="preview" hidden></div>
 <p id="status" role="status" aria-live="polite"></p>
 </div><p id="setupMessage" class="note">Loading secure fleet backend…</p>
-</section></div><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></main>
+</section></div><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden></div></main>
 <script>
 const $=id=>document.getElementById(id);let records=[],version='',selected=null,working=null,uploadMode='gallery',busy=false,uploadBusy=false;
 const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
@@ -655,5 +655,4 @@ $('publish').onclick=async()=>{
   }
 }
 </script>
-</div>
 <script defer src="/assets/admin-auth-gate.js"></script></body></html>
